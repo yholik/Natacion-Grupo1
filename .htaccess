@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /gestion-natacion/
+    RewriteBase /Natacion-Grupo1/
 
     # Si piden la raíz pelada, ir a public/
     RewriteRule ^$ public/index.php [L]
