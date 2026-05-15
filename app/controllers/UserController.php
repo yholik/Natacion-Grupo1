@@ -83,6 +83,11 @@ class UserController extends BaseController {
             return $this->json( 'warning', 'La contraseña es muy corta (mín. 6 caracteres).' );
         }
 
+        $confirmPassword = $_POST[ 'confirm_password' ] ?? '';
+if ( $fields[ 'password' ] !== $confirmPassword ) {
+    return $this->json( 'warning', 'Las contraseñas no coinciden.' );
+}
+
         // --- GESTIÓN DE IMAGEN DE PERFIL ---
         $tempFile = null;
         if ( isset( $_FILES[ 'profile_image' ] ) && $_FILES[ 'profile_image' ][ 'error' ] === UPLOAD_ERR_OK ) {
