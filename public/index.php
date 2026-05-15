@@ -12,6 +12,8 @@ try {
 
     // Definimos la constante asegurando que no tenga barra al final
     define( '_URL', rtrim( $envUrl, '/' ) );
+    date_default_timezone_set(Env::get('APP_TIMEZONE','UTC'));
+
 
 } catch ( Exception $e ) {
     die( 'Error crítico: ' . $e->getMessage() );
