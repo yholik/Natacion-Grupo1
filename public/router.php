@@ -41,8 +41,8 @@ switch ( $route ) {
     case 'send-reset':
     case 'reset-password':
     case 'update-password':
-    require_once __DIR__ . '/../app/controllers/UserController.php';
-    $controller = new UserController();
+    require_once __DIR__ . '/../app/controllers/AuthController.php';
+    $controller = new AuthController();
 
     /**
     * Ejecución del método según la acción solicitada.
