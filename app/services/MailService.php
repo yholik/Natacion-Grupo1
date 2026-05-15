@@ -16,7 +16,6 @@ class MailService
         $mail = new PHPMailer( true );
     
         try {
-            throw execption();
             $mail->isSMTP();
             $mail->Host       = Env::get( 'MAIL_HOST' );
             $mail->SMTPAuth   = true;
