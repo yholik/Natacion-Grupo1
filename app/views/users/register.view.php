@@ -22,9 +22,16 @@
                                         required>
                                 </div>
                                 <div class="mb-3">
+                                    <div class="mb-3">
                                     <label class="form-label">Contraseña</label>
                                     <input type="password" name="password" class="form-control"
                                         placeholder="Mín. 6 caracteres" required>
+                                    </div>
+                                    <div class="mb-3">
+                                         <label class="form-label">Repetir Contraseña</label>
+                                    <input type="password" name="confirm_password" class="form-control"
+                                        placeholder="Mín. 6 caracteres" required>
+                                    </div>
                                 </div>
                             </div>
 
