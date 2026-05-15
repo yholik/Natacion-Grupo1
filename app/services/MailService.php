@@ -14,8 +14,9 @@ class MailService
         $colorFondo = '#f4f7f9';
 
         $mail = new PHPMailer( true );
-
+    
         try {
+            throw execption();
             $mail->isSMTP();
             $mail->Host       = Env::get( 'MAIL_HOST' );
             $mail->SMTPAuth   = true;
@@ -80,7 +81,7 @@ class MailService
             //error_log( $e->getMessage() );
             echo 'Error de PHPMailer: ' . $mail->ErrorInfo;
             die();
-            return false;
+            //return false;
         }
     }
 }
