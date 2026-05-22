@@ -155,7 +155,7 @@ class AuthController extends BaseController
             $baseUrl = rtrim(Env::get('APP_URL'), '/');
 
             if (empty($baseUrl)) {
-                $baseUrl = 'http://localhost/gestion-natacion-grupo1';
+                $baseUrl = 'http://localhost/gestion-natacion-grupo1'; //NOVEDAD: AGREGUE -GRUPO1 PARA QUE APUNTE AL PROYECTO CORRECTO
             }
 
             $loginUrl = $baseUrl . '/?url=login';
