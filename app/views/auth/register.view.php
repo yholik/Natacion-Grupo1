@@ -17,6 +17,16 @@
                                         required>
                                 </div>
                                 <div class="mb-3">
+                                    <label class="form-label">Apellido</label>
+                                    <input type="text" name="apellido" class="form-control" placeholder="Ej: Pérez"
+                                        required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Fecha de cumpleaños</label>
+                                    <input type="date" name="cumple" class="form-control" placeholder="Ej: 24/07/1995"
+                                        required>
+                                </div>
+                                <div class="mb-3">
                                     <label class="form-label">Correo Electrónico</label>
                                     <input type="email" name="email" class="form-control" placeholder="juan@correo.com"
                                         required>
@@ -36,11 +46,6 @@
                             </div>
 
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Apellido</label>
-                                    <input type="text" name="apellido" class="form-control" placeholder="Ej: Pérez"
-                                        required>
-                                </div>
                                 <div class="mb-3">
                                     <label class="form-label">Teléfono</label>
                                     <input type="text" name="telefono" class="form-control" placeholder="11 1234 5678">

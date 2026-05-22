@@ -39,10 +39,6 @@
                     <li class="nav-item">
                         <a class="nav-link btn btn-outline-danger btn-sm ms-3" href="?url=logout">Salir</a>
                     </li>
-                    <?php else: ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="?url=login">Ingresar</a>
-                    </li>
                     <?php endif; ?>
                 </ul>
             </div>
