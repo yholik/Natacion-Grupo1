@@ -1,6 +1,6 @@
 <?php
 
-class User {
+class Auth {
     private $db;
 
     public function __construct( $pdo ) {
@@ -13,9 +13,8 @@ class User {
     * Busca un usuario por email.
     * @return array|bool Retorna los datos del usuario o false si no existe.
     */
-
     public function findByEmail( $email ) {
-        $stmt = $this->db->prepare( 'SELECT * FROM users WHERE email = ? AND deleted_at IS NULL LIMIT 1' );
+        $stmt = $this->db->prepare( 'SELECT * FROM auth WHERE email = ? AND deleted_at IS NULL LIMIT 1' );
         $stmt->execute( [ $email ] );
         return $stmt->fetch( PDO::FETCH_ASSOC );
     }
@@ -26,30 +25,30 @@ class User {
     * Crea las credenciales de acceso para un nuevo usuario.
     * @param array $data [ 'email' => string, 'password' => string, 'role_id' => int ]
     */
-
     public function create( array $data ) {
         $hash = password_hash( $data[ 'password' ], PASSWORD_BCRYPT );
+
         // Usamos el role_id del array, o 3 ( Swimmer ) por defecto si no viene
         $roleId = $data[ 'role_id' ] ?? 3;
 
-        $stmt = $this->db->prepare( 'INSERT INTO users (email, password, role_id) VALUES (?, ?, ?)' );
+        $stmt = $this->db->prepare( 'INSERT INTO auth (email, password, role_id) VALUES (?, ?, ?)' );
 
         if ( $stmt->execute( [ $data[ 'email' ], $hash, $roleId ] ) ) {
             return $this->db->lastInsertId();
         }
+
         return false;
     }
 
     /**
     * Valida las credenciales en el inicio de sesión.
     */
-
     public function login( $email, $password ) {
-        // Traemos los datos de users y los datos de perfil de swimmers
-        $sql = "SELECT u.*, s.first_name, s.profile_image 
-            FROM users u
-            LEFT JOIN swimmers s ON u.id = s.user_id 
-            WHERE u.email = ? AND u.deleted_at IS NULL 
+        // Traemos los datos de auth y los datos de perfil de swimmers
+        $sql = "SELECT a.*, s.first_name, s.profile_image 
+            FROM auth a
+            LEFT JOIN swimmers s ON a.id = s.user_id 
+            WHERE a.email = ? AND a.deleted_at IS NULL 
             LIMIT 1";
 
         $stmt = $this->db->prepare( $sql );
@@ -58,17 +57,16 @@ class User {
 
         if ( $user && password_verify( $password, $user[ 'password' ] ) ) {
             return $user;
-            // Retorna el array con email, role_id, first_name y profile_image
         }
+
         return false;
     }
 
     /**
     * Actualiza la contraseña de un usuario mediante su email.
     */
-
     public function updatePasswordByEmail( $email, $hashedPassword ) {
-        $stmt = $this->db->prepare( 'UPDATE users SET password = ? WHERE email = ?' );
+        $stmt = $this->db->prepare( 'UPDATE auth SET password = ? WHERE email = ?' );
         return $stmt->execute( [ $hashedPassword, $email ] );
     }
 
@@ -77,7 +75,6 @@ class User {
     /**
     * Guarda un token de recuperación, eliminando cualquier token previo del mismo email.
     */
-
     public function savePasswordToken( $email, $token, $expires ) {
         try {
             // 1. Limpiamos registros de recuperación antiguos para este usuario
@@ -97,7 +94,6 @@ class User {
     /**
     * Valida si un token existe y no ha expirado.
     */
-
     public function validateToken( $token ) {
         $stmt = $this->db->prepare( 'SELECT email FROM password_resets WHERE token = ? AND expires_at > NOW() LIMIT 1' );
         $stmt->execute( [ $token ] );
@@ -107,7 +103,6 @@ class User {
     /**
     * Elimina el token una vez que ya ha sido utilizado.
     */
-
     public function deleteToken( $token ) {
         $stmt = $this->db->prepare( 'DELETE FROM password_resets WHERE token = ?' );
         return $stmt->execute( [ $token ] );
