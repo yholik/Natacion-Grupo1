@@ -1,13 +1,13 @@
 <?php
 
 require_once __DIR__ . '/../core/BaseController.php';
-require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../models/Auth.php';
 require_once __DIR__ . '/../models/Swimmer.php';
 require_once __DIR__ . '/../services/MailService.php';
 
 class AuthController extends BaseController
 {
-    private $userModel;
+    private $authModel;
     private $swimmerModel;
     private $pdo;
 
@@ -16,7 +16,7 @@ class AuthController extends BaseController
         global $pdo;
 
         $this->pdo = $pdo;
-        $this->userModel = new User($pdo);
+        $this->authModel = new Auth($pdo);
         $this->swimmerModel = new Swimmer($pdo);
     }
 
@@ -123,11 +123,10 @@ class AuthController extends BaseController
     private function executeRegistration($f, $tempFile = null)
     {
         try {
-            if ($this->userModel->findByEmail($f['email'])) {
+            if ($this->authModel->findByEmail($f['email'])) {
                 if ($tempFile && file_exists($tempFile)) {
                     unlink($tempFile);
                 }
-
                 return $this->json(
                     'user_exists',
                     'Ya tienes una cuenta registrada.',
@@ -137,7 +136,7 @@ class AuthController extends BaseController
 
             $this->pdo->beginTransaction();
 
-            $userId = $this->userModel->create([
+            $userId = $this->authModel->create([
                 'email'    => $f['email'],
                 'password' => $f['password'],
                 'role_id'  => 3
@@ -156,7 +155,7 @@ class AuthController extends BaseController
             $baseUrl = rtrim(Env::get('APP_URL'), '/');
 
             if (empty($baseUrl)) {
-                $baseUrl = 'http://localhost/gestion-natacion';
+                $baseUrl = 'http://localhost/gestion-natacion-grupo1'; //NOVEDAD: AGREGUE -GRUPO1 PARA QUE APUNTE AL PROYECTO CORRECTO
             }
 
             $loginUrl = $baseUrl . '/?url=login';
@@ -187,7 +186,7 @@ class AuthController extends BaseController
         $email = trim($_POST['email'] ?? '');
         $pass = $_POST['password'] ?? '';
 
-        $user = $this->userModel->login($email, $pass);
+        $user = $this->authModel->login($email, $pass);
 
         if ($user) {
             $_SESSION['user_id'] = $user['id'];
@@ -228,13 +227,13 @@ class AuthController extends BaseController
             return $this->json('error', 'Email inválido.');
         }
 
-        $user = $this->userModel->findByEmail($email);
+        $user = $this->authModel->findByEmail($email);
 
         if ($user) {
             $token = bin2hex(random_bytes(32));
             $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
-            $this->userModel->savePasswordToken($email, $token, $expires);
+            $this->authModel->savePasswordToken($email, $token, $expires);
 
             $mailService = new MailService();
 
@@ -261,7 +260,7 @@ class AuthController extends BaseController
             return $this->json('warning', 'La contraseña debe tener al menos 6 caracteres.');
         }
 
-        $resetRequest = $this->userModel->validateToken($token);
+        $resetRequest = $this->authModel->validateToken($token);
 
         if ($resetRequest) {
             $email = $resetRequest['email'];
@@ -270,8 +269,8 @@ class AuthController extends BaseController
             try {
                 $this->pdo->beginTransaction();
 
-                $this->userModel->updatePasswordByEmail($email, $hashedPassword);
-                $this->userModel->deleteToken($token);
+                $this->authModel->updatePasswordByEmail($email, $hashedPassword);
+                $this->authModel->deleteToken($token);
 
                 $this->pdo->commit();
 

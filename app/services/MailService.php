@@ -25,7 +25,6 @@ class MailService
             $mail->Port       = Env::get( 'MAIL_PORT' );
 
             $mail->setFrom( Env::get( 'MAIL_FROM' ), 'Soporte Escuela de Natación' );
-            //$mail->setFrom( 'lic.juanpablocesarini@gmail.com', 'Escuela de Natación' );
             $mail->addAddress( $toEmail );
 
             $mail->isHTML( true );
@@ -79,8 +78,7 @@ class MailService
         } catch ( Exception $e ) {
             //error_log( $e->getMessage() );
             echo 'Error de PHPMailer: ' . $mail->ErrorInfo;
-            die();
-            //return false;
+            return false;
         }
     }
 }
