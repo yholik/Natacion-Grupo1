@@ -46,6 +46,10 @@
                                     <input type="text" name="telefono" class="form-control" placeholder="11 1234 5678">
                                 </div>
                                 <div class="mb-3">
+                                    <label class="form-label">Fecha de Nacimiento</label>
+                                    <input type="date" name="birth_date" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
                                     <label class="form-label">Foto de Perfil</label>
                                     <input type="file" name="profile_image" class="form-control" accept="image/*">
                                 </div>
