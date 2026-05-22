@@ -9,7 +9,7 @@ class Coach {
     }
 
 
-public function getAllCoaches(){
+public function getAll(){
     $sql = "SELECT c.* , u.email
     FROM coaches c
     INNER JOIN users u ON c.user_id = c.id
