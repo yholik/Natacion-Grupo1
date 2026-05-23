@@ -4,7 +4,7 @@ class Coach {
     private $db;
 
     public function __construct($pdo){
-        this->db = $pdo;
+        $this->db = $pdo;
 
     }
 
