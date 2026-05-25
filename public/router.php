@@ -57,6 +57,15 @@ switch ( $route ) {
     if ( $route === 'update-password' ) $controller->updatePassword();
     break;
 
+    // --- COACH ---
+    case'coach':   
+        require_once __DIR__ . '/../app/controllers/AuthController.php';
+        $controller = new AuthController();         
+        if ( $route === 'coach' )   $controller->showCoachHome();
+
+break;
+
+
     // --- SEGURIDAD: CIERRE DE SESIÓN ---
     case 'logout':
     /**

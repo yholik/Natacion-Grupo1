@@ -22,6 +22,16 @@ class BaseController {
             }
         }
     }
+
+
+    //NOVEDAD: Porque sino el usuario podria ingresar mediante URL
+    // a rutas de admin o de coach
+    protected function checkRole(int $roleId){
+        if((int)$_SESSION['role_id'] != $roleId){
+            header('Location: ?url=login');
+            exit;
+        }
+    }
     
     /**
     * @param string $view  Nombre del archivo ( ej: 'usuarios/register' )
