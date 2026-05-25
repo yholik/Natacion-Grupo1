@@ -63,7 +63,22 @@ switch ( $route ) {
         $controller = new AuthController();         
         if ( $route === 'coach' )   $controller->showCoachHome();
 
-break;
+    break;
+
+    /// --- SWIMMER ---
+    case 'swimmer':
+    case 'swimmer/update-profile':
+    case 'swimmer/enroll':
+    case 'swimmer/cancel-enrollment':
+        require_once __DIR__ . '/../app/controllers/AuthController.php';
+        $controller = new AuthController();         
+
+        if ( $route === 'swimmer' )   $controller->showSwimmerHome();
+        if ( $route === 'swimmer/update-profile' )   $controller->updateProfile();
+        if ( $route === 'swimmer/enroll' )   $controller->enroll();
+        if ( $route === 'swimmer/cancel-enrollment' )   $controller->cancelEnrollment();
+    break;
+
 
 
     // --- SEGURIDAD: CIERRE DE SESIÓN ---

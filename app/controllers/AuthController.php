@@ -201,7 +201,7 @@ class AuthController extends BaseController
             $redirectUrl = match((int)$user['role_id']) {
                 1 => Env::get('APP_URL') . '/?url=admin',
                 2 => Env::get('APP_URL') . '/?url=coach',
-                3 => Env::get('APP_URL') . '/?url=home',
+                3 => Env::get('APP_URL') . '/?url=swimmer',
                 default => Env::get('APP_URL') . '/?url=home'
             };
             return $this->json('success','¡Bienvenido ' . $user['first_name'] . '!', $redirectUrl);
@@ -315,6 +315,17 @@ class AuthController extends BaseController
         $this->checkAuth();
         $this->render('users/coach/coach-home.view', [
             'title' => 'Panel de Coach'
+        ]);
+    }
+
+    public function showSwimmerHome()
+    {
+        //ACA IMPLEMENTO LA FUNCTION CHECKROLE PARA
+        // EVITAR QUE UN USUARIO NO APTO INGRESE POR URL
+        $this->checkRole(3); 
+        $this->checkAuth();
+        $this->render('users/swimmer/swimmer-home.view', [
+            'title' => 'Panel de Nadador'
         ]);
     }
 }
