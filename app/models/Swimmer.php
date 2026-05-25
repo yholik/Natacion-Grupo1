@@ -41,4 +41,36 @@ class Swimmer {
             $data['profile_image'] ?? 'default-profile.png' 
         ]);
     }
+
+    public function getSwimmerById(int $user_id) {
+
+        $sql = "SELECT s.*, u.email 
+                    FROM swimmers s 
+                    INNER JOIN users u ON s.user_id = u.id 
+                    WHERE s.user_id = ? AND s.deleted_at IS NULL 
+                    LIMIT 1"
+        ;
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$user_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function updateSwimmer(int $userId, array $data) {
+        $fields = [];
+        $values = [];
+        foreach (['first_name', 'last_name', 'phone', 'birth_date', 'profile_image'] as $col) {
+            if (array_key_exists($col, $data)) {
+                $fields[] = "$col = ?";
+                $values[] = $data[$col];
+            }
+        }
+        if (empty($fields)) {
+            return false;
+        }
+        $values[] = $userId;
+        $sql = "UPDATE swimmers SET " . implode(', ', $fields) . " WHERE user_id = ? AND deleted_at IS NULL";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute($values);
+    }
 }
