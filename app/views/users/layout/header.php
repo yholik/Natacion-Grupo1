@@ -20,9 +20,11 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="?url=home">SwimManager 🚩</a>
-
-            <div class="collapse navbar-collapse">
+            <a class="navbar-brand" href="?url=home">Club de Natacion - El Delfín Saltarín 🚩</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
+    <span class="navbar-toggler-icon"></span>
+</button>
+            <div class="collapse navbar-collapse" id="navbarMenu">
                 <ul class="navbar-nav ms-auto align-items-center">
                     <?php if (isset($_SESSION['user_id'])): ?>
                     <li class="nav-item d-flex align-items-center">
