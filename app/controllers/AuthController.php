@@ -55,6 +55,7 @@ class AuthController extends BaseController
         ]);
     }
 
+
     // --- SECCIÓN: REGISTRO ---
 
     public function register()
@@ -195,11 +196,15 @@ class AuthController extends BaseController
             $_SESSION['first_name'] = $user['first_name'];
             $_SESSION['profile_image'] = $user['profile_image'];
 
-            return $this->json(
-                'success',
-                '¡Bienvenido ' . $user['first_name'] . '!',
-                Env::get('APP_URL') . '/?url=home'
-            );
+
+            //NOVEDAD: AGREGUE ESTE REDIRECT PARA PODER REDIRIGIR BASANDOME EN EL ROL DE USUARIO
+            $redirectUrl = match((int)$user['role_id']) {
+                1 => Env::get('APP_URL') . '/?url=admin',
+                2 => Env::get('APP_URL') . '/?url=coach',
+                3 => Env::get('APP_URL') . '/?url=home',
+                default => Env::get('APP_URL') . '/?url=home'
+            };
+            return $this->json('success','¡Bienvenido ' . $user['first_name'] . '!', $redirectUrl);
         }
 
         return $this->json('error', 'Credenciales incorrectas.');
@@ -298,5 +303,18 @@ class AuthController extends BaseController
             || empty($f['last_name'])
             || empty($f['email'])
             || empty($f['password']);
+    }
+
+    // --- SECCIÓN: VISTAS COACH ---
+
+    public function showCoachHome()
+    {
+        //ACA IMPLEMENTO LA FUNCTION CHECKROLE PARA
+        // EVITAR QUE UN USUARIO NO APTO INGRESE POR URL
+        $this->checkRole(2); 
+        $this->checkAuth();
+        $this->render('users/coach/coach-home.view', [
+            'title' => 'Panel de Coach'
+        ]);
     }
 }
