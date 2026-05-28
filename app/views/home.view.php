@@ -1,5 +1,5 @@
 <?php include __DIR__ . '/users/layout/header.php'; ?>
-
+<main class="container mt-4">
 <div class="bg-white p-5 rounded shadow-sm">
     <h1>Bienvenido, Profe</h1>
     <p class="lead">Este es el panel administrativo de la escuela.</p>
@@ -15,5 +15,5 @@
         </div>
     </div>
 </div>
-
+</main>
 <?php include __DIR__ . '/users/layout/footer.php'; ?>
