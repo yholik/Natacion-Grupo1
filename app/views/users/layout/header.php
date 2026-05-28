@@ -35,9 +35,12 @@
                         ?>
                         <img src="<?= $rutaFoto ?>" alt="Perfil" class="profile-img-nav me-2">
 
-                        <span class="nav-link text-info p-0">
+                        <!-- <span class="nav-link text-info p-0">
                             Hola, <?= htmlspecialchars($_SESSION['first_name'] ?? 'Usuario') ?>
-                        </span>
+                        </span> -->
+                        <a href="?url=swimmer/profile" class="nav-link text-info p-0 text-decoration-none">
+                            Hola, <?= htmlspecialchars($_SESSION['first_name'] ?? 'Usuario') ?>
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link btn btn-outline-danger btn-sm ms-3" href="?url=logout">Salir</a>

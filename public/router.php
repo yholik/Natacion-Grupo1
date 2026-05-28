@@ -67,6 +67,7 @@ switch ( $route ) {
 
     /// --- SWIMMER ---
     case 'swimmer':
+    case 'swimmer/profile':
     case 'swimmer/update-profile':
     case 'swimmer/enroll':
     case 'swimmer/cancel-enrollment':
@@ -74,6 +75,7 @@ switch ( $route ) {
         $controller = new AuthController();         
 
         if ( $route === 'swimmer' )   $controller->showSwimmerHome();
+        if ( $route === 'swimmer/profile' )   $controller->showSwimmerProfile();
         if ( $route === 'swimmer/update-profile' )   $controller->updateProfile();
         if ( $route === 'swimmer/enroll' )   $controller->enroll();
         if ( $route === 'swimmer/cancel-enrollment' )   $controller->cancelEnrollment();
