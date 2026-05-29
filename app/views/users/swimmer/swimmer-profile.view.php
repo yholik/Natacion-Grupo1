@@ -1,4 +1,3 @@
-<?php include __DIR__ . '/../layout/header.php'; ?>
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card shadow-sm">
@@ -59,4 +58,3 @@
         }
     });
     </script>
-<?php include __DIR__ . '/../layout/footer.php'; ?>

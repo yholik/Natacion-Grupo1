@@ -1,51 +1,17 @@
-<?php include __DIR__ . '../../layout/header.php'; ?>
-<link rel="stylesheet" href="<?= Env::get('ASSET_URL') ?>/css/coach.css">
-<main>
-<!-- ASIDE -->
-<div class="d-flex" id="navsidebar">
-<aside class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 280px; min-height: 100vh;">
-  
-  <a href="index.php" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none gap-2">
-    <i class="bi bi-bootstrap-fill fs-2"></i>
-    <span class="fs-4 tracking-tight">Panel de control</span>
-  </a>
-  
-  <hr class="border-secondary my-3">
+<?php include_once __DIR__ . '/coach-sidebar.view.php'; ?>
 
-  <ul class="nav nav-pills flex-column mb-auto gap-1">
+<div class="d-flex" style="min-height: calc(100vh - 56px);"> 
     
-    <li class="nav-item">
-      <a href="index.php" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'home') ? 'active bg-primary' : 'opacity-75'; ?>" aria-current="page">
-        <i class="bi bi-house-door fs-5"></i>
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li>
-      <a href="dashboard.php" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'dashboard') ? 'active bg-primary' : 'opacity-75'; ?>">
-        <i class="bi bi-speedometer2 fs-5"></i>
-        <span>Gestión del perfil</span>
-      </a>
-    </li>
-    
-    <li>
-      <a href="orders.php" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'orders') ? 'active bg-primary' : 'opacity-75'; ?>">
-        <i class="bi bi-table fs-5"></i>
-        <span>Gestión de clases</span>
-      </a>
-    </li>
-    
-    <li>
-      <a href="products.php" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'products') ? 'active bg-primary' : 'opacity-75'; ?>">
-        <i class="bi bi-grid-3x3-gap fs-5"></i>
-        <span>Calendario</span>
-      </a>
-    </li>
+    <?php include_once __DIR__ . '/coach-sidebar.view.php'; ?>
 
-  </ul>
-</aside>
+    <div class="flex-grow-1 p-5 bg-white">
+        <h1>Panel de Control - Coach</h1>
+        <p class="lead">Esta es tu zona blanca limpia.</p>
+        <hr>
+        
+        <div class="alert alert-success">
+            Acá va el contenido de coach.
+        </div>
+    </div>
+
 </div>
-
-
-</main>
-<?php include __DIR__ . '/../layout/footer.php'; ?>
