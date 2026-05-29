@@ -1,5 +1,3 @@
-<?php include __DIR__ . '/../users/layout/header.php'; ?>
-
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-5">
@@ -42,4 +40,3 @@
         </div>
     </div>
 </div>
-<?php include __DIR__ . '/../users/layout/footer.php'; ?>

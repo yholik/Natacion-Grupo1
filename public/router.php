@@ -58,10 +58,12 @@ switch ( $route ) {
     break;
 
     // --- COACH ---
-    case'coach':   
+    case 'coach':   
+    case 'coach-home':
         require_once __DIR__ . '/../app/controllers/AuthController.php';
         $controller = new AuthController();         
         if ( $route === 'coach' )   $controller->showCoachHome();
+        if( $route === 'coach-home' ) $controller->showCoachHome();
 
     break;
 
