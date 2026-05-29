@@ -50,4 +50,3 @@
             </div>
         </div>
     </nav>
-    <main class="container mt-4">

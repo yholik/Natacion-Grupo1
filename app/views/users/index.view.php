@@ -1,5 +1,5 @@
 <?php include __DIR__ . '/../users/layout/header.php'; ?>
-
+<main class="container mt-4">
 <div class="container mt-4">
     <h2>Listado de Nadadores</h2>
     <table class="table table-striped mt-3">
@@ -27,5 +27,5 @@
         </tbody>
     </table>
 </div>
-
+</main>
 <?php include __DIR__ . '/../layout/footer.php'; ?>
