@@ -14,7 +14,7 @@ class Swimmer {
         // Agregamos s.profile_image a la consulta
         $sql = "SELECT s.*, u.email 
                 FROM swimmers s 
-                INNER JOIN users u ON s.user_id = u.id 
+                INNER JOIN auth u ON s.user_id = u.id 
                 WHERE s.deleted_at IS NULL";
         
         $stmt = $this->db->query($sql);
@@ -46,7 +46,7 @@ class Swimmer {
 
         $sql = "SELECT s.*, u.email 
                     FROM swimmers s 
-                    INNER JOIN users u ON s.user_id = u.id 
+                    INNER JOIN auth u ON s.user_id = u.id 
                     WHERE s.user_id = ? AND s.deleted_at IS NULL 
                     LIMIT 1"
         ;

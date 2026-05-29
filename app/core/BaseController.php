@@ -37,18 +37,19 @@ class BaseController {
     * @param string $view  Nombre del archivo ( ej: 'usuarios/register' )
     * @param array  $data  Diccionario de datos para la vista
     */
-    protected function render( $view, $data = [] ) {
-        // Extraemos el array: [ 'alerta' => '...' ] se vuelve la variable $alerta
-        extract( $data );
+    protected function render( $view, $data = [] ){
+        extract($data);
 
-        $path = __DIR__ . '/../views/' . $view . '.php';
-
-        if ( file_exists( $path ) ) {
-            require_once $path;
-        } else {
-            die( "Error: La vista '{$view}' no existe. Verificá la carpeta views." );
-        }
+        //Al realizar este cambio, tanto en swimmer.home-view,php como coach.home-view.php
+        // deberíamos quitar los include al header y footer.
+        //Capturamos la vista
+        ob_start();
+        require_once __DIR__ . '/../views/'. $view . '.php';
+        $contenido = ob_get_clean();
+        //Inyectamos en layout (main)
+        require_once __DIR__ . '/../views/users/layout/main.php';
     }
+
 
     protected function json( $status, $message, $redirect = null ) {
         header( 'Content-Type: application/json' );
