@@ -127,4 +127,19 @@ class SwimmerController extends BaseController {
         return $this->json('error', 'No se pudo cancelar la inscripción.');
     }
 
+    public function showProfile()
+    {
+        $this->checkAuth();
+        $this->checkRole(3);
+        $userId = (int) $_SESSION['user_id'];
+        $swimmer = $this->swimmerModel->getByUserId($userId);
+        if (!$swimmer) {
+            die('Error: Perfil de nadador no encontrado.');
+        }
+        $this->render('users/swimmer/swimmer-profile.view', [
+            'title'   => 'Mi Perfil',
+            'swimmer' => $swimmer
+        ]);
+    }
+
 }
