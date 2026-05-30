@@ -83,6 +83,17 @@ switch ( $route ) {
         if ( $route === 'swimmer/cancel-enrollment' )   $controller->cancelEnrollment();
     break;
 
+    // --- ADMIN ---
+    case 'admin':   
+    case 'admin-home':
+    case 'admin-manage-coaches':
+        require_once __DIR__ . '/../app/controllers/AuthController.php';
+        $controller = new AuthController();         
+        if ( $route === 'admin' )   $controller->showAdminHome();
+        if( $route === 'admin-home' ) $controller->showAdminHome();
+        if( $route === 'admin-manage-coaches' ) $controller->showAdminManageCoaches();
+    break;
+
 
 
     // --- SEGURIDAD: CIERRE DE SESIÓN ---

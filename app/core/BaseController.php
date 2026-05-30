@@ -78,6 +78,7 @@ class BaseController
         
         switch ($userRole) {
             case 1: //aca va admin
+                header('Location: ?url=admin-home');
                 exit;
             case 2: //aca va coach
                 header('Location: ?url=coach-home');

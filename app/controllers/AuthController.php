@@ -305,6 +305,8 @@ class AuthController extends BaseController
             || empty($f['password']);
     }
 
+
+    //Todo esto creo que deberia estar en su controller especifico
     // --- SECCIÓN: VISTAS COACH ---
 
     public function showCoachHome()
@@ -326,7 +328,7 @@ class AuthController extends BaseController
             'title' => 'Panel de Nadador'
         ]);
     }
-
+    
     public function showSwimmerProfile()
     {
         $this->checkRole(3);
@@ -336,6 +338,27 @@ class AuthController extends BaseController
         $this->render('users/swimmer/swimmer-profile.view', [
             'title'   => 'Mi Perfil',
             'swimmer' => $swimmer
+        ]);
+    }
+
+
+     // --- SECCIÓN: VISTAS ADMIN ---
+
+    public function showAdminHome()
+    {
+        $this->checkAuth();
+        $this->checkRole(1); 
+        $this->render('users/admin/admin-home.view', [
+            'title' => 'Panel de Admin'
+        ]);
+    }
+
+     public function showAdminManageCoaches()
+    {
+        $this->checkAuth();
+        $this->checkRole(1); 
+        $this->render('users/admin/admin-manage-coaches.view', [
+            'title' => 'Panel de Admin'
         ]);
     }
 }
