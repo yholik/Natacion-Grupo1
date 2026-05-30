@@ -70,7 +70,8 @@ switch ( $route ) {
     break;
 
     /// --- SWIMMER ---
-    case 'swimmer':
+    case 'swimmer-home':
+    case 'swimmer':  
     case 'swimmer/profile':
     case 'swimmer/update-profile':
     case 'swimmer/enroll':
@@ -78,6 +79,7 @@ switch ( $route ) {
         require_once __DIR__ . '/../app/controllers/AuthController.php';
         $controller = new AuthController();         
 
+        if ( $route === 'swimmer-home' )   $controller->showSwimmerHome();
         if ( $route === 'swimmer' )   $controller->showSwimmerHome();
         if ( $route === 'swimmer/profile' )   $controller->showSwimmerProfile();
         if ( $route === 'swimmer/update-profile' )   $controller->updateProfile();
