@@ -40,8 +40,9 @@ class BaseController
     /**
      * @param string $view  Nombre del archivo ( ej: 'usuarios/register' )
      * @param array  $data  Diccionario de datos para la vista
-     */
-    protected function render($view, $data = [])
+     * @param bool   $useLayout Indica si debe inyectarse en el layout común (main.php)
+    */
+    protected function render($view, $data = [], $useLayout = true)
     {
         extract($data); // convierto las claves del array en variables
 
@@ -58,8 +59,14 @@ class BaseController
             ob_start();
             require_once __DIR__ . '/../views/' . $view . '.php'; 
             $contenido = ob_get_clean();
-            //Inyectamos en layout (main)
-            require_once __DIR__ . '/../views/users/layout/main.php';
+
+            // Si es true, mete la barra gris general
+            if ($useLayout) {
+                require_once __DIR__ . '/../views/users/layout/main.php';
+            }else {
+                //Si es falso, deja la barra como está en el landing (sería la única que tomaría este criterio)
+                echo $contenido;
+            }
         } else {
 
             $this->handleFallback(); // Si la vista no existe, manejo el caso segun el usuario de la sesion
