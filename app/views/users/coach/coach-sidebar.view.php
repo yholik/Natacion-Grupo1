@@ -13,14 +13,14 @@
   <ul class="nav nav-pills flex-column mb-auto gap-1">
     
     <li class="nav-item">
-      <a href="coach-home" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'coach-home') ? 'active bg-primary' : 'opacity-75'; ?>" aria-current="page">
+      <a href=" ?url=coach-home" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'coach-home') ? 'active bg-primary' : 'opacity-75'; ?>" aria-current="page">
         <i class="bi bi-house-door fs-5"></i>
         <span>Home</span>
       </a>
     </li>
     
     <li>
-      <a href="coach-profile" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'profile') ? 'active bg-primary' : 'opacity-75'; ?>">
+      <a href="?url=coach-profile" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'profile') ? 'active bg-primary' : 'opacity-75'; ?>">
         <i class="bi bi-speedometer2 fs-5"></i>
         <span>Gestión del perfil</span>
       </a>
