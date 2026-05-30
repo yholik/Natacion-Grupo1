@@ -1,0 +1,59 @@
+<div class="d-flex" style="min-height: calc(100vh - 56px);">
+
+    <?php include_once __DIR__ . '/coach-sidebar.view.php'; ?>
+</div>
+<div class="p-4 w-100">
+    <h2 class="mb-4">Mis datos personales</h2>
+
+    <form id="profileForm" class="w-100">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Nombre</label>
+                <input type="text" name="first_name" class="form-control" value="<?= htmlspecialchars($_SESSION['first_name']) ?>" disabled>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Apellido</label>
+                <input type="text" name="last_name" class="form-control" value="-" disabled>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Teléfono</label>
+                <input type="text" name="phone" class="form-control" value="-" disabled>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Especialidad</label>
+                <input type="text" name="specialty" class="form-control" value="-" disabled>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($_SESSION['email']) ?>" disabled>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+            <button type="button" class="btn btn-secondary" id="btnEdit">Editar</button>
+            <button type="button" class="btn btn-primary d-none" id="btnSave">Guardar</button>
+        </div>
+    </form>
+</div>
+
+<script>
+const btnEdit = document.getElementById('btnEdit');
+const btnSave = document.getElementById('btnSave');
+const inputs  = document.querySelectorAll('#profileForm input');
+
+btnEdit.addEventListener('click', function() {
+    inputs.forEach(input => input.removeAttribute('disabled'));
+    btnEdit.classList.add('d-none');
+    btnSave.classList.remove('d-none');
+});
+
+btnSave.addEventListener('click', function() {
+    inputs.forEach(input => input.setAttribute('disabled', true));
+    btnEdit.classList.remove('d-none');
+    btnSave.classList.add('d-none');
+});
+</script>

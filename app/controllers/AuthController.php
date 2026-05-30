@@ -313,17 +313,28 @@ class AuthController extends BaseController
     {
         //ACA IMPLEMENTO LA FUNCTION CHECKROLE PARA
         // EVITAR QUE UN USUARIO NO APTO INGRESE POR URL
-        $this->checkRole(2); 
+        
         $this->checkAuth();
+        $this->checkRole(2); 
         $this->render('users/coach/coach-home.view', [
             'title' => 'Panel de Coach'
         ]);
     }
 
+    public function showCoachProfile()
+    {
+        $this->checkAuth();
+        $this->checkRole(2);         
+        $this->render('users/coach/coach-profile.view', [
+            'title' => ' - Gestion del perfil'
+        ]);
+    }
+
     public function showSwimmerHome()
     {
-        $this->checkRole(3);
+        
         $this->checkAuth();
+        $this->checkRole(3);
         $this->render('users/swimmer/swimmer-home.view', [
             'title' => 'Panel de Nadador'
         ]);
@@ -331,8 +342,9 @@ class AuthController extends BaseController
     
     public function showSwimmerProfile()
     {
-        $this->checkRole(3);
+      
         $this->checkAuth();
+          $this->checkRole(3);
         $userId = (int) $_SESSION['user_id'];
         $swimmer = $this->swimmerModel->getSwimmerById($userId);
         $this->render('users/swimmer/swimmer-profile.view', [
