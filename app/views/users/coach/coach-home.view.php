@@ -12,7 +12,7 @@
         <div class="alert alert-success">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <a href="?url=coach-students" class="text-decoration-none">
+                    <a href="?url=coach-lessons" class="text-decoration-none">
                         <div class="card text-center shadow-sm h-100">
                             <div class="card-body">
                                 <h5 class="card-title text-muted">Alumnos</h5>
