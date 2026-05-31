@@ -17,11 +17,10 @@
     }
     </style>
 </head>
-
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="?url=home">Club de Natacion - El Delfín Saltarín 🚩</a>
+            <a class="navbar-brand" href="?url=landing">Club de Natacion - El Delfín Saltarín 🚩</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
     <span class="navbar-toggler-icon"></span>
 </button>
