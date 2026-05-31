@@ -17,13 +17,20 @@ require_once __DIR__ . '/../app/core/BaseController.php';
 * Usamos el parámetro 'url' definido en el .htaccess o pasado por GET.
 * Si no hay ruta ( página de inicio ), por defecto vamos a 'home'.
 */
-$route = $_GET[ 'url' ] ?? 'home';
+$route = $_GET[ 'url' ] ?? 'landing';
 
 /**
 * 2. DESPACHO DE RUTAS ( DISPATCHER )
 * El switch actúa como una tabla de decisiones.
 */
 switch ( $route ) {
+
+    // --- VISTA PÚBLICA DE BIENVENIDA ---
+    case 'landing':
+        //Aquí mostramos el landing previo al inicio de sesión
+        require_once __DIR__ .'/../app/controllers/HomeController.php';
+        ( new HomeController() )->landing(); //
+        break;
 
     // --- VISTA PRINCIPAL ---
     case 'home':
@@ -70,7 +77,8 @@ switch ( $route ) {
     break;
 
     /// --- SWIMMER ---
-    case 'swimmer':
+    case 'swimmer-home':
+    case 'swimmer':  
     case 'swimmer/profile':
     case 'swimmer/update-profile':
     case 'swimmer/enroll':
@@ -78,6 +86,7 @@ switch ( $route ) {
         require_once __DIR__ . '/../app/controllers/AuthController.php';
         $controller = new AuthController();         
 
+        if ( $route === 'swimmer-home' )   $controller->showSwimmerHome();
         if ( $route === 'swimmer' )   $controller->showSwimmerHome();
         if ( $route === 'swimmer/profile' )   $controller->showSwimmerProfile();
         if ( $route === 'swimmer/update-profile' )   $controller->updateProfile();
