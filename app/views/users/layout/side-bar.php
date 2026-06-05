@@ -1,5 +1,6 @@
 <ul class="nav nav-pills flex-column mb-auto gap-1">
                     
+                    
                     <?php if ($_SESSION['role_id'] == 1): ?>
                         <li class="nav-item">
                             <a href="?url=admin-home" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'admin-home') ? 'active bg-primary' : 'opacity-75'; ?>" aria-current="page">
@@ -58,9 +59,9 @@
                                 <i class="bi bi-journal-bookmark-fill fs-5"></i>
                                 <span>Mis Clases</span>
                             </a>
-                        </li>
-                    <?php endif; ?>
+                        </li>                    
                     
+                     <?php elseif ($_SESSION['role_id'] == 2 || $_SESSION['role_id'] == 3): ?>
                     <li>
                         <a href="" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'calendar') ? 'active bg-primary' : 'opacity-75'; ?>">
                             <i class="bi bi-grid-3x3-gap fs-5"></i>
@@ -78,3 +79,4 @@
                      
 
                 </ul>
+                <?php endif; ?>
