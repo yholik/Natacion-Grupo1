@@ -201,7 +201,7 @@ class AuthController extends BaseController
             $redirectUrl = match((int)$user['role_id']) {
                 1 => Env::get('APP_URL') . '/?url=admin',
                 2 => Env::get('APP_URL') . '/?url=coach',
-                3 => Env::get('APP_URL') . '/?url=swimmer',
+                3 => Env::get('APP_URL') . '/?url=swimmer-classes-avaliable',
                 default => Env::get('APP_URL') . '/?url=home'
             };
             return $this->json('success','¡Bienvenido ' . $user['first_name'] . '!', $redirectUrl);
@@ -307,34 +307,6 @@ class AuthController extends BaseController
 
 
     //Todo esto creo que deberia estar en su controller especifico
-    // --- SECCIÓN: VISTAS COACH ---
-
-    
-
-    public function showSwimmerHome()
-    {
-        
-        $this->checkAuth();
-        $this->checkRole(3);
-        $this->render('users/swimmer/swimmer-home.view', [
-            'title' => 'Panel de Nadador'
-        ]);
-    }
-    
-    public function showSwimmerProfile()
-    {
-      
-        $this->checkAuth();
-          $this->checkRole(3);
-        $userId = (int) $_SESSION['user_id'];
-        $swimmer = $this->swimmerModel->getSwimmerById($userId);
-        $this->render('users/swimmer/swimmer-profile.view', [
-            'title'   => 'Mi Perfil',
-            'swimmer' => $swimmer
-        ]);
-    }
-
-
      // --- SECCIÓN: VISTAS ADMIN ---
 
     public function showAdminHome()
