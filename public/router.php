@@ -64,12 +64,6 @@ switch ( $route ) {
     if ( $route === 'update-password' ) $controller->updatePassword();
     break;
 
-    // --- Perfil genérico ---
-    case 'profile':
-        require_once __DIR__ . '/../app/controllers/PerfilController.php';
-        ( new PerfilController() )->show();
-        break;
-
     // --- COACH ---
     case 'coach':   
     case 'coach-home':
@@ -82,20 +76,22 @@ switch ( $route ) {
         break;
 
     /// --- SWIMMER ---
-    case 'swimmer-home':
     case 'swimmer':  
+    case 'swimmer-classes-avaliable':
+    case 'swimmer-my-classes':
     case 'swimmer-profile':
     case 'swimmer-update-profile':
     case 'swimmer-enroll':
     case 'swimmer-cancel-enrollment':
-        require_once __DIR__ . '/../app/controllers/AuthController.php';
-        $controller = new AuthController();         
+        require_once __DIR__ . '/../app/controllers/SwimmerController.php';
+        $controller = new SwimmerController();         
 
-        if ( $route === 'swimmer-home' )   $controller->showSwimmerHome();
-        if ( $route === 'swimmer' )   $controller->showSwimmerHome();
-        if ( $route === 'swimmer-profile' )   $controller->showSwimmerProfile();
-        if ( $route === 'swimmer-update-profile' )   $controller->updateProfile();
-        if ( $route === 'swimmer-enroll' )   $controller->enroll();
+        if ( $route === 'swimmer' )                     $controller->showAvailableClasses();
+        if ( $route === 'swimmer-classes-avaliable' )   $controller->showAvailableClasses();
+        if ( $route === 'swimmer-my-classes' )          $controller->showMyClasses();
+        if ( $route === 'swimmer-profile' )             $controller->showProfile();
+        if ( $route === 'swimmer-update-profile' )      $controller->updateProfile();
+        if ( $route === 'swimmer-enroll' )              $controller->enroll();
         if ( $route === 'swimmer-cancel-enrollment' )   $controller->cancelEnrollment();
     break;
 

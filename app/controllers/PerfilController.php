@@ -26,7 +26,7 @@ class PerfilController extends BaseController
 
         switch ($roleId) {
             case 1: // admin
-                $this->render('users/admin/admin-profile.view', [
+                $this->render('users/admin/admin-home.view', [
                     'title' => 'Mi Perfil - Admin'
                 ]);
                 break;

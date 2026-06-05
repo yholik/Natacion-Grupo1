@@ -1,5 +1,5 @@
 <ul class="nav nav-pills flex-column mb-auto gap-1">
-                    <?php if (isset($_SESSION['user_id'])): ?>
+<?php if (isset($_SESSION['user_id'])): ?>
                     
                     <?php if ($_SESSION['role_id'] == 1): ?>
                         <li class="nav-item">
@@ -41,6 +41,7 @@
                                 <span>Gestión de clases</span>
                             </a>
                         </li>
+                        <?php endif; ?>
 
                     <?php if ($_SESSION['role_id'] == 3): ?>
                         <li class="nav-item">
@@ -80,6 +81,6 @@
                     </li>
 
                      
-                    <?php endif; ?>
+                
 <?php endif; ?>
                 </ul>
