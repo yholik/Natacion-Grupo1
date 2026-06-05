@@ -64,6 +64,12 @@ switch ( $route ) {
     if ( $route === 'update-password' ) $controller->updatePassword();
     break;
 
+    // --- Perfil genérico ---
+    case 'profile':
+        require_once __DIR__ . '/../app/controllers/PerfilController.php';
+        ( new PerfilController() )->show();
+        break;
+
     // --- COACH ---
     case 'coach':   
     case 'coach-home':
@@ -71,10 +77,9 @@ switch ( $route ) {
         require_once __DIR__ . '/../app/controllers/CoachController.php';
         $controller = new CoachController();         
         if ( $route === 'coach' )   $controller->showCoachHome();
-        if( $route === 'coach-home' ) $controller->showCoachHome();
+        if ( $route === 'coach-home' ) $controller->showCoachHome();
         if ( $route === 'coach-profile' ) $controller->showCoachProfile();
-
-    break;
+        break;
 
     /// --- SWIMMER ---
     case 'swimmer-home':

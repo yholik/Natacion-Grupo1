@@ -86,7 +86,7 @@ class BaseController
                 header('Location: ?url=coach-home');
                 exit;
             case 3: //swimmer
-                header('Location: ?url=swimmer-home');
+                header('Location: ?url=swimmer-my-classes');
                 exit;
             default:
                 header('Location: ?url=login');
