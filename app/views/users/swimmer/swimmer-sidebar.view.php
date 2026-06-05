@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?= Env::get('ASSET_URL') ?>/css/coach.css">
+<link rel="stylesheet" href="<?= Env::get('ASSET_URL') ?>/css/swimmer.css">
 <!-- ASIDE -->
 <div class="d-flex" id="navsidebar">
 <aside class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 280px; min-height: 100vh;">
@@ -13,7 +13,7 @@
   <ul class="nav nav-pills flex-column mb-auto gap-1">
     
     <li class="nav-item">
-      <a href="?url=swimmer-home" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'swimmer-home') ? 'active bg-primary' : 'opacity-75'; ?>" aria-current="page">
+      <a href="?url=swimmer-home" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'home') ? 'active bg-primary' : 'opacity-75'; ?>" aria-current="page">
         <i class="bi bi-house-door fs-5"></i>
         <span>Home</span>
       </a>

@@ -1,6 +1,10 @@
+<?php include __DIR__ . '/../layout/header.php'; ?>
 <div class="d-flex w-100" style="min-height: calc(100vh - 56px);"> 
     
     <?php include_once __DIR__ . '/admin-sidebar.view.php'; ?>
+
+    </div><!-- <<<<< manu: encierro el aside en un contenedor para que pueda ocupar toda la altura y 
+        el main quede a su lado, sin que el aside se achique al ponerle un height: 100vh -->
 
     <main class="flex-grow-1 w-100 p-5 bg-white">
         <h1>Panel de Control - Admin</h1>
@@ -32,3 +36,4 @@
     </main>
 
 </div>
+<?php include __DIR__ . '/../layout/footer.php'; ?>

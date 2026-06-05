@@ -1,3 +1,5 @@
+    <?php include __DIR__ . '/../layout/header.php'; ?>
+    <main>
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card shadow-sm">
@@ -45,6 +47,8 @@
             </div>
         </div>
     </div>
+
+    </main>
     <script>
     document.getElementById('formUpdateProfile')?.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -58,3 +62,4 @@
         }
     });
     </script>
+    <?php include __DIR__ . '/../layout/footer.php'; ?>
