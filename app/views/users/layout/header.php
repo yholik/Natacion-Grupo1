@@ -24,9 +24,11 @@
         <div class="container">
 
             <a class="navbar-brand" href="?url=landing">Club de Natacion - El Delfín Saltarín 🚩</a>
+            <?php if (isset($_SESSION['role_id'])): ?>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            <?php endif; ?>
 
             <div class="collapse navbar-collapse" id="navbarMenu">
 
