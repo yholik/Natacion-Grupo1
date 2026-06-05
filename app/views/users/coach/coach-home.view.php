@@ -1,7 +1,10 @@
 <?php include __DIR__ . '/../layout/header.php'; ?>
 <main>
-
-
+    <div class="d-flex">
+<aside class="p-3 text-white bg-dark d-none d-lg-block flex-shrink-0" style="width: 280px; min-height: 100vh;">
+       
+</aside>
+</div>
 <!-- CONTENIDO PRINCIPAL -->
     <div class="flex-grow-1 p-5 bg-white text-center">
         <h1 class="mb-4">Bienvenido,
