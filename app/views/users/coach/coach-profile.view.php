@@ -1,7 +1,7 @@
-<div class="d-flex" style="min-height: calc(100vh - 56px);">
+<?php include __DIR__ . '/../layout/header.php'; ?>
+<main>
 
-    <?php include_once __DIR__ . '/coach-sidebar.view.php'; ?>
-</div>
+
 <div class="p-4 w-100">
     <h2 class="mb-4">Mis datos personales</h2>
 
@@ -40,6 +40,8 @@
     </form>
 </div>
 
+</main>
+
 <script>
 const btnEdit = document.getElementById('btnEdit');
 const btnSave = document.getElementById('btnSave');
@@ -57,3 +59,4 @@ btnSave.addEventListener('click', function() {
     btnSave.classList.add('d-none');
 });
 </script>
+<?php include __DIR__ . '/../layout/footer.php'; ?>

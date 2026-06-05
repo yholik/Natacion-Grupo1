@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $titulo ?? 'Escuela de Natación' ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?= Env::get('ASSET_URL') ?>/css/dashboard-header.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
     .profile-img-nav {
@@ -19,33 +20,35 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
         <div class="container">
+
             <a class="navbar-brand" href="?url=landing">Club de Natacion - El Delfín Saltarín 🚩</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
-    <span class="navbar-toggler-icon"></span>
-</button>
-            <div class="collapse navbar-collapse" id="navbarMenu">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <?php if (isset($_SESSION['user_id'])): ?>
-                    <li class="nav-item d-flex align-items-center">
-                        <?php 
-                            $foto = $_SESSION['profile_image'] ?? 'default-profile.png';
-                            $rutaFoto = Env::get('ASSET_URL') . "/img/uploads/profiles/swimmers/" . $foto;
-                        ?>
-                        <img src="<?= $rutaFoto ?>" alt="Perfil" class="profile-img-nav me-2">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                        <!-- <span class="nav-link text-info p-0">
-                            Hola, <?= htmlspecialchars($_SESSION['first_name'] ?? 'Usuario') ?>
-                        </span> -->
-                        <a href="?url=swimmer/profile" class="nav-link text-info p-0 text-decoration-none">
-                            Hola, <?= htmlspecialchars($_SESSION['first_name'] ?? 'Usuario') ?>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-outline-danger btn-sm ms-3" href="?url=logout">Salir</a>
-                    </li>
-                    <?php endif; ?>
-                </ul>
+            <div class="collapse navbar-collapse" id="navbarMenu">
+
+                <?php if (isset($_SESSION['user_id'])): ?>
+                <div class="nav-item d-flex align-items-center my-3 my-lg-0 order-1 order-lg-2 ms-lg-auto">
+                    <?php 
+                        $foto = $_SESSION['profile_image'] ?? 'default-profile.png';
+                        $rutaFoto = Env::get('ASSET_URL') . "/img/uploads/profiles/swimmers/" . $foto;
+                    ?>
+                    <img src="<?= $rutaFoto ?>" alt="Perfil" class="profile-img-nav me-2">
+
+                    <a href="?url=swimmer/profile" class="nav-link text-info p-0 text-decoration-none">
+                        Hola, <?= htmlspecialchars($_SESSION['first_name'] ?? 'Usuario') ?>
+                    </a>
+                </div>
+            <?php endif; ?>
+
+            <aside class="sidebar-panel p-3 text-white order-2 order-lg-1 d-lg-none">
+                    <?php include_once __DIR__ . '/side-bar.php'; ?>                
+            </aside>         
+               
+            
             </div>
         </div>
     </nav>
