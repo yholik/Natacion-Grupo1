@@ -40,9 +40,8 @@ class BaseController
     /**
      * @param string $view  Nombre del archivo ( ej: 'usuarios/register' )
      * @param array  $data  Diccionario de datos para la vista
-     * @param bool   $useLayout Indica si debe inyectarse en el layout común (main.php)
     */
-    protected function render($view, $data = [], $useLayout = true)
+    protected function render($view, $data = [])
     {
         extract($data); // convierto las claves del array en variables
 
@@ -51,22 +50,18 @@ class BaseController
 
         // primero pregunto si existe la vista solicitada para evitar
         // que cargue vistas viejas
+
         if (file_exists(($requestedRute))) {
+            
+//DESCENTRALIZO ARCHIVO MAIN.PHP PORQUE NO SE ESTA UTILIZANDO DE LA MANERA ADECUADA
+//NOS QUEDA HEADERS RIGIDOS SOLO PARA QUE EL LANDING SE VEA BIEN, NO ES FUNCIONAL
+//ASI QUE INYECTAMOS LA VISTA SOLICITADA DIRECTAMENTE, SI SE QUIERE UN LAYOUT COMUN, 
+// SE HACE DESDE LA VISTA MISMA CON UN INCLUDE
+//EN CASO DE NO EXISTIR LA VISTA, MANEJAMOS EL CASO CON UN FALBACK SEGUN EL USUARIO LOGUEADO
+            
+            require_once $requestedRute;         
 
-            //Al realizar este cambio, tanto en swimmer.home-view,php como coach.home-view.php
-            // deberíamos quitar los include al header y footer.
-            //Capturamos la vista
-            ob_start();
-            require_once __DIR__ . '/../views/' . $view . '.php'; 
-            $contenido = ob_get_clean();
-
-            // Si es true, mete la barra gris general
-            if ($useLayout) {
-                require_once __DIR__ . '/../views/users/layout/main.php';
-            }else {
-                //Si es falso, deja la barra como está en el landing (sería la única que tomaría este criterio)
-                echo $contenido;
-            }
+          
         } else {
 
             $this->handleFallback(); // Si la vista no existe, manejo el caso segun el usuario de la sesion
