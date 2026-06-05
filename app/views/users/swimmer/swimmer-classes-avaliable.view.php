@@ -1,5 +1,8 @@
 <?php include __DIR__ . '/../layout/header.php'; ?>
 <main>
+<aside class="p-3 text-white bg-dark d-none d-lg-block flex-shrink-0" style="width: 280px; min-height: 100vh;">
+       
+</aside>
 <div class="d-flex" style="min-height: calc(100vh - 56px);">
 
      <?php include_once __DIR__ . '/swimmer-sidebar.view.php'; ?>
