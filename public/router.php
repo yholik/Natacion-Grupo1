@@ -64,34 +64,39 @@ switch ( $route ) {
     if ( $route === 'update-password' ) $controller->updatePassword();
     break;
 
+    // --- Perfil genérico ---
+    case 'profile':
+        require_once __DIR__ . '/../app/controllers/PerfilController.php';
+        ( new PerfilController() )->show();
+        break;
+
     // --- COACH ---
     case 'coach':   
     case 'coach-home':
-        case 'coach-profile':
+    case 'coach-profile':
         require_once __DIR__ . '/../app/controllers/AuthController.php';
         $controller = new AuthController();         
         if ( $route === 'coach' )   $controller->showCoachHome();
-        if( $route === 'coach-home' ) $controller->showCoachHome();
+        if ( $route === 'coach-home' ) $controller->showCoachHome();
         if ( $route === 'coach-profile' ) $controller->showCoachProfile();
-
-    break;
+        break;
 
     /// --- SWIMMER ---
     case 'swimmer-home':
     case 'swimmer':  
-    case 'swimmer/profile':
-    case 'swimmer/update-profile':
-    case 'swimmer/enroll':
-    case 'swimmer/cancel-enrollment':
+    case 'swimmer-profile':
+    case 'swimmer-update-profile':
+    case 'swimmer-enroll':
+    case 'swimmer-cancel-enrollment':
         require_once __DIR__ . '/../app/controllers/AuthController.php';
         $controller = new AuthController();         
 
         if ( $route === 'swimmer-home' )   $controller->showSwimmerHome();
         if ( $route === 'swimmer' )   $controller->showSwimmerHome();
-        if ( $route === 'swimmer/profile' )   $controller->showSwimmerProfile();
-        if ( $route === 'swimmer/update-profile' )   $controller->updateProfile();
-        if ( $route === 'swimmer/enroll' )   $controller->enroll();
-        if ( $route === 'swimmer/cancel-enrollment' )   $controller->cancelEnrollment();
+        if ( $route === 'swimmer-profile' )   $controller->showSwimmerProfile();
+        if ( $route === 'swimmer-update-profile' )   $controller->updateProfile();
+        if ( $route === 'swimmer-enroll' )   $controller->enroll();
+        if ( $route === 'swimmer-cancel-enrollment' )   $controller->cancelEnrollment();
     break;
 
     // --- ADMIN ---

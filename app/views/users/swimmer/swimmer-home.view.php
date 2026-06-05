@@ -1,6 +1,14 @@
  <?php include __DIR__ . '/../layout/header.php'; ?>
  <main>
+<div class="d-flex" style="min-height: calc(100vh - 56px);">
+
+    <?php include_once __DIR__ . '/swimmer-sidebar.view.php'; ?>
+
+    <main class="flex-grow-1 p-4 bg-white">
+
+
  <div class="row">
+
             <div class="col-md-12">
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-success text-white">
@@ -141,4 +149,10 @@
         });
         </script>
 
+    </main>
+
+</div>
+
+
         <?php include __DIR__ . '/../layout/footer.php'; ?>
+
