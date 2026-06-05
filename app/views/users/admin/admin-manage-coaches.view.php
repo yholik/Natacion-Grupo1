@@ -1,11 +1,6 @@
 <?php include __DIR__ . '/../layout/header.php'; ?>
 <main>
-<div class="d-flex" style="min-height: calc(100vh - 56px);"> 
-    
-    <?php include_once __DIR__ . '/admin-sidebar.view.php'; ?>
 
-</div> <!-- <<<<< manu: encierro el aside en un contenedor para que pueda ocupar toda la altura y 
-        el main quede a su lado, sin que el aside se achique al ponerle un height: 100vh -->
      <div class="flex-grow-1 p-5 bg-white">
         <h1>Gestionar Profesores</h1>
         <hr>

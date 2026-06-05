@@ -68,8 +68,8 @@ switch ( $route ) {
     case 'coach':   
     case 'coach-home':
         case 'coach-profile':
-        require_once __DIR__ . '/../app/controllers/AuthController.php';
-        $controller = new AuthController();         
+        require_once __DIR__ . '/../app/controllers/CoachController.php';
+        $controller = new CoachController();         
         if ( $route === 'coach' )   $controller->showCoachHome();
         if( $route === 'coach-home' ) $controller->showCoachHome();
         if ( $route === 'coach-profile' ) $controller->showCoachProfile();

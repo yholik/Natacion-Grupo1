@@ -1,7 +1,7 @@
-<div class="d-flex" style="min-height: calc(100vh - 56px);">
+<?php include __DIR__ . '/../layout/header.php'; ?>
+<main>
 
-    <?php include_once __DIR__ . '/coach-sidebar.view.php'; ?>
-</div>
+
 <!-- CONTENIDO PRINCIPAL -->
     <div class="flex-grow-1 p-5 bg-white text-center">
         <h1 class="mb-4">Bienvenido,
@@ -51,3 +51,6 @@
     </div>
 
 </div>
+
+</main>
+<?php include __DIR__ . '/../layout/footer.php'; ?>

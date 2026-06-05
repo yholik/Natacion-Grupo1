@@ -309,26 +309,7 @@ class AuthController extends BaseController
     //Todo esto creo que deberia estar en su controller especifico
     // --- SECCIÓN: VISTAS COACH ---
 
-    public function showCoachHome()
-    {
-        //ACA IMPLEMENTO LA FUNCTION CHECKROLE PARA
-        // EVITAR QUE UN USUARIO NO APTO INGRESE POR URL
-        
-        $this->checkAuth();
-        $this->checkRole(2); 
-        $this->render('users/coach/coach-home.view', [
-            'title' => 'Panel de Coach'
-        ]);
-    }
-
-    public function showCoachProfile()
-    {
-        $this->checkAuth();
-        $this->checkRole(2);         
-        $this->render('users/coach/coach-profile.view', [
-            'title' => ' - Gestion del perfil'
-        ]);
-    }
+    
 
     public function showSwimmerHome()
     {
