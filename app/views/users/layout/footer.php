@@ -11,7 +11,7 @@
     }
 </script>
 
-</main> <footer class="text-center border-top w-100 py-3 bg-white mt-auto">
+<footer class="text-center border-top w-100 py-3 bg-white mt-auto">
     <p class="mb-0 text-muted">&copy; <?= date('Y') ?> - Club de Natación - El Delfín Saltarín 🚩</p>
 </footer>
 

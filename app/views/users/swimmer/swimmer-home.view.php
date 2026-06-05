@@ -1,4 +1,6 @@
-        <div class="row">
+ <?php include __DIR__ . '/../layout/header.php'; ?>
+ <main>
+ <div class="row">
             <div class="col-md-12">
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-success text-white">
@@ -100,6 +102,8 @@
                 </div>
             </div>
         </div>
+
+                                    </main>
         <script>
         document.querySelectorAll('.btn-enroll').forEach(btn => {
             btn.addEventListener('click', async function() {
@@ -136,3 +140,5 @@
             });
         });
         </script>
+
+        <?php include __DIR__ . '/../layout/footer.php'; ?>
