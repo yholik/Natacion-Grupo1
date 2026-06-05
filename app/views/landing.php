@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/css/landing.css">
+<link rel="stylesheet" href="<?= Env::get('ASSET_URL') ?>/css/landing.css">
 
 <header class="main-header">
     <div class="header-logo">
