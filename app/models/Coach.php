@@ -34,7 +34,6 @@ $data['specialty']
 ]);
 }
 
-
 public function getCoachById(int $user_id){
 
 $sql = "SELECT c.*, u.email 
