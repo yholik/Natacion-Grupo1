@@ -86,8 +86,8 @@ switch ( $route ) {
         require_once __DIR__ . '/../app/controllers/SwimmerController.php';
         $controller = new SwimmerController();         
 
-        if ( $route === 'swimmer' )                     $controller->showAvailableClasses();
-        if ( $route === 'swimmer-classes-avaliable' )   $controller->showAvailableClasses();
+        if ( $route === 'swimmer' )                     $controller->showAvaliableClasses();
+        if ( $route === 'swimmer-classes-avaliable' )   $controller->showAvaliableClasses();
         if ( $route === 'swimmer-my-classes' )          $controller->showMyClasses();
         if ( $route === 'swimmer-profile' )             $controller->showProfile();
         if ( $route === 'swimmer-update-profile' )      $controller->updateProfile();

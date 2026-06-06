@@ -59,7 +59,7 @@ class SwimmerController extends BaseController {
                 return $this->json('warning', 'Formato de imagen no válido (jpg, png, gif).');
             }
         }
-        if ($this->swimmerModel->update($userId, $data)) {
+        if ($this->swimmerModel->updateSwimmer($userId, $data)) {
             return $this->json('success', 'Perfil actualizado correctamente.');
         }
         return $this->json('error', 'No se pudieron guardar los cambios.');
@@ -77,7 +77,7 @@ class SwimmerController extends BaseController {
             return $this->json('error', 'Clase inválida.');
         }
         $userId = (int) $_SESSION['user_id'];
-        $swimmer = $this->swimmerModel->getBySwimmerId($userId);
+        $swimmer = $this->swimmerModel->getSwimmerById($userId);
         if (!$swimmer) {
             return $this->json('error', 'Perfil de nadador no encontrado.');
         }
@@ -124,7 +124,7 @@ class SwimmerController extends BaseController {
         ]);
     }
 
-    public function showAvailableClasses()
+    public function showAvaliableClasses()
     {
         $this->checkAuth();
         $this->checkRole(3);
