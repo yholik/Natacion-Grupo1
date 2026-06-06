@@ -23,7 +23,8 @@ class CoachController extends BaseController {
 
 public function updateProfileCoach()
     {
-
+    $userId = (int) $_SESSION['user_id'];
+    
     //compruebo que el metodo es valido
        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         return $this->json('error', 'Método no permitido.');
@@ -34,20 +35,15 @@ public function updateProfileCoach()
         'first_name' => trim($_POST['first_name'] ?? ''),
         'last_name'  => trim($_POST['last_name']  ?? ''),
         'phone'      => trim($_POST['phone']       ?? ''),
-        'specialty'  => trim($_POST['specialty']   ?? ''),
-        'email'      => trim($_POST['email']       ?? '')
+        'specialty'  => trim($_POST['specialty']   ?? '')
     ];
 
     
-        if ($this->hasEmptyFields($data)) {
-        return $this->json('warning', 'Todos los campos son obligatorios.');
+     if (empty($data['first_name']) || empty($data['last_name'])) {
+            return $this->json('warning', 'Nombre y apellido son obligatorios.');
         }
 
-        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            return $this->json('error', 'El email ingresado no es válido.');
-        }
-
-        $updatedData = $this->coachModel->updateCoach($_SESSION['user_id'], $data);
+        $updatedData = $this->coachModel->updateCoach($userId, $data);
 
         if($updatedData) {
             return $this->json('success', 'Perfil actualizado correctamente.');
@@ -56,34 +52,34 @@ public function updateProfileCoach()
         }
     
     }
-    
-  private function hasEmptyFields($f)
-    {
-        return empty($f['first_name'])
-            || empty($f['last_name'])
-            || empty($f['phone'])
-            || empty($f['specialty'])
-            || empty($f['email']);
-    }
+
     /*--- FUNCIONES DE VISTAS ---*/
 public function showCoachHome()
     {
+        $userId = (int) $_SESSION['user_id'];
+        $coachData = $this->coachModel->getCoachById($userId);
+
         //ACA IMPLEMENTO LA FUNCTION CHECKROLE PARA
         // EVITAR QUE UN USUARIO NO APTO INGRESE POR URL
         
         $this->checkAuth();
         $this->checkRole(2); 
         $this->render('users/coach/coach-home.view', [
-            'title' => 'Panel de Coach'
+            'title' => 'Panel de Coach',
+            'data' => $coachData
         ]);
     }
 
     public function showCoachProfile()
     {
+        $userId = (int) $_SESSION['user_id'];
+        $coachData = $this->coachModel->getCoachById($userId);
+
         $this->checkAuth();
         $this->checkRole(2);         
         $this->render('users/coach/coach-profile.view', [
-            'title' => ' - Gestion del perfil'
+            'title' => ' - Gestion del perfil',
+            'data' => $coachData
         ]);
     }
 
