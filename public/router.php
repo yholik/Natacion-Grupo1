@@ -99,11 +99,13 @@ switch ( $route ) {
     case 'admin':   
     case 'admin-home':
     case 'admin-manage-coaches':
-        require_once __DIR__ . '/../app/controllers/AuthController.php';
-        $controller = new AuthController();         
+    case 'admin-create-coach':
+        require_once __DIR__ . '/../app/controllers/AdminController.php';
+        $controller = new AdminController();         
         if ( $route === 'admin' )   $controller->showAdminHome();
         if( $route === 'admin-home' ) $controller->showAdminHome();
         if( $route === 'admin-manage-coaches' ) $controller->showAdminManageCoaches();
+        if( $route === 'admin-create-coach' ) $controller->createCoach();
     break;
 
 

@@ -22,18 +22,47 @@ class Auth {
     // --- SECCIÓN: GESTIÓN DE CUENTA ---
 
     /**
-    * Crea las credenciales de acceso para un nuevo usuario.
-    * @param array $data [ 'email' => string, 'password' => string, 'role_id' => int ]
-    */
-    public function create( array $data ) {
-        $hash = password_hash( $data[ 'password' ], PASSWORD_BCRYPT );
+     * Crea las credenciales de acceso para un nuevo usuario.
+     *
+     * @param array $data [
+     *     'email' => string,
+     *     'password' => string,
+     *     'role_id' => int
+     * ]
+     *
+     * @return int|false
+     */
+    public function create(array $data)
+    {
+        $hash = password_hash($data['password'], PASSWORD_BCRYPT);
 
-        // Usamos el role_id del array, o 3 ( Swimmer ) por defecto si no viene
-        $roleId = $data[ 'role_id' ] ?? 3;
+        $roleId = $data['role_id'] ?? 3;
 
-        $stmt = $this->db->prepare( 'INSERT INTO auth (email, password, role_id) VALUES (?, ?, ?)' );
+        $sql = "
+            INSERT INTO auth (
+                email,
+                password,
+                role_id,
+                created_at,
+                updated_at,
+                deleted_at
+            ) VALUES (
+                ?,
+                ?,
+                ?,
+                NOW(),
+                NOW(),
+                NULL
+            )
+        ";
 
-        if ( $stmt->execute( [ $data[ 'email' ], $hash, $roleId ] ) ) {
+        $stmt = $this->db->prepare($sql);
+
+        if ($stmt->execute([
+            $data['email'],
+            $hash,
+            $roleId
+        ])) {
             return $this->db->lastInsertId();
         }
 

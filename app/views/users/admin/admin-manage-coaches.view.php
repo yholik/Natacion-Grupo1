@@ -1,17 +1,46 @@
 <?php include __DIR__ . '/../layout/header.php'; ?>
-<main class="d-flex flex-column flex-lg-row w-100"> <!-- CONFG PARA QUE EL CONTENIDO APAREZCA A LA DERECHA DEL PANEL-->
+
+<?php
+// Si el controlador no envía $coaches, se usa un array vacío para evitar errores.
+$coaches = $coaches ?? [];
+
+/**
+ * Escapa valores antes de imprimirlos en HTML.
+ * Evita problemas de XSS si algún dato viene con caracteres especiales.
+ */
+function e($value)
+{
+    return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+}
+
+/**
+ * Formatea una fecha.
+ * Si la fecha viene vacía o NULL, muestra "-".
+ */
+function formatDateOrDash($value)
+{
+    if (empty($value)) {
+        return '-';
+    }
+
+    return e(date('Y-m-d', strtotime($value)));
+}
+?>
+
+<main class="d-flex flex-column flex-lg-row w-100">
     <div class="d-flex">
-<aside class="p-3 text-white bg-dark d-none d-lg-block flex-shrink-0" style="width: 280px; min-height: 100vh;">
-       
-       <?php include __DIR__ . '/../layout/side-bar.php'; ?>
-</aside>
+        <aside class="p-3 text-white bg-dark d-none d-lg-block flex-shrink-0" style="width: 280px; min-height: 100vh;">
+            <?php include __DIR__ . '/../layout/side-bar.php'; ?>
+        </aside>
     </div>
-     <div class="flex-grow-1 p-5 bg-white">
+
+    <div class="flex-grow-1 p-5 bg-white">
         <h1>Gestionar Profesores</h1>
         <hr>
 
         <div class="d-flex gap-2 mb-4">
-            <a href="agregar_profesor.php" class="btn btn-success">
+            <!-- Lleva al formulario de creación de profesor -->
+            <a href="<?= e(Env::get('APP_URL')) ?>/?url=admin-create-coach" class="btn btn-success">
                 Agregar
             </a>
         </div>
@@ -42,138 +71,119 @@
                         </thead>
 
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Juan</td>
-                                <td>Pérez</td>
-                                <td>juan.perez@email.com</td>
-                                <td>1122334455</td>
-                                <td>Natación inicial</td>
-                                <td>Profesor</td>
-                                <td>2026-05-15</td>
-                                <td>2026-05-01</td>
-                                <td>-</td>
-                                <td>
-                                    <span class="badge bg-success">Activo</span>
-                                </td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <a href="editar_profesor.php?id=1" class="btn btn-sm btn-primary">
-                                            Editar
-                                        </a>
+                            <!-- Si no hay profesores, se muestra una fila informativa -->
+                            <?php if (empty($coaches)): ?>
+                                <tr>
+                                    <td colspan="12" class="text-center py-4 text-muted">
+                                        No hay profesores registrados.
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
 
-                                        <form id="form-cambiar-estado-1" action="dar_baja_profesor.php" method="POST" class="m-0">
-                                            <input type="hidden" name="coach_id" value="1">
+                            <!-- Recorre los profesores enviados desde el controlador -->
+                            <?php foreach ($coaches as $coach): ?>
+                                <?php
+                                // user_id es el ID de la cuenta en auth.
+                                $userId = $coach['user_id'];
 
-                                            <button
-                                                type="button"
-                                                class="btn btn-sm btn-danger btn-cambiar-estado"
-                                                data-form-id="form-cambiar-estado-1"
-                                                data-nombre="Juan Pérez"
-                                                data-accion="baja"
+                                // Nombre completo usado en el mensaje del modal.
+                                $fullName = trim($coach['first_name'] . ' ' . $coach['last_name']);
+
+                                // Si deleted_at está vacío, el profesor está activo.
+                                $isActive = empty($coach['deleted_at']);
+
+                                // ID único del formulario de esta fila.
+                                // Se usa luego desde JavaScript para enviar el formulario correcto.
+                                $formId = 'form-cambiar-estado-' . $userId;
+                                ?>
+
+                                <tr>
+                                    <td><?= e($coach['id']) ?></td>
+                                    <td><?= e($coach['first_name']) ?></td>
+                                    <td><?= e($coach['last_name']) ?></td>
+                                    <td><?= e($coach['email']) ?></td>
+                                    <td><?= e($coach['phone']) ?></td>
+                                    <td><?= e($coach['specialty']) ?></td>
+                                    <td>Profesor</td>
+                                    <td><?= formatDateOrDash($coach['updated_at'] ?? null) ?></td>
+                                    <td><?= formatDateOrDash($coach['created_at'] ?? null) ?></td>
+                                    <td><?= formatDateOrDash($coach['deleted_at'] ?? null) ?></td>
+
+                                    <td>
+                                        <?php if ($isActive): ?>
+                                            <span class="badge bg-success">Activo</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-secondary">Baja</span>
+                                        <?php endif; ?>
+                                    </td>
+
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <a href="<?= e(Env::get('APP_URL')) ?>/?url=admin-edit-coach&id=<?= e($userId) ?>" class="btn btn-sm btn-primary">
+                                                Editar
+                                            </a>
+
+                                            <!--
+                                                Formulario real de alta/baja.
+                                                No se envía directamente al tocar el botón.
+                                                Primero el JS muestra el modal de confirmación.
+                                            -->
+                                            <form
+                                                id="<?= e($formId) ?>"
+                                                action="<?= e(Env::get('APP_URL')) ?>/?url=<?= $isActive ? 'admin-deactivate-coach' : 'admin-activate-coach' ?>"
+                                                method="POST"
+                                                class="m-0"
                                             >
-                                                Dar de Baja
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
+                                                <input type="hidden" name="coach_id" value="<?= e($userId) ?>">
 
-                            <tr>
-                                <td>2</td>
-                                <td>María</td>
-                                <td>Gómez</td>
-                                <td>maria.gomez@email.com</td>
-                                <td>1155667788</td>
-                                <td>Competición</td>
-                                <td>Profesor</td>
-                                <td>2026-05-18</td>
-                                <td>2026-05-03</td>
-                                <td>-</td>
-                                <td>
-                                    <span class="badge bg-success">Activo</span>
-                                </td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <a href="editar_profesor.php?id=2" class="btn btn-sm btn-primary">
-                                            Editar
-                                        </a>
-
-                                        <form id="form-cambiar-estado-2" action="dar_baja_profesor.php" method="POST" class="m-0">
-                                            <input type="hidden" name="coach_id" value="2">
-
-                                            <button
-                                                type="button"
-                                                class="btn btn-sm btn-danger btn-cambiar-estado"
-                                                data-form-id="form-cambiar-estado-2"
-                                                data-nombre="María Gómez"
-                                                data-accion="baja"
-                                            >
-                                                Dar de Baja
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>3</td>
-                                <td>Carlos</td>
-                                <td>Ramírez</td>
-                                <td>carlos.ramirez@email.com</td>
-                                <td>1199887766</td>
-                                <td>Aquagym</td>
-                                <td>Profesor</td>
-                                <td>2026-05-20</td>
-                                <td>2026-05-05</td>
-                                <td>2026-05-25</td>
-                                <td>
-                                    <span class="badge bg-secondary">Baja</span>
-                                </td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <a href="editar_profesor.php?id=3" class="btn btn-sm btn-primary">
-                                            Editar
-                                        </a>
-
-                                        <form id="form-cambiar-estado-3" action="dar_alta_profesor.php" method="POST" class="m-0">
-                                            <input type="hidden" name="coach_id" value="3">
-
-                                            <button
-                                                type="button"
-                                                class="btn btn-sm btn-success btn-cambiar-estado"
-                                                data-form-id="form-cambiar-estado-3"
-                                                data-nombre="Carlos Ramírez"
-                                                data-accion="alta"
-                                            >
-                                                Dar de Alta
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
+                                                <!--
+                                                    data-form-id: identifica qué formulario debe enviarse.
+                                                    data-nombre: nombre mostrado en el modal.
+                                                    data-accion: define si el mensaje será alta o baja.
+                                                -->
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-sm <?= $isActive ? 'btn-danger' : 'btn-success' ?> btn-cambiar-estado"
+                                                    data-form-id="<?= e($formId) ?>"
+                                                    data-nombre="<?= e($fullName) ?>"
+                                                    data-accion="<?= $isActive ? 'baja' : 'alta' ?>"
+                                                >
+                                                    <?= $isActive ? 'Dar de Baja' : 'Dar de Alta' ?>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
+        <!-- Modal genérico reutilizable -->
         <?php require_once __DIR__ . '/../../components/modal_confirmacion.php'; ?>
     </div>
 </main>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // Busca todos los botones que cambian el estado del profesor.
         const botonesCambiarEstado = document.querySelectorAll('.btn-cambiar-estado');
 
         botonesCambiarEstado.forEach(boton => {
             boton.addEventListener('click', async () => {
+                // Obtiene datos cargados en el botón mediante data-*.
                 const formId = boton.dataset.formId;
                 const nombre = boton.dataset.nombre;
                 const accion = boton.dataset.accion;
 
+                // Determina si la acción es baja o alta.
                 const esBaja = accion === 'baja';
 
+                // Muestra el modal genérico y espera la respuesta del usuario.
+                // true  = aceptó
+                // false = canceló
                 const confirmado = await mostrarConfirmacion(
                     esBaja
                         ? `Se dará de baja el siguiente usuario: ${nombre}`
@@ -186,12 +196,15 @@
                     }
                 );
 
+                // Si canceló, no se envía nada.
                 if (!confirmado) {
                     return;
                 }
 
+                // Busca el formulario correspondiente a la fila.
                 const formulario = document.getElementById(formId);
 
+                // Si existe, lo envía por POST al controlador.
                 if (formulario) {
                     formulario.submit();
                 }

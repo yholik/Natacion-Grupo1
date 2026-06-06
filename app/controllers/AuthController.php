@@ -305,25 +305,4 @@ class AuthController extends BaseController
             || empty($f['password']);
     }
 
-
-    //Todo esto creo que deberia estar en su controller especifico
-     // --- SECCIÓN: VISTAS ADMIN ---
-
-    public function showAdminHome()
-    {
-        $this->checkAuth();
-        $this->checkRole(1); 
-        $this->render('users/admin/admin-home.view', [
-            'title' => 'Panel de Admin'
-        ]);
-    }
-
-     public function showAdminManageCoaches()
-    {
-        $this->checkAuth();
-        $this->checkRole(1); 
-        $this->render('users/admin/admin-manage-coaches.view', [
-            'title' => 'Panel de Admin'
-        ]);
-    }
 }
