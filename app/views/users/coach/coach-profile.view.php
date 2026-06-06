@@ -64,5 +64,21 @@ btnSave.addEventListener('click', function() {
     btnEdit.classList.remove('d-none');
     btnSave.classList.add('d-none');
 });
+
+document.getElementById('profileForm')?.addEventListener('submit', async function(e){
+     e.preventDefault(); 
+
+     const formData = new FormData(this);
+
+     const resp = await fetch('?url=coach-update-profile', { method: 'POST', body: formData });
+
+    const data = await resp.json();
+
+    if(data.status === 'success') {
+        Swal.fire({ icon: 'success', title: 'Perfil actualizado' }).then(() => location.reload());
+    } else {
+        Swal.fire({ icon: 'error', title: data.message });
+}
+});
 </script>
 <?php include __DIR__ . '/../layout/footer.php'; ?>
