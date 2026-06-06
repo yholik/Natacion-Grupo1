@@ -9,7 +9,7 @@
 <!-- CONTENIDO PRINCIPAL -->
     <div class="flex-grow-1 p-5 bg-white text-center">
         <h1 class="mb-4">Bienvenido,
-            <?= htmlspecialchars($_SESSION['first_name']) ?>
+            <?= htmlspecialchars($coachData['first_name']) ?>
         </h1>
 
         

@@ -73,7 +73,8 @@ $data['specialty']
 
     
     public function updateCoach(int $user_id, array $data){
-        $sql = "
+        
+    $sql = "
             UPDATE coaches 
             SET 
                 first_name = ?, 
