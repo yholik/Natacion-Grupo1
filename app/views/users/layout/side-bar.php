@@ -45,9 +45,9 @@
 
                     <?php if ($_SESSION['role_id'] == 3): ?>
                         <li class="nav-item">
-                            <a href="?url=swimmer-home" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'swimmer-home') ? 'active bg-primary' : 'opacity-75'; ?>" aria-current="page">
+                            <a href="?url=swimmer-classes-avaliable" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'swimmer-home') ? 'active bg-primary' : 'opacity-75'; ?>" aria-current="page">
                                 <i class="bi bi-house-door fs-5"></i>
-                                <span>Home</span>
+                                <span>Clases Disponibles</span>
                             </a>
                         </li>
                         <li>
@@ -57,14 +57,14 @@
                             </a>
                         </li>
                         <li>
-                            <a href="?url=swimmer-lessons" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'lessons') ? 'active bg-primary' : 'opacity-75'; ?>">
+                            <a href="?url=swimmer-my-classes" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'lessons') ? 'active bg-primary' : 'opacity-75'; ?>">
                                 <i class="bi bi-journal-bookmark-fill fs-5"></i>
                                 <span>Mis Clases</span>
                             </a>
                         </li>    
                         <?php endif; ?>                
                     
-                    <?php if ($_SESSION['role_id'] == 2 || $_SESSION['role_id'] == 3): ?>
+                    <?php if ($_SESSION['role_id'] == 2):?>
                     <li>
                         <a href="" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'calendar') ? 'active bg-primary' : 'opacity-75'; ?>">
                             <i class="bi bi-grid-3x3-gap fs-5"></i>

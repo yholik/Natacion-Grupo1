@@ -201,7 +201,7 @@ class AuthController extends BaseController
             $redirectUrl = match((int)$user['role_id']) {
                 1 => Env::get('APP_URL') . '/?url=admin',
                 2 => Env::get('APP_URL') . '/?url=coach',
-                3 => Env::get('APP_URL') . '/?url=swimmer',
+                3 => Env::get('APP_URL') . '/?url=swimmer-classes-avaliable',
                 default => Env::get('APP_URL') . '/?url=home'
             };
             return $this->json('success','¡Bienvenido ' . $user['first_name'] . '!', $redirectUrl);
@@ -305,72 +305,4 @@ class AuthController extends BaseController
             || empty($f['password']);
     }
 
-
-    //Todo esto creo que deberia estar en su controller especifico
-    // --- SECCIÓN: VISTAS COACH ---
-
-    public function showCoachHome()
-    {
-        //ACA IMPLEMENTO LA FUNCTION CHECKROLE PARA
-        // EVITAR QUE UN USUARIO NO APTO INGRESE POR URL
-        
-        $this->checkAuth();
-        $this->checkRole(2); 
-        $this->render('users/coach/coach-home.view', [
-            'title' => 'Panel de Coach'
-        ]);
-    }
-
-    public function showCoachProfile()
-    {
-        $this->checkAuth();
-        $this->checkRole(2);         
-        $this->render('users/coach/coach-profile.view', [
-            'title' => ' - Gestion del perfil'
-        ]);
-    }
-
-    public function showSwimmerHome()
-    {
-        
-        $this->checkAuth();
-        $this->checkRole(3);
-        $this->render('users/swimmer/swimmer-home.view', [
-            'title' => 'Panel de Nadador'
-        ]);
-    }
-    
-    public function showSwimmerProfile()
-    {
-      
-        $this->checkAuth();
-          $this->checkRole(3);
-        $userId = (int) $_SESSION['user_id'];
-        $swimmer = $this->swimmerModel->getSwimmerById($userId);
-        $this->render('users/swimmer/swimmer-profile.view', [
-            'title'   => 'Mi Perfil',
-            'swimmer' => $swimmer
-        ]);
-    }
-
-
-     // --- SECCIÓN: VISTAS ADMIN ---
-
-    public function showAdminHome()
-    {
-        $this->checkAuth();
-        $this->checkRole(1); 
-        $this->render('users/admin/admin-home.view', [
-            'title' => 'Panel de Admin'
-        ]);
-    }
-
-     public function showAdminManageCoaches()
-    {
-        $this->checkAuth();
-        $this->checkRole(1); 
-        $this->render('users/admin/admin-manage-coaches.view', [
-            'title' => 'Panel de Admin'
-        ]);
-    }
 }

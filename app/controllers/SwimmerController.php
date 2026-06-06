@@ -2,6 +2,8 @@
 
 require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/Swimmer.php';
+require_once __DIR__ . '/../models/Lesson.php';
+require_once __DIR__ . '/../models/Booking.php';
 
 class SwimmerController extends BaseController {
     private $swimmerModel;
@@ -17,27 +19,6 @@ class SwimmerController extends BaseController {
         $this->swimmerModel = new Swimmer($pdo);
         $this->lessonModel = new Lesson($pdo);
         $this->bookingModel = new Booking($pdo);
-    }
-
-     public function dashboard()
-    {
-        $this->checkAuth();
-        $this->checkRole(3);
-        $userId = (int) $_SESSION['user_id'];
-        $swimmer = $this->swimmerModel->getByUserId($userId);
-        if (!$swimmer) {
-            die('Error: Perfil de nadador no encontrado.');
-        }
-        $lessons = $this->lessonModel->getAllWithCoach();
-        $bookings = $this->bookingModel->getBySwimmer($swimmer['id']);
-        $bookingsIds = array_column($bookings, 'lesson_id');
-        $this->render('swimmer/swimmer-home.view', [
-            'title'       => 'Mi Panel - Nadador',
-            'swimmer'     => $swimmer,
-            'lessons'     => $lessons,
-            'bookings'    => $bookings,
-            'bookingsIds' => $bookingsIds
-        ]);
     }
 
      public function updateProfile()
@@ -78,7 +59,7 @@ class SwimmerController extends BaseController {
                 return $this->json('warning', 'Formato de imagen no válido (jpg, png, gif).');
             }
         }
-        if ($this->swimmerModel->update($userId, $data)) {
+        if ($this->swimmerModel->updateSwimmer($userId, $data)) {
             return $this->json('success', 'Perfil actualizado correctamente.');
         }
         return $this->json('error', 'No se pudieron guardar los cambios.');
@@ -96,7 +77,7 @@ class SwimmerController extends BaseController {
             return $this->json('error', 'Clase inválida.');
         }
         $userId = (int) $_SESSION['user_id'];
-        $swimmer = $this->swimmerModel->getByUserId($userId);
+        $swimmer = $this->swimmerModel->getSwimmerById($userId);
         if (!$swimmer) {
             return $this->json('error', 'Perfil de nadador no encontrado.');
         }
@@ -127,18 +108,48 @@ class SwimmerController extends BaseController {
         return $this->json('error', 'No se pudo cancelar la inscripción.');
     }
 
+    /* VISTAS */
     public function showProfile()
     {
         $this->checkAuth();
         $this->checkRole(3);
         $userId = (int) $_SESSION['user_id'];
-        $swimmer = $this->swimmerModel->getByUserId($userId);
+        $swimmer = $this->swimmerModel->getSwimmerById($userId);
         if (!$swimmer) {
             die('Error: Perfil de nadador no encontrado.');
         }
         $this->render('users/swimmer/swimmer-profile.view', [
             'title'   => 'Mi Perfil',
             'swimmer' => $swimmer
+        ]);
+    }
+
+    public function showAvaliableClasses()
+    {
+        $this->checkAuth();
+        $this->checkRole(3);
+        $userId = (int) $_SESSION['user_id'];
+        $swimmer = $this->swimmerModel->getSwimmerById($userId);
+        $lessons = $this->lessonModel->getAllWithCoach();
+        $bookings = $this->bookingModel->getBySwimmer($swimmer['id']);
+        $bookingsIds = array_column($bookings, 'lesson_id');
+        $this->render('users/swimmer/swimmer-classes-avaliable.view', [
+            'title'       => 'Clases Disponibles',
+            'lessons'     => $lessons,
+            'bookingsIds' => $bookingsIds
+        ]);
+    }
+    
+    public function showMyClasses()
+    {
+        $this->checkAuth();
+        $this->checkRole(3);
+        $userId = (int) $_SESSION['user_id'];
+        $swimmer = $this->swimmerModel->getSwimmerById($userId);
+        $bookings = $this->bookingModel->getBySwimmer($swimmer['id']);
+        $this->render('users/swimmer/swimmer-my-classes.view', [
+            'title'    => 'Mis Clases',
+            'bookings' => $bookings
         ]);
     }
 

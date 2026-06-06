@@ -1,10 +1,12 @@
 <?php include __DIR__ . '/../layout/header.php'; ?>
-<main>
-<div class="d-flex" style="min-height: calc(100vh - 56px);">
+<main class="d-flex flex-column flex-lg-row w-100">
 
-     <?php include_once __DIR__ . '/swimmer-sidebar.view.php'; ?>
-
-    <main class="flex-grow-1 p-4 bg-white">
+<div class="d-flex">
+    <aside class="p-3 text-white bg-dark d-none d-lg-block flex-shrink-0" style="width: 280px; min-height: 100vh;">
+        <?php include __DIR__ . '/../layout/side-bar.php'; ?>
+    </aside>
+</div>
+    <div class="flex-grow-1 p-4 bg-white">
 
         <div class="row">
             <div class="col-md-12">
@@ -69,12 +71,12 @@
             </div>
         </div>
 
-    </main>
+    </div>
     <script>
     document.querySelectorAll('.btn-enroll').forEach(btn => {
         btn.addEventListener('click', async function() {
             const lessonId = this.dataset.lessonId;
-            const resp = await fetch('?url=swimmer/enroll', {
+            const resp = await fetch('?url=swimmer-enroll', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'lesson_id=' + lessonId
@@ -89,6 +91,5 @@
     });
     </script>
 
-</div>
 </main>
 <?php include __DIR__ . '/../layout/footer.php'; ?>
