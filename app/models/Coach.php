@@ -37,16 +37,6 @@ class Coach {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-public function getAll(){
-    $sql = "SELECT c.* , u.email
-    FROM coaches c
-    INNER JOIN users u ON c.user_id = c.id
-    WHERE c.deleted_at IS NULL";
-
-    $stmt = $this->db->query($sql);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
 public function createCoach(array $data){
 
 $sql = "INSERT INTO coaches (user_id, first_name, last_name, phone, specialty)
@@ -61,22 +51,6 @@ $data['phone'],
 $data['specialty']
 ]);
 }
-
-public function getCoachById(int $user_id){
-
-$sql = "SELECT c.*, u.email 
-             FROM coaches c 
-             INNER JOIN users u ON c.user_id = u.id 
-             WHERE c.user_id = ? AND c.deleted_at IS NULL 
-             LIMIT 1"
-;
-
-$stmt = $this->db->prepare($sql);
-$stmt->execute([$user_id]);
-return $stmt->fetch(PDO::FETCH_ASSOC);
-}
-
-
    
     public function getCoachById(int $user_id){
         $sql = "

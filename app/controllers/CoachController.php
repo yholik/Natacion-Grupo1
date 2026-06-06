@@ -50,13 +50,13 @@ public function updateProfileCoach()
         $updatedData = $this->coachModel->updateCoach($_SESSION['user_id'], $data);
 
         if($updatedData) {
-            error_log('Perfil actualizado con éxito');
             return $this->json('success', 'Perfil actualizado correctamente.');
         } else {
             return $this->json('error', 'Error al actualizar el perfil. Intente nuevamente.');
         }
     
     }
+    
   private function hasEmptyFields($f)
     {
         return empty($f['first_name'])
