@@ -22,27 +22,27 @@
                             <div class="mb-3">
                                 <label class="form-label">Nombre</label>
                                 <input type="text" name="first_name" class="form-control"
-                                    value="<?= htmlspecialchars($swimmer['first_name'] ?? '') ?>">
+                                    value="<?= htmlspecialchars($data['first_name'] ?? '') ?>">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Apellido</label>
                                 <input type="text" name="last_name" class="form-control"
-                                    value="<?= htmlspecialchars($swimmer['last_name'] ?? '') ?>">
+                                    value="<?= htmlspecialchars($data['last_name'] ?? '') ?>">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Email</label>
                                 <input type="email" class="form-control"
-                                    value="<?= htmlspecialchars($swimmer['email'] ?? '') ?>" disabled>
+                                    value="<?= htmlspecialchars($data['email'] ?? '') ?>" disabled>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Teléfono</label>
                                 <input type="text" name="phone" class="form-control"
-                                    value="<?= htmlspecialchars($swimmer['phone'] ?? '') ?>">
+                                    value="<?= htmlspecialchars($data['phone'] ?? '') ?>">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Fecha de Nacimiento</label>
                                 <input type="date" name="birth_date" class="form-control"
-                                    value="<?= htmlspecialchars($swimmer['birth_date'] ?? '') ?>">
+                                    value="<?= htmlspecialchars($data['birth_date'] ?? '') ?>">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Foto de Perfil</label>
