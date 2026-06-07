@@ -66,7 +66,7 @@ public function showCoachHome()
         $this->checkRole(2); 
         $this->render('users/coach/coach-home.view', [
             'title' => 'Panel de Coach',
-            'data' => $coachData
+            'coach' => $coachData
         ]);
     }
 
@@ -79,7 +79,7 @@ public function showCoachHome()
         $this->checkRole(2);         
         $this->render('users/coach/coach-profile.view', [
             'title' => ' - Gestion del perfil',
-            'data' => $coachData
+            'coach' => $coachData
         ]);
     }
 
