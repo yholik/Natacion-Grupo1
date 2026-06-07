@@ -43,7 +43,7 @@
                     <img src="<?= $rutaFoto ?>" alt="Perfil" class="profile-img-nav me-2">
 
                     <a href="?url=swimmer/profile" class="nav-link text-info p-0 text-decoration-none">
-                        Hola, <?= htmlspecialchars($_SESSION['first_name'] ?? 'Usuario') ?>
+                        Hola, <?= htmlspecialchars($data['first_name'] ?? 'Usuario') ?>
                     </a>
                 </div>
             <?php endif; ?>

@@ -67,12 +67,15 @@ switch ( $route ) {
     // --- COACH ---
     case 'coach':   
     case 'coach-home':
-        case 'coach-profile':
+    case 'coach-profile':
+    case 'coach-update-profile':
+    
         require_once __DIR__ . '/../app/controllers/CoachController.php';
         $controller = new CoachController();         
         if ( $route === 'coach' )   $controller->showCoachHome();
         if ( $route === 'coach-home' ) $controller->showCoachHome();
         if ( $route === 'coach-profile' ) $controller->showCoachProfile();
+        if ( $route === 'coach-update-profile' ) $controller->updateProfileCoach();
         break;
 
     /// --- SWIMMER ---
