@@ -8,8 +8,9 @@
 </div>
 <!-- CONTENIDO PRINCIPAL -->
     <div class="flex-grow-1 p-5 bg-white text-center">
+        <?= json_encode($_SESSION) ?>
         <h1 class="mb-4">Bienvenido,
-            <?= htmlspecialchars($coachData['first_name']) ?>
+            <?= htmlspecialchars($_SESSION['first_name']) ?>
         </h1>
 
         

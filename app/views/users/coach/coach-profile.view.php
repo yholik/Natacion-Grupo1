@@ -17,27 +17,27 @@
         <div class="row g-3">
             <div class="col-md-6">
                 <label class="form-label">Nombre</label>
-                <input type="text" name="first_name" class="form-control" value="<?= htmlspecialchars($data['first_name'] ?? 'Sin nombre') ?>" disabled>
+                <input type="text" name="first_name" class="form-control" value="<?= htmlspecialchars($coach['first_name'] ?? '') ?>" disabled>
             </div>
 
             <div class="col-md-6">
                 <label class="form-label">Apellido</label>
-                <input type="text" name="last_name" class="form-control" value="<?= htmlspecialchars($data['last_name'] ?? 'Sin apellido') ?>" disabled>
+                <input type="text" name="last_name" class="form-control" value="<?= htmlspecialchars($coach['last_name'] ?? '') ?>" disabled>
             </div>
 
             <div class="col-md-6">
                 <label class="form-label">Teléfono</label>
-                <input type="text" name="phone" class="form-control" value="<?= htmlspecialchars($data['phone'] ?? 'Sin teléfono') ?>" disabled>
+                <input type="text" name="phone" class="form-control" value="<?= htmlspecialchars($coach['phone'] ?? '') ?>" disabled>
             </div>
 
             <div class="col-md-6">
                 <label class="form-label">Especialidad</label>
-                <input type="text" name="specialty" class="form-control" value="<?= htmlspecialchars($data['specialty'] ?? 'Sin especialidad') ?>" disabled>
+                <input type="text" name="specialty" class="form-control" value="<?= htmlspecialchars($coach['specialty'] ?? '') ?>" disabled>
             </div>
 
             <div class="col-md-6">
                 <label class="form-label">Email</label>
-                <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($data['email'] ?? 'Sin email') ?>" disabled>
+                <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($coach['email'] ?? '') ?>" disabled>
             </div>
         </div>
 

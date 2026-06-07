@@ -120,7 +120,7 @@ class SwimmerController extends BaseController {
         }
         $this->render('users/swimmer/swimmer-profile.view', [
             'title'   => 'Mi Perfil',
-            'data' => $swimmer
+            'swimmer' => $swimmer
         ]);
     }
 
@@ -137,7 +137,7 @@ class SwimmerController extends BaseController {
             'title'       => 'Clases Disponibles',
             'lessons'     => $lessons,
             'bookingsIds' => $bookingsIds,
-            'data' => $swimmer
+            'swimmer' => $swimmer
         ]);
     }
     
@@ -151,7 +151,7 @@ class SwimmerController extends BaseController {
         $this->render('users/swimmer/swimmer-my-classes.view', [
             'title'    => 'Mis Clases',
             'bookings' => $bookings,
-            'data' => $swimmer
+            'swimmer' => $swimmer
         ]);
     }
 
