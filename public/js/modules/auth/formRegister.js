@@ -1,8 +1,3 @@
-/**
- * Gestión del alta de alumnos mediante AJAX.
- * Este módulo captura los datos del formulario, valida archivos en el cliente
- * y los envía al controlador mediante la API Fetch.
- */
 import { handleAlert } from "../../services/ui.js";
 
 export function initRegister() {
@@ -13,38 +8,6 @@ export function initRegister() {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    /**
-     * Capturamos el archivo de imagen para validarlo antes de enviarlo.
-     * Es una buena práctica para ahorrar ancho de banda y no saturar el servidor
-     * con archivos que no cumplen los requisitos.
-     */
-    const fileInput = form.querySelector('input[name="profile_image"]');
-    const file = fileInput ? fileInput.files[0] : null;
-
-    if (file) {
-      // Validamos que el formato sea exclusivamente de imagen
-      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-      if (!allowedTypes.includes(file.type)) {
-        return handleAlert(
-          "error",
-          "Formato no válido. Solo se permiten imágenes JPG, PNG o GIF.",
-        );
-      }
-
-      // Validamos que el tamaño no exceda los 2MB para optimizar el almacenamiento
-      const maxSize = 2 * 1024 * 1024;
-      if (file.size > maxSize) {
-        return handleAlert(
-          "warning",
-          "La imagen es muy pesada. El límite es de 2MB.",
-        );
-      }
-    }
-
-    /**
-     * FormData empaqueta automáticamente todos los campos del formulario,
-     * incluyendo los archivos (files), siempre que el input tenga el atributo 'name'.
-     */
     const formData = new FormData(form);
 
     try {
