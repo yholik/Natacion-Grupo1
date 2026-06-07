@@ -1,14 +1,25 @@
 import { handleAlert } from "../../services/ui.js";
+import { initCropper } from "../cropperMain.js";
 
 export function initRegister() {
   const form = document.getElementById("formRegister");
 
   if (!form) return;
 
+  const fileInput = form.querySelector('input[name="profile_image"]');
+  const cropper = initCropper(fileInput, { aspectRatio: 1 });
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const formData = new FormData(form);
+
+    if (cropper) {
+      const croppedFile = cropper.getCroppedFile();
+      if (croppedFile) {
+        formData.set('profile_image', croppedFile, croppedFile.name);
+      }
+    }
 
     try {
       const response = await fetch("?url=register", {
