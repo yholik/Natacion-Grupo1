@@ -56,17 +56,33 @@
         </div>
     </div>
     </main>
-    <script>
-    document.getElementById('formUpdateProfile')?.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        const resp = await fetch('?url=swimmer-update-profile', { method: 'POST', body: formData });
-        const data = await resp.json();
-        if (data.status === 'success') {
-            Swal.fire({ icon: 'success', title: 'Perfil actualizado' }).then(() => location.reload());
-        } else {
-            Swal.fire({ icon: 'error', title: data.message });
-        }
-    });
+    <script type="module">
+    import { initCropper } from '<?= rtrim(Env::get('ASSET_URL'), '/') ?>/js/modules/cropperMain.js';
+
+    const form = document.getElementById('formUpdateProfile');
+    if (form) {
+        const fileInput = form.querySelector('input[name="profile_image"]');
+        const cropper = initCropper(fileInput, { aspectRatio: 1 });
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            if (cropper) {
+                const croppedFile = cropper.getCroppedFile();
+                if (croppedFile) {
+                    formData.set('profile_image', croppedFile, croppedFile.name);
+                }
+            }
+
+            const resp = await fetch('?url=swimmer-update-profile', { method: 'POST', body: formData });
+            const data = await resp.json();
+            if (data.status === 'success') {
+                Swal.fire({ icon: 'success', title: 'Perfil actualizado' }).then(() => location.reload());
+            } else {
+                Swal.fire({ icon: 'error', title: data.message });
+            }
+        });
+    }
     </script>
     <?php include __DIR__ . '/../layout/footer.php'; ?>

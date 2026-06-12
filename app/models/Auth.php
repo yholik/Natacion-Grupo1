@@ -74,11 +74,16 @@ class Auth {
     */
     public function login( $email, $password ) {
         // Traemos los datos de auth y los datos de perfil de swimmers
-        $sql = "SELECT a.*, s.first_name, s.profile_image 
-            FROM auth a
-            LEFT JOIN swimmers s ON a.id = s.user_id 
-            WHERE a.email = ? AND a.deleted_at IS NULL 
-            LIMIT 1";
+     $sql = "SELECT a.*, 
+            COALESCE(s.first_name, c.first_name, 'Admin') AS first_name,
+            COALESCE(s.profile_image, 'default-profile.png') AS profile_image
+        FROM auth a
+        LEFT JOIN swimmers s ON a.id = s.user_id 
+        LEFT JOIN coaches c ON a.id = c.user_id
+        WHERE a.email = ? AND a.deleted_at IS NULL 
+        LIMIT 1";
+
+
 
         $stmt = $this->db->prepare( $sql );
         $stmt->execute( [ $email ] );

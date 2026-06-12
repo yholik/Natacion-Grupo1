@@ -136,7 +136,8 @@ class SwimmerController extends BaseController {
         $this->render('users/swimmer/swimmer-classes-avaliable.view', [
             'title'       => 'Clases Disponibles',
             'lessons'     => $lessons,
-            'bookingsIds' => $bookingsIds
+            'bookingsIds' => $bookingsIds,
+            'swimmer' => $swimmer
         ]);
     }
     
@@ -149,7 +150,8 @@ class SwimmerController extends BaseController {
         $bookings = $this->bookingModel->getBySwimmer($swimmer['id']);
         $this->render('users/swimmer/swimmer-my-classes.view', [
             'title'    => 'Mis Clases',
-            'bookings' => $bookings
+            'bookings' => $bookings,
+            'swimmer' => $swimmer
         ]);
     }
 

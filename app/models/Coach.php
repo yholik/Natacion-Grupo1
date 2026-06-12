@@ -37,35 +37,20 @@ class Coach {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Crea el perfil del profesor vinculado a un usuario de auth.
-     */
-    public function createCoach(array $data){
-        $sql = "
-            INSERT INTO coaches (
-                user_id, 
-                first_name, 
-                last_name, 
-                phone, 
-                specialty,
-                created_at,
-                updated_at,
-                deleted_at
-            )
-            VALUES (?, ?, ?, ?, ?, NOW(), NOW(), NULL)
-        ";
+public function createCoach(array $data){
 
-        $stmt = $this->db->prepare($sql);
+$sql = "INSERT INTO coaches (user_id, first_name, last_name, phone, specialty)
+VALUES (?, ?, ?, ?, ?)";
 
-        return $stmt->execute([
-            $data['user_id'],
-            $data['first_name'],
-            $data['last_name'],
-            $data['phone'],
-            $data['specialty']
-        ]);
-    }
-
+$stmt = $this->db->prepare($sql);
+return $stmt -> execute([
+$data['user_id'],
+$data['first_name'],
+$data['last_name'],
+$data['phone'],
+$data['specialty']
+]);
+}
    
     public function getCoachById(int $user_id){
         $sql = "
@@ -88,7 +73,8 @@ class Coach {
 
     
     public function updateCoach(int $user_id, array $data){
-        $sql = "
+        
+    $sql = "
             UPDATE coaches 
             SET 
                 first_name = ?, 
