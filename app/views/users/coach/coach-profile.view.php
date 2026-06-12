@@ -11,6 +11,8 @@
 </div>
 
 <div class="p-4 w-100">
+
+<!-- FALTA PODER ACTUALIZAR SU CONTRASEÑA-->
     <h2 class="mb-4">Mis datos personales</h2>
 
     <form id="updateProfileForm" class="w-100">
@@ -45,6 +47,8 @@
             <button type="button" class="btn btn-secondary" id="btnEdit">Editar</button>
             <button type="submit" class="btn btn-primary d-none" id="btnSave">Guardar</button>
         </div>
+
+        
     </form>
 </div>
 
