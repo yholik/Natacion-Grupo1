@@ -1,7 +1,7 @@
 <?php include __DIR__ . '/../users/layout/header.php'; ?>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-<link rel="stylesheet" href="/css/auth-vistas.css">
+<link rel="stylesheet" href="<?= Env::get('ASSET_URL') ?>/css/auth-vistas.css">
 
 <div class="login-split-card forgot-split-card">
     
