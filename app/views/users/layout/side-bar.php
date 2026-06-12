@@ -36,9 +36,15 @@
                             </a>
                         </li>
                         <li>
-                            <a href="" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'lessons') ? 'active bg-primary' : 'opacity-75'; ?>">
+                            <a href="?url=coach-lessons" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'lessons') ? 'active bg-primary' : 'opacity-75'; ?>">
                                 <i class="bi bi-table fs-5"></i>
                                 <span>Gestión de clases</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="?url=coach-calendar" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'calendar') ? 'active bg-primary' : 'opacity-75'; ?>">
+                                <i class="bi bi-grid-3x3-gap fs-5"></i>
+                                <span>Agenda/Calendario</span>
                             </a>
                         </li>
                         <?php endif; ?>
@@ -63,15 +69,7 @@
                             </a>
                         </li>    
                         <?php endif; ?>                
-                    
-                    <?php if ($_SESSION['role_id'] == 2):?>
-                    <li>
-                        <a href="" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'calendar') ? 'active bg-primary' : 'opacity-75'; ?>">
-                            <i class="bi bi-grid-3x3-gap fs-5"></i>
-                            <span>Calendario</span>
-                        </a>
-                    </li>
-                    <?php endif; ?>
+               
 
                     <li>
                     <a class="nav-link btn btn-outline-danger btn-sm ms-lg-3 w-100 w-lg-auto" href="?url=logout" id="btnLogout">

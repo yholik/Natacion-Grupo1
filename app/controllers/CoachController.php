@@ -53,35 +53,44 @@ public function updateProfileCoach()
     
     }
 
-    /*--- FUNCIONES DE VISTAS ---*/
+
+private function getCoachContext(): array
+{
+    $this->checkAuth();
+    $this->checkRole(2);
+
+    $userId = (int) $_SESSION['user_id'];
+    $coachData = $this->coachModel->getCoachById($userId);
+
+    return ['coach' => $coachData];
+}
+
 public function showCoachHome()
-    {
-        $userId = (int) $_SESSION['user_id'];
-        $coachData = $this->coachModel->getCoachById($userId);
+{
+    $this->render('users/coach/coach-home.view', 
+        array_merge($this->getCoachContext(), ['title' => 'Panel de Coach'])
+    );
+}
 
-        //ACA IMPLEMENTO LA FUNCTION CHECKROLE PARA
-        // EVITAR QUE UN USUARIO NO APTO INGRESE POR URL
-        
-        $this->checkAuth();
-        $this->checkRole(2); 
-        $this->render('users/coach/coach-home.view', [
-            'title' => 'Panel de Coach',
-            'coach' => $coachData
-        ]);
-    }
+public function showCoachProfile()
+{
+    $this->render('users/coach/coach-profile.view', 
+        array_merge($this->getCoachContext(), ['title' => ' - Gestion del perfil'])
+    );
+}
 
-    public function showCoachProfile()
-    {
-        $userId = (int) $_SESSION['user_id'];
-        $coachData = $this->coachModel->getCoachById($userId);
+public function showCoachLessons()
+{
+    $this->render('users/coach/coach-lessons.view', 
+        array_merge($this->getCoachContext(), ['title' => ' - Gestion de lecciones'])
+    );
+}
 
-        $this->checkAuth();
-        $this->checkRole(2);         
-        $this->render('users/coach/coach-profile.view', [
-            'title' => ' - Gestion del perfil',
-            'coach' => $coachData
-        ]);
-    }
-
+public function showCoachCalendar()
+{
+    $this->render('users/coach/coach-calendar.view', 
+        array_merge($this->getCoachContext(), ['title' => ' - Calendario'])
+    );
+}
 }
 
