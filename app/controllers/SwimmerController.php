@@ -155,4 +155,17 @@ class SwimmerController extends BaseController {
         ]);
     }
 
+    public function showSwimmerCalendar()
+    {
+        $this->checkAuth();
+        $this->checkRole(3);
+        $userId = (int) $_SESSION['user_id'];
+        $swimmer = $this->swimmerModel->getSwimmerById($userId);
+        $bookings = $this->bookingModel->getBySwimmer($swimmer['id']);
+        $this->render('users/swimmer/swimmer-calendar.view', [
+            'title'    => ' - Mi Calendario',
+            'bookings' => $bookings,
+            'swimmer'  => $swimmer
+        ]);
+    }
 }
