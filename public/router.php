@@ -71,6 +71,7 @@ switch ( $route ) {
     case 'coach-update-profile':
     case 'coach-lessons':
     case 'coach-calendar':
+    case 'coach-create-lesson':
     
         require_once __DIR__ . '/../app/controllers/CoachController.php';
         $controller = new CoachController();         
@@ -80,6 +81,7 @@ switch ( $route ) {
         if ( $route === 'coach-update-profile' ) $controller->updateProfileCoach();
         if ( $route === 'coach-lessons' ) $controller->showCoachLessons();
         if ( $route === 'coach-calendar' ) $controller->showCoachCalendar();
+        if ( $route === 'coach-create-lesson' ) $controller->createLesson();
         break;
 
     /// --- SWIMMER ---
@@ -90,6 +92,7 @@ switch ( $route ) {
     case 'swimmer-update-profile':
     case 'swimmer-enroll':
     case 'swimmer-cancel-enrollment':
+    case 'swimmer-calendar':
         require_once __DIR__ . '/../app/controllers/SwimmerController.php';
         $controller = new SwimmerController();         
 
@@ -100,6 +103,7 @@ switch ( $route ) {
         if ( $route === 'swimmer-update-profile' )      $controller->updateProfile();
         if ( $route === 'swimmer-enroll' )              $controller->enroll();
         if ( $route === 'swimmer-cancel-enrollment' )   $controller->cancelEnrollment();
+        if ( $route === 'swimmer-calendar' )            $controller->showSwimmerCalendar();
     break;
 
     // --- ADMIN ---
