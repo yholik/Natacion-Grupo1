@@ -20,6 +20,12 @@
                                 <span>Administrar Nadadores</span>
                             </a>
                         </li>
+                        <li>
+                            <a href="?url=admin-manage-lessons" class="nav-link text-white d-flex align-items-center gap-3 py-2.5 px-3 <?php echo ($current_page == 'lessons') ? 'active bg-primary' : 'opacity-75'; ?>">
+                                <i class="bi bi-table fs-5"></i>
+                                <span>Administrar Clases</span>
+                            </a>
+                        </li>
                     <?php endif; ?>
 
                     <?php if ($_SESSION['role_id'] == 2): ?>

@@ -4,12 +4,14 @@
 require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/Admin.php';
 require_once __DIR__ . '/../models/Coach.php';
+require_once __DIR__ . '/../models/Lesson.php';
 
 class AdminController extends BaseController
 {
     private $adminModel;
     private $coachModel;
     private $pdo;
+    private $lessonModel;
 
     public function __construct()
     {
@@ -18,6 +20,7 @@ class AdminController extends BaseController
         $this->pdo = $pdo;
         $this->adminModel = new Admin($pdo);
         $this->coachModel = new Coach($pdo);
+        $this->lessonModel = new Lesson($pdo);
     }
 
     public function showAdminHome()
@@ -108,5 +111,121 @@ class AdminController extends BaseController
             || empty($fields['email'])
             || empty($fields['phone'])
             || empty($fields['specialty']);
+    }
+
+    public function deactivateCoach()
+    {
+        $this->checkAuth();
+        $this->checkRole(1);
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $this->redirectToManageCoaches();
+        }
+
+        $userId = (int) ($_POST['user_id'] ?? 0);
+
+        if ($userId <= 0) {
+            return $this->redirectToManageCoaches();
+        }
+
+        $this->adminModel->deactivateCoach($userId);
+
+        return $this->redirectToManageCoaches();
+    }
+
+    public function activateCoach()
+    {
+        $this->checkAuth();
+        $this->checkRole(1);
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $this->redirectToManageCoaches();
+        }
+
+        $userId = (int) ($_POST['user_id'] ?? 0);
+
+        if ($userId <= 0) {
+            return $this->redirectToManageCoaches();
+        }
+
+        $this->adminModel->activateCoach($userId);
+
+        return $this->redirectToManageCoaches();
+    }
+
+    private function redirectToManageCoaches()
+    {
+        header('Location: ' . Env::get('APP_URL') . '/?url=admin-manage-coaches');
+        exit;
+    }
+
+    public function editCoach()
+    {
+        $this->checkAuth();
+        $this->checkRole(1);
+
+        $userId = (int) ($_POST['user_id'] ?? $_GET['id'] ?? 0);
+
+        if ($userId <= 0) {
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                return $this->json('error', 'ID de profesor inválido.');
+            }
+
+            return $this->redirectToManageCoaches();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $coach = $this->coachModel->getCoachById($userId);
+
+            if (!$coach) {
+                return $this->redirectToManageCoaches();
+            }
+
+            return $this->render('users/admin/admin-create-coach.view', [
+                'title' => 'Editar Profesor',
+                'coach' => $coach
+            ]);
+        }
+
+        $fields = [
+            'first_name' => trim($_POST['first_name'] ?? ''),
+            'last_name'  => trim($_POST['last_name'] ?? ''),
+            'phone'      => trim($_POST['phone'] ?? ''),
+            'specialty'  => trim($_POST['specialty'] ?? '')
+        ];
+
+        if (
+            empty($fields['first_name']) ||
+            empty($fields['last_name']) ||
+            empty($fields['phone']) ||
+            empty($fields['specialty'])
+        ) {
+            return $this->json('warning', 'Faltan datos obligatorios.');
+        }
+
+        $updated = $this->adminModel->updateCoach($userId, $fields);
+
+        if (!$updated) {
+            return $this->json('error', 'No se pudo actualizar el profesor.');
+        }
+
+        return $this->json(
+            'success',
+            'Profesor actualizado correctamente.',
+            Env::get('APP_URL') . '/?url=admin-manage-coaches'
+        );
+    }
+
+    public function showAdminManageLessons()
+    {
+        $this->checkAuth();
+        $this->checkRole(1);
+
+        $lessons = $this->lessonModel->getAllWithCoach();
+
+        $this->render('users/admin/admin-manage-lessons.view', [
+            'title' => 'Gestionar Clases',
+            'lessons' => $lessons
+        ]);
     }
 }

@@ -95,4 +95,50 @@ $data['specialty']
             $user_id
         ]);
     }
+
+    public function deactivateByUserId(int $userId): bool
+    {
+        try {
+            $sql = "
+                UPDATE coaches
+                SET 
+                    deleted_at = NOW(),
+                    updated_at = NOW()
+                WHERE user_id = :user_id
+                AND deleted_at IS NULL
+            ";
+
+            $stmt = $this->db->prepare($sql);
+
+            return $stmt->execute([
+                ':user_id' => $userId
+            ]);
+
+        } catch (Throwable $e) {
+            return false;
+        }
+    }
+
+    public function activateByUserId(int $userId): bool
+    {
+        try {
+            $sql = "
+                UPDATE coaches
+                SET 
+                    deleted_at = NULL,
+                    updated_at = NOW()
+                WHERE user_id = :user_id
+                AND deleted_at IS NOT NULL
+            ";
+
+            $stmt = $this->db->prepare($sql);
+
+            return $stmt->execute([
+                ':user_id' => $userId
+            ]);
+
+        } catch (Throwable $e) {
+            return false;
+        }
+    }
 }

@@ -107,18 +107,27 @@ switch ( $route ) {
     break;
 
     // --- ADMIN ---
-    case 'admin':   
+    case 'admin':
     case 'admin-home':
     case 'admin-manage-coaches':
+    case 'admin-edit-coach':
     case 'admin-create-coach':
+    case 'admin-deactivate-coach':
+    case 'admin-activate-coach':
+    case 'admin-manage-lessons':
         require_once __DIR__ . '/../app/controllers/AdminController.php';
-        $controller = new AdminController();         
-        if ( $route === 'admin' )   $controller->showAdminHome();
-        if( $route === 'admin-home' ) $controller->showAdminHome();
-        if( $route === 'admin-manage-coaches' ) $controller->showAdminManageCoaches();
-        if( $route === 'admin-create-coach' ) $controller->createCoach();
-    break;
+        $controller = new AdminController();
 
+        if ($route === 'admin') { $controller->showAdminHome(); }
+        if ($route === 'admin-home') { $controller->showAdminHome(); }
+        if ($route === 'admin-manage-coaches') { $controller->showAdminManageCoaches(); }
+        if ($route === 'admin-create-coach') { $controller->createCoach(); }
+        if ($route === 'admin-edit-coach') { $controller->editCoach(); }
+        if ($route === 'admin-deactivate-coach') { $controller->deactivateCoach(); }
+        if ($route === 'admin-activate-coach') { $controller->activateCoach(); }
+        if($route === 'admin-manage-lessons') { $controller->showAdminManageLessons(); }
+
+        break;
 
 
     // --- SEGURIDAD: CIERRE DE SESIÓN ---

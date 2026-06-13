@@ -83,4 +83,31 @@ class Admin
             return false;
         }
     }
+    
+    public function deactivateCoach(int $userId): bool
+    {
+        if ($userId <= 0) {
+            return false;
+        }
+
+        return $this->coachModel->deactivateByUserId($userId);
+    }
+
+    public function activateCoach(int $userId): bool
+    {
+        if ($userId <= 0) {
+            return false;
+        }
+
+        return $this->coachModel->activateByUserId($userId);
+    }
+
+    public function updateCoach(int $user_id, array $data): bool
+    {
+        if ($user_id <= 0) {
+            return false;
+        }
+
+        return $this->coachModel->updateCoach($user_id, $data);
+    }
 }

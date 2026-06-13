@@ -1,22 +1,14 @@
 <?php include __DIR__ . '/../layout/header.php'; ?>
 
 <?php
-// Si el controlador no envía $coaches, se usa un array vacío para evitar errores.
 $coaches = $coaches ?? [];
+$appUrl = htmlspecialchars(rtrim(Env::get('APP_URL'), '/'), ENT_QUOTES, 'UTF-8');
 
-/**
- * Escapa valores antes de imprimirlos en HTML.
- * Evita problemas de XSS si algún dato viene con caracteres especiales.
- */
 function e($value)
 {
     return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
 }
 
-/**
- * Formatea una fecha.
- * Si la fecha viene vacía o NULL, muestra "-".
- */
 function formatDateOrDash($value)
 {
     if (empty($value)) {
@@ -39,8 +31,7 @@ function formatDateOrDash($value)
         <hr>
 
         <div class="d-flex gap-2 mb-4">
-            <!-- Lleva al formulario de creación de profesor -->
-            <a href="<?= e(Env::get('APP_URL')) ?>/?url=admin-create-coach" class="btn btn-success">
+            <a href="<?= $appUrl ?>/?url=admin-create-coach" class="btn btn-success">
                 Agregar
             </a>
         </div>
@@ -71,7 +62,6 @@ function formatDateOrDash($value)
                         </thead>
 
                         <tbody>
-                            <!-- Si no hay profesores, se muestra una fila informativa -->
                             <?php if (empty($coaches)): ?>
                                 <tr>
                                     <td colspan="12" class="text-center py-4 text-muted">
@@ -80,20 +70,11 @@ function formatDateOrDash($value)
                                 </tr>
                             <?php endif; ?>
 
-                            <!-- Recorre los profesores enviados desde el controlador -->
                             <?php foreach ($coaches as $coach): ?>
                                 <?php
-                                // user_id es el ID de la cuenta en auth.
                                 $userId = $coach['user_id'];
-
-                                // Nombre completo usado en el mensaje del modal.
                                 $fullName = trim($coach['first_name'] . ' ' . $coach['last_name']);
-
-                                // Si deleted_at está vacío, el profesor está activo.
                                 $isActive = empty($coach['deleted_at']);
-
-                                // ID único del formulario de esta fila.
-                                // Se usa luego desde JavaScript para enviar el formulario correcto.
                                 $formId = 'form-cambiar-estado-' . $userId;
                                 ?>
 
@@ -119,28 +100,21 @@ function formatDateOrDash($value)
 
                                     <td>
                                         <div class="d-flex gap-2">
-                                            <a href="<?= e(Env::get('APP_URL')) ?>/?url=admin-edit-coach&id=<?= e($userId) ?>" class="btn btn-sm btn-primary">
+                                            <a
+                                                href="<?= $appUrl ?>/?url=admin-edit-coach&id=<?= e($userId) ?>"
+                                                class="btn btn-sm btn-primary"
+                                            >
                                                 Editar
                                             </a>
 
-                                            <!--
-                                                Formulario real de alta/baja.
-                                                No se envía directamente al tocar el botón.
-                                                Primero el JS muestra el modal de confirmación.
-                                            -->
                                             <form
                                                 id="<?= e($formId) ?>"
-                                                action="<?= e(Env::get('APP_URL')) ?>/?url=<?= $isActive ? 'admin-deactivate-coach' : 'admin-activate-coach' ?>"
+                                                action="<?= $appUrl ?>/?url=<?= $isActive ? 'admin-deactivate-coach' : 'admin-activate-coach' ?>"
                                                 method="POST"
                                                 class="m-0"
                                             >
-                                                <input type="hidden" name="coach_id" value="<?= e($userId) ?>">
+                                                <input type="hidden" name="user_id" value="<?= e($userId) ?>">
 
-                                                <!--
-                                                    data-form-id: identifica qué formulario debe enviarse.
-                                                    data-nombre: nombre mostrado en el modal.
-                                                    data-accion: define si el mensaje será alta o baja.
-                                                -->
                                                 <button
                                                     type="button"
                                                     class="btn btn-sm <?= $isActive ? 'btn-danger' : 'btn-success' ?> btn-cambiar-estado"
@@ -161,56 +135,10 @@ function formatDateOrDash($value)
             </div>
         </div>
 
-        <!-- Modal genérico reutilizable -->
         <?php require_once __DIR__ . '/../../components/modal_confirmacion.php'; ?>
     </div>
 </main>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // Busca todos los botones que cambian el estado del profesor.
-        const botonesCambiarEstado = document.querySelectorAll('.btn-cambiar-estado');
-
-        botonesCambiarEstado.forEach(boton => {
-            boton.addEventListener('click', async () => {
-                // Obtiene datos cargados en el botón mediante data-*.
-                const formId = boton.dataset.formId;
-                const nombre = boton.dataset.nombre;
-                const accion = boton.dataset.accion;
-
-                // Determina si la acción es baja o alta.
-                const esBaja = accion === 'baja';
-
-                // Muestra el modal genérico y espera la respuesta del usuario.
-                // true  = aceptó
-                // false = canceló
-                const confirmado = await mostrarConfirmacion(
-                    esBaja
-                        ? `Se dará de baja el siguiente usuario: ${nombre}`
-                        : `Se dará de alta el siguiente usuario: ${nombre}`,
-                    {
-                        titulo: esBaja ? 'Dar de baja usuario' : 'Dar de alta usuario',
-                        textoAceptar: esBaja ? 'Dar de Baja' : 'Dar de Alta',
-                        textoCancelar: 'Cancelar',
-                        claseAceptar: esBaja ? 'btn-danger' : 'btn-success'
-                    }
-                );
-
-                // Si canceló, no se envía nada.
-                if (!confirmado) {
-                    return;
-                }
-
-                // Busca el formulario correspondiente a la fila.
-                const formulario = document.getElementById(formId);
-
-                // Si existe, lo envía por POST al controlador.
-                if (formulario) {
-                    formulario.submit();
-                }
-            });
-        });
-    });
-</script>
+<script src="<?= $appUrl ?>/public/js/modules/admin/admin-manage-coaches.js"></script>
 
 <?php include __DIR__ . '/../layout/footer.php'; ?>
