@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 // Reune lo que usa el profesor en su panel.
 
