@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Header común del área logueada. -->
 <html lang="es">
 
 <head>
@@ -39,10 +40,16 @@
                     <?php 
                         $foto = $_SESSION['profile_image'] ?? 'default-profile.png';
                         $rutaFoto = Env::get('ASSET_URL') . "/img/uploads/profiles/swimmers/" . $foto;
+                        $headerLink = match ((int) ($_SESSION['role_id'] ?? 0)) {
+                            1 => '?url=admin-manage-coaches',
+                            2 => '?url=profile',
+                            3 => '?url=profile',
+                            default => '?url=landing',
+                        };
                     ?>
                     <img src="<?= $rutaFoto ?>" alt="Perfil" class="profile-img-nav me-2">
 
-                    <a href="?url=swimmer/profile" class="nav-link text-info p-0 text-decoration-none">
+                    <a href="<?= $headerLink ?>" class="nav-link text-info p-0 text-decoration-none">
                         Hola, <?= htmlspecialchars($_SESSION['first_name'] ?? 'Usuario') ?>
                     </a>
                 </div>

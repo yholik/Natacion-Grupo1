@@ -1,3 +1,4 @@
+// Activa la confirmación antes de borrar clases.
 document.addEventListener('DOMContentLoaded', () => {
     const botonesEliminarClase = document.querySelectorAll('.btn-eliminar-clase');
 

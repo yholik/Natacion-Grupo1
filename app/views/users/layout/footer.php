@@ -1,3 +1,4 @@
+<!-- Footer común y utilidades compartidas. -->
 <script>
 
 /**

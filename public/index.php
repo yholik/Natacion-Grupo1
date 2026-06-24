@@ -1,4 +1,6 @@
 <?php
+
+// Punto de entrada de la aplicación web.
 session_start();
 require_once __DIR__ . '/../app/core/Env.php';
 

@@ -1,3 +1,4 @@
+﻿// Activa las confirmaciones del listado de profesores.
 document.addEventListener('DOMContentLoaded', () => {
     const botonesCambiarEstado = document.querySelectorAll('.btn-cambiar-estado');
 
@@ -6,20 +7,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const formId = boton.dataset.formId;
             const nombre = boton.dataset.nombre;
             const accion = boton.dataset.accion;
+            const especialidades = boton.dataset.especialidades || '';
 
             const esBaja = accion === 'baja';
+            const mensaje = esBaja
+                ? `Se dara de baja el siguiente profesor: ${nombre}. Tambien se eliminara la relacion con sus especialidades${especialidades ? ` (${especialidades})` : ''}. Desea continuar?`
+                : `Se dara de alta el siguiente usuario: ${nombre}`;
 
-            const confirmado = await mostrarConfirmacion(
-                esBaja
-                    ? `Se dará de baja el siguiente usuario: ${nombre}`
-                    : `Se dará de alta el siguiente usuario: ${nombre}`,
-                {
-                    titulo: esBaja ? 'Dar de baja usuario' : 'Dar de alta usuario',
-                    textoAceptar: esBaja ? 'Dar de Baja' : 'Dar de Alta',
-                    textoCancelar: 'Cancelar',
-                    claseAceptar: esBaja ? 'btn-danger' : 'btn-success'
-                }
-            );
+            const confirmado = await mostrarConfirmacion(mensaje, {
+                titulo: esBaja ? 'Dar de baja profesor' : 'Dar de alta usuario',
+                textoAceptar: esBaja ? 'Dar de Baja' : 'Dar de Alta',
+                textoCancelar: 'Cancelar',
+                claseAceptar: esBaja ? 'btn-danger' : 'btn-success'
+            });
 
             if (!confirmado) {
                 return;

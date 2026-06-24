@@ -1,4 +1,6 @@
-<?php
+﻿<?php
+
+// Reune lo que usa el profesor en su panel.
 
 require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/Auth.php';
@@ -12,129 +14,202 @@ class CoachController extends BaseController {
     private $lessonModel;
     private $pdo;
 
-
+    // Prepara los modelos que necesita el rol coach.
     public function __construct()
     {
-        global $pdo;        
+        global $pdo;
         $this->pdo = $pdo;
         $this->authModel = new Auth($pdo);
         $this->coachModel = new Coach($pdo);
         $this->lessonModel = new Lesson($pdo);
     }
 
+    // Carga una vez los datos base del coach logueado.
+    private function getCoachContext(): array
+    {
+        $this->checkAuth();
+        $this->checkRole(2);
 
-    public function updateProfileCoach()
-        {
         $userId = (int) $_SESSION['user_id'];
-        
-        //compruebo que el metodo es valido
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return $this->json('error', 'Método no permitido.');
-            }
+        $coachData = $this->coachModel->getCoachById($userId);
 
-            //capturo y valido datos del form
-            $data = [
-            'first_name' => trim($_POST['first_name'] ?? ''),
-            'last_name'  => trim($_POST['last_name']  ?? ''),
-            'phone'      => trim($_POST['phone']       ?? ''),
-            'specialty'  => trim($_POST['specialty']   ?? '')
+        return ['coach' => $coachData];
+    }
+
+    // Muestra la portada del panel coach.
+    public function showCoachHome()
+    {
+        $this->render(
+            'users/coach/coach-home.view',
+            array_merge($this->getCoachContext(), ['title' => 'Panel de Coach'])
+        );
+    }
+
+    // Abre la gestion de clases del coach.
+    public function showCoachLessons()
+    {
+        $this->render(
+            'users/coach/coach-lessons.view',
+            array_merge($this->getCoachContext(), ['title' => ' - Gestion de lecciones'])
+        );
+    }
+
+    // Lleva las clases del coach a la vista calendario.
+    public function showCoachCalendar()
+    {
+        $context = $this->getCoachContext();
+        $coach = $context['coach'];
+        $lessons = $this->lessonModel->getByCoachId((int) $coach['id']);
+
+        $this->render(
+            'users/coach/coach-calendar.view',
+            array_merge($context, [
+                'title'   => ' - Calendario',
+                'lessons' => $lessons
+            ])
+        );
+    }
+
+    // Guarda una clase nueva para el coach logueado.
+    public function createLesson()
+    {
+        $this->checkAuth();
+        $this->checkRole(2);
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $this->json('error', 'Metodo no permitido.');
+        }
+
+        $userId = (int) $_SESSION['user_id'];
+        $coach = $this->coachModel->getCoachById($userId);
+        if (!$coach) {
+            return $this->json('error', 'Perfil de coach no encontrado.');
+        }
+
+        $data = [
+            'coach_id'    => (int) $coach['id'],
+            'level'       => trim($_POST['level'] ?? ''),
+            'day_of_week' => trim($_POST['day_of_week'] ?? ''),
+            'start_time'  => trim($_POST['start_time'] ?? ''),
+            'end_time'    => trim($_POST['end_time'] ?? ''),
+            'capacity'    => (int) ($_POST['capacity'] ?? 0)
         ];
 
-        
-        if (empty($data['first_name']) || empty($data['last_name'])) {
-                return $this->json('warning', 'Nombre y apellido son obligatorios.');
-            }
-
-            $updatedData = $this->coachModel->updateCoach($userId, $data);
-
-            if($updatedData) {
-                return $this->json('success', 'Perfil actualizado correctamente.');
-            } else {
-                return $this->json('error', 'Error al actualizar el perfil. Intente nuevamente.');
-            }
-        
+        if (empty($data['level']) || empty($data['day_of_week']) || empty($data['start_time']) || empty($data['end_time']) || $data['capacity'] <= 0) {
+            return $this->json('warning', 'Todos los campos son obligatorios y la capacidad debe ser mayor a 0.');
         }
 
-
-    private function getCoachContext(): array
-        {
-            $this->checkAuth();
-            $this->checkRole(2);
-
-            $userId = (int) $_SESSION['user_id'];
-            $coachData = $this->coachModel->getCoachById($userId);
-
-            return ['coach' => $coachData];
+        if ($this->lessonModel->create($data)) {
+            return $this->json('success', 'Clase creada correctamente.');
         }
 
-    public function showCoachHome()
-        {
-            $this->render('users/coach/coach-home.view', 
-                array_merge($this->getCoachContext(), ['title' => 'Panel de Coach'])
-            );
+        return $this->json('error', 'No se pudo crear la clase.');
+    }
+
+    // Carga la vista del admin con el catalogo de especialidades.
+    public function getAllEspecialidades()
+    {
+        $this->checkAuth();
+        $this->checkRole(1);
+
+        $editingSpecialty = null;
+
+        $specialtyId = (int) ($_GET['id'] ?? 0);
+        if ($specialtyId > 0) {
+            $editingSpecialty = $this->coachModel->getSpecialtyById($specialtyId);
         }
 
-    public function showCoachProfile()
-        {
-            $this->render('users/coach/coach-profile.view', 
-                array_merge($this->getCoachContext(), ['title' => ' - Gestion del perfil'])
-            );
+        $this->renderManageSpecialties($editingSpecialty);
+    }
+
+    // Crea una especialidad nueva desde el admin.
+    public function createSpecialty()
+    {
+        $this->checkAuth();
+        $this->checkRole(1);
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $this->redirectToManageSpecialties();
         }
 
-    public function showCoachLessons()
-        {
-            $this->render('users/coach/coach-lessons.view', 
-                array_merge($this->getCoachContext(), ['title' => ' - Gestion de lecciones'])
-            );
+        $name = trim($_POST['name'] ?? '');
+        if ($name === '') {
+            return $this->redirectToManageSpecialties();
         }
 
-    public function showCoachCalendar()
-        {
-            $context = $this->getCoachContext();
-            $coach = $context['coach'];
-            $lessons = $this->lessonModel->getByCoachId((int) $coach['id']);
-            $this->render('users/coach/coach-calendar.view', 
-                array_merge($context, [
-                    'title'   => ' - Calendario',
-                    'lessons' => $lessons
-                ])
-            );
+        if ($this->coachModel->specialtyNameExists($name)) {
+            return $this->renderManageSpecialties(null, 'Ya existe una especialidad con ese nombre');
         }
 
-    public function createLesson()
-        {
-            $this->checkAuth();
-            $this->checkRole(2);
+        $this->coachModel->createSpecialty($name);
 
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                return $this->json('error', 'Método no permitido.');
-            }
+        return $this->redirectToManageSpecialties();
+    }
 
-            $userId = (int) $_SESSION['user_id'];
-            $coach = $this->coachModel->getCoachById($userId);
-            if (!$coach) {
-                return $this->json('error', 'Perfil de coach no encontrado.');
-            }
+    // Guarda el cambio de nombre de una especialidad.
+    public function updateSpecialty()
+    {
+        $this->checkAuth();
+        $this->checkRole(1);
 
-            $data = [
-                'coach_id'    => (int) $coach['id'],
-                'level'       => trim($_POST['level'] ?? ''),
-                'day_of_week' => trim($_POST['day_of_week'] ?? ''),
-                'start_time'  => trim($_POST['start_time'] ?? ''),
-                'end_time'    => trim($_POST['end_time'] ?? ''),
-                'capacity'    => (int) ($_POST['capacity'] ?? 0)
-            ];
-
-            if (empty($data['level']) || empty($data['day_of_week']) || empty($data['start_time']) || empty($data['end_time']) || $data['capacity'] <= 0) {
-                return $this->json('warning', 'Todos los campos son obligatorios y la capacidad debe ser mayor a 0.');
-            }
-
-            if ($this->lessonModel->create($data)) {
-                return $this->json('success', 'Clase creada correctamente.');
-            }
-
-            return $this->json('error', 'No se pudo crear la clase.');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $this->redirectToManageSpecialties();
         }
 
+        $specialtyId = (int) ($_POST['specialty_id'] ?? 0);
+        $name = trim($_POST['name'] ?? '');
+
+        if ($specialtyId <= 0 || $name === '') {
+            return $this->redirectToManageSpecialties();
+        }
+
+        if ($this->coachModel->specialtyNameExists($name, $specialtyId)) {
+            $editingSpecialty = $this->coachModel->getSpecialtyById($specialtyId);
+            return $this->renderManageSpecialties($editingSpecialty, 'Ya existe una especialidad con ese nombre');
+        }
+
+        $this->coachModel->updateSpecialty($specialtyId, $name);
+
+        return $this->redirectToManageSpecialties();
+    }
+
+    // Elimina una especialidad libre de profesores asociados.
+    public function deleteSpecialty()
+    {
+        $this->checkAuth();
+        $this->checkRole(1);
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $this->redirectToManageSpecialties();
+        }
+
+        $specialtyId = (int) ($_POST['specialty_id'] ?? 0);
+        if ($specialtyId <= 0) {
+            return $this->redirectToManageSpecialties();
+        }
+
+        $this->coachModel->deleteSpecialty($specialtyId);
+
+        return $this->redirectToManageSpecialties();
+    }
+
+    // Devuelve al listado de especialidades.
+    private function redirectToManageSpecialties()
+    {
+        header('Location: ?url=admin-manage-specialties');
+        exit;
+    }
+
+    // Reutiliza la carga de la pantalla de especialidades.
+    private function renderManageSpecialties($editingSpecialty = null, ?string $modalMessage = null)
+    {
+        $specialties = $this->coachModel->getAllSpecialties();
+
+        $this->render('users/admin/admin-manage-specialties.view', [
+            'title' => 'Administrar Especialidades',
+            'specialties' => $specialties,
+            'editingSpecialty' => $editingSpecialty,
+            'modalMessage' => $modalMessage
+        ]);
+    }
 }
-

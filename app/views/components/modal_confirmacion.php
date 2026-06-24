@@ -1,3 +1,4 @@
+<!-- Modal reutilizable para confirmar acciones del panel. -->
 <div class="modal fade" id="modalConfirmacionGenerico" tabindex="-1" aria-labelledby="modalConfirmacionGenericoLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content shadow">

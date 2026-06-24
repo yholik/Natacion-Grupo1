@@ -1,24 +1,36 @@
-// Maneja el alta y edición de profesores desde admin.
-document.addEventListener('DOMContentLoaded', () => {
-    const formCrearCoach = document.getElementById('formCrearCoach');
-    const btnGuardarCoach = document.getElementById('btnGuardarCoach');
+// Maneja el alta y edición de nadadores desde admin.
+import { initCropper } from "../cropperMain.js";
 
-    if (!formCrearCoach || !btnGuardarCoach) {
+document.addEventListener('DOMContentLoaded', () => {
+    const formCrearSwimmer = document.getElementById('formCrearSwimmer');
+    const btnGuardarSwimmer = document.getElementById('btnGuardarSwimmer');
+
+    if (!formCrearSwimmer || !btnGuardarSwimmer) {
         return;
     }
 
-    formCrearCoach.addEventListener('submit', async (event) => {
+    const fileInput = formCrearSwimmer.querySelector('input[name="profile_image"]');
+    const cropper = fileInput ? initCropper(fileInput, { aspectRatio: 1 }) : null;
+
+    formCrearSwimmer.addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        const esEdicion = formCrearCoach.dataset.mode === 'edit';
+        const esEdicion = formCrearSwimmer.dataset.mode === 'edit';
 
-        btnGuardarCoach.disabled = true;
-        btnGuardarCoach.textContent = esEdicion ? 'Actualizando...' : 'Guardando...';
+        btnGuardarSwimmer.disabled = true;
+        btnGuardarSwimmer.textContent = esEdicion ? 'Actualizando...' : 'Guardando...';
 
         try {
-            const formData = new FormData(formCrearCoach);
+            const formData = new FormData(formCrearSwimmer);
 
-            const response = await fetch(formCrearCoach.action, {
+            if (cropper) {
+                const croppedFile = cropper.getCroppedFile();
+                if (croppedFile) {
+                    formData.set('profile_image', croppedFile, croppedFile.name);
+                }
+            }
+
+            const response = await fetch(formCrearSwimmer.action, {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -30,12 +42,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const rawResponse = await response.text();
 
             if (!contentType.includes('application/json')) {
-                console.error('Respuesta no JSON del servidor:', rawResponse);
-
                 await mostrarConfirmacion(
                     esEdicion
-                        ? 'No se pudo actualizar el profesor. El servidor devolvió una respuesta inválida.'
-                        : 'No se pudo crear el profesor. El servidor devolvió una respuesta inválida.',
+                        ? 'No se pudo actualizar el nadador. El servidor devolvió una respuesta inválida.'
+                        : 'No se pudo crear el nadador. El servidor devolvió una respuesta inválida.',
                     {
                         titulo: 'Error',
                         textoAceptar: 'Aceptar',
@@ -48,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const result = JSON.parse(rawResponse);
-
             const status = result.status || result.type || '';
             const message = result.message || 'Operación finalizada.';
             const redirectUrl = result.redirect || result.url || null;
@@ -57,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 await mostrarConfirmacion(
                     message,
                     {
-                        titulo: esEdicion ? 'Profesor actualizado' : 'Profesor creado',
+                        titulo: esEdicion ? 'Nadador actualizado' : 'Nadador creado',
                         textoAceptar: 'Aceptar',
                         claseAceptar: 'btn-success',
                         mostrarCancelar: false
@@ -72,11 +81,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             await mostrarConfirmacion(
-                message || (esEdicion ? 'No se pudo actualizar el profesor.' : 'No se pudo crear el profesor.'),
+                message || (esEdicion ? 'No se pudo actualizar el nadador.' : 'No se pudo crear el nadador.'),
                 {
                     titulo: esEdicion ? 'No se pudo actualizar' : 'No se pudo crear',
                     textoAceptar: 'Aceptar',
-                    claseAceptar: 'btn-danger',
+                    claseAceptar: status === 'warning' ? 'btn-warning' : 'btn-danger',
                     mostrarCancelar: false
                 }
             );
@@ -86,8 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             await mostrarConfirmacion(
                 esEdicion
-                    ? 'No se pudo actualizar el profesor. Revisá la conexión, la ruta o el error del servidor.'
-                    : 'No se pudo crear el profesor. Revisá la conexión, la ruta o el error del servidor.',
+                    ? 'No se pudo actualizar el nadador. Revisá la conexión, la ruta o el error del servidor.'
+                    : 'No se pudo crear el nadador. Revisá la conexión, la ruta o el error del servidor.',
                 {
                     titulo: 'Error',
                     textoAceptar: 'Aceptar',
@@ -97,8 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
             );
 
         } finally {
-            btnGuardarCoach.disabled = false;
-            btnGuardarCoach.textContent = esEdicion ? 'Actualizar' : 'Guardar';
+            btnGuardarSwimmer.disabled = false;
+            btnGuardarSwimmer.textContent = esEdicion ? 'Actualizar' : 'Guardar';
         }
     });
 });

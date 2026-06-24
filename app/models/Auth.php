@@ -1,8 +1,11 @@
 <?php
 
+// Resuelve credenciales, sesión y tokens de recuperación.
+
 class Auth {
     private $db;
 
+    // Toma la conexión compartida del proyecto.
     public function __construct( $pdo ) {
         $this->db = $pdo;
     }
@@ -32,6 +35,7 @@ class Auth {
      *
      * @return int|false
      */
+    // Inserta el usuario base en auth.
     public function create(array $data)
     {
         $hash = password_hash($data['password'], PASSWORD_BCRYPT);
@@ -72,18 +76,15 @@ class Auth {
     /**
     * Valida las credenciales en el inicio de sesión.
     */
+    // Busca el usuario y valida la contraseña.
     public function login( $email, $password ) {
-        // Traemos los datos de auth y los datos de perfil de swimmers
      $sql = "SELECT a.*, 
-            COALESCE(s.first_name, c.first_name, 'Admin') AS first_name,
-            COALESCE(s.profile_image, 'default-profile.png') AS profile_image
+            COALESCE(p.first_name, 'Admin') AS first_name,
+            COALESCE(p.profile_image, 'default-profile.png') AS profile_image
         FROM auth a
-        LEFT JOIN swimmers s ON a.id = s.user_id 
-        LEFT JOIN coaches c ON a.id = c.user_id
+        LEFT JOIN perfil p ON a.id = p.user_id AND p.deleted_at IS NULL
         WHERE a.email = ? AND a.deleted_at IS NULL 
         LIMIT 1";
-
-
 
         $stmt = $this->db->prepare( $sql );
         $stmt->execute( [ $email ] );
@@ -99,6 +100,7 @@ class Auth {
     /**
     * Actualiza la contraseña de un usuario mediante su email.
     */
+    // Actualiza la contraseña usando el email como referencia.
     public function updatePasswordByEmail( $email, $hashedPassword ) {
         $stmt = $this->db->prepare( 'UPDATE auth SET password = ? WHERE email = ?' );
         return $stmt->execute( [ $hashedPassword, $email ] );
@@ -128,6 +130,7 @@ class Auth {
     /**
     * Valida si un token existe y no ha expirado.
     */
+    // Verifica si el token todavía sirve.
     public function validateToken( $token ) {
         $stmt = $this->db->prepare( 'SELECT email FROM password_resets WHERE token = ? AND expires_at > NOW() LIMIT 1' );
         $stmt->execute( [ $token ] );
@@ -137,6 +140,7 @@ class Auth {
     /**
     * Elimina el token una vez que ya ha sido utilizado.
     */
+    // Borra el token después de usarlo.
     public function deleteToken( $token ) {
         $stmt = $this->db->prepare( 'DELETE FROM password_resets WHERE token = ?' );
         return $stmt->execute( [ $token ] );
