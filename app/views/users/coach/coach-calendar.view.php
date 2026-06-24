@@ -1,3 +1,5 @@
+<?php require_once __DIR__ . '/../../components/modal_confirmacion.php'; ?>
+
 <?php include __DIR__ . '/../layout/header.php'; ?>
 <main class="d-flex flex-column flex-lg-row w-100">
     <div class="d-flex">
@@ -29,7 +31,7 @@
     <!-- Modal CREAR clase -->
     <div class="modal fade" id="createModal" tabindex="-1">
         <div class="modal-dialog">
-            <form method="POST" action="?url=coach-create-lesson" class="modal-content">
+            <form id="formCrearClase" method="POST" action="?url=coach-create-lesson" class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Agregar clase</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -57,7 +59,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Crear clase</button>
+                    <button type="submit" class="btn btn-primary" id="btnCrearClase">
+                        Crear clase
+                    </button>
                 </div>
             </form>
         </div>
@@ -108,6 +112,111 @@
             new bootstrap.Modal(document.getElementById('createModal')).show();
         }
     });
+    const formCrearClase = document.getElementById('formCrearClase');
+const btnCrearClase = document.getElementById('btnCrearClase');
+const createModalElement = document.getElementById('createModal');
+
+if (formCrearClase && btnCrearClase) {
+    formCrearClase.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        btnCrearClase.disabled = true;
+        btnCrearClase.textContent = 'Creando...';
+
+        try {
+            const formData = new FormData(formCrearClase);
+
+            const response = await fetch(formCrearClase.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const contentType = response.headers.get('content-type') || '';
+            const rawResponse = await response.text();
+
+            console.log('Respuesta cruda:', rawResponse);
+
+            if (!contentType.includes('application/json')) {
+                console.error('Respuesta no JSON del servidor:', rawResponse);
+
+                await window.mostrarConfirmacion(
+                    'No se pudo crear la clase. El servidor devolvió una respuesta inválida.',
+                    {
+                        titulo: 'Error',
+                        textoAceptar: 'Aceptar',
+                        claseAceptar: 'btn-danger',
+                        mostrarCancelar: false
+                    }
+                );
+
+                return;
+            }
+
+            const result = JSON.parse(rawResponse);
+
+            const status = result.status || result.type || '';
+            const message = result.message || 'Operación finalizada.';
+            const redirectUrl = result.redirect || result.url || null;
+
+            if (status === 'success') {
+                const createModal = bootstrap.Modal.getInstance(createModalElement);
+
+                if (createModal) {
+                    createModal.hide();
+                }
+
+                await window.mostrarConfirmacion(
+                    message,
+                    {
+                        titulo: 'Clase creada',
+                        textoAceptar: 'Aceptar',
+                        claseAceptar: 'btn-success',
+                        mostrarCancelar: false
+                    }
+                );
+
+                if (redirectUrl) {
+                    window.location.href = redirectUrl;
+                    return;
+                }
+
+                window.location.reload();
+                return;
+            }
+
+            await window.mostrarConfirmacion(
+                message || 'No se pudo crear la clase.',
+                {
+                    titulo: 'No se pudo crear',
+                    textoAceptar: 'Aceptar',
+                    claseAceptar: 'btn-danger',
+                    mostrarCancelar: false
+                }
+            );
+
+        } catch (error) {
+            console.error('Error capturado:', error);
+
+            await window.mostrarConfirmacion(
+                'No se pudo crear la clase. Revisá la conexión, la ruta o el error del servidor.',
+                {
+                    titulo: 'Error',
+                    textoAceptar: 'Aceptar',
+                    claseAceptar: 'btn-danger',
+                    mostrarCancelar: false
+                }
+            );
+
+        } finally {
+            btnCrearClase.disabled = false;
+            btnCrearClase.textContent = 'Crear clase';
+        }
+    });
+}
+
     </script>
 </main>
 <?php include __DIR__ . '/../layout/footer.php'; ?>
