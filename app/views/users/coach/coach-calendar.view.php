@@ -85,9 +85,33 @@
     const dayNames = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
     const dayKeys = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const lessons = <?= json_encode($lessons) ?>;
+    const APP_URL = '<?= rtrim(Env::get('ASSET_URL'), '/') ?>';
     </script>
     <script type="module">
     import { initCalendar } from '<?= rtrim(Env::get('ASSET_URL'), '/') ?>/js/modules/calendar.js';
+    import { handleAlert } from '<?= rtrim(Env::get('ASSET_URL'), '/') ?>/js/services/ui.js';
+
+    const createForm = document.querySelector('#createModal form');
+    createForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(createForm);
+        try {
+            const res = await fetch(APP_URL + '/?url=coach-create-lesson', {
+                method: 'POST',
+                body: formData
+            });
+            const json = await res.json();
+            if (json.status === 'success') {
+                handleAlert(json.status, json.message, json.redirect);
+                bootstrap.Modal.getInstance(document.getElementById('createModal')).hide();
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                handleAlert(json.status, json.message);
+            }
+        } catch (err) {
+            handleAlert('error', 'Error de conexión al servidor.');
+        }
+    });
 
     initCalendar({
         data: lessons, dayMap, dayNames,
