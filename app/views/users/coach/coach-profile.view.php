@@ -1,4 +1,4 @@
-﻿<?php include __DIR__ . '/../layout/header.php'; ?>
+<?php include __DIR__ . '/../layout/header.php'; ?>
 <?php
 $specialties = $specialties ?? [];
 $selectedSpecialtyIds = array_map('intval', $coach['specialty_ids'] ?? []);

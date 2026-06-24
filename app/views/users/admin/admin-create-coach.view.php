@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $appUrl = htmlspecialchars(rtrim(Env::get('APP_URL'), '/'), ENT_QUOTES, 'UTF-8');
 
 $coach = $coach ?? null;
