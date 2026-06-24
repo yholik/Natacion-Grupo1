@@ -1,8 +1,11 @@
 <?php
 
+// Carga el .env y expone sus valores al resto de la app.
+
 class Env
 {
 
+    // Lee el archivo línea por línea y publica cada variable.
     public static function load($path)
     {
 
@@ -32,6 +35,7 @@ class Env
         }
     }
 
+    // Devuelve una variable ya cargada o un valor por defecto.
     public static function get($key, $default = null)
     {
         return $_ENV[$key] ?? $default;

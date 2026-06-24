@@ -1,4 +1,5 @@
 <?php
+// Encapsula los correos salientes del sistema.
 require_once __DIR__ . '/../libs/PHPMailer/src/Exception.php';
 require_once __DIR__ . '/../libs/PHPMailer/src/PHPMailer.php';
 require_once __DIR__ . '/../libs/PHPMailer/src/SMTP.php';
@@ -8,6 +9,7 @@ use PHPMailer\PHPMailer\Exception;
 
 class MailService
  {
+    // Envía el mail con el enlace de recuperación.
     public function sendEmailResetPassword( $toEmail, $token )
     {
         $colorPrincipal = '#007bff';
@@ -82,6 +84,7 @@ class MailService
         }
     }
     
+    // Envía las credenciales iniciales al profesor.
     public function sendWelcomeCoach($toEmail, $tempPassword, $coachName)
     {
         $colorPrincipal = '#007bff';
@@ -120,6 +123,89 @@ class MailService
 
                             <p style='color: #666666; font-size: 16px;'>
                                 Se ha creado tu cuenta como profesor en el sistema.
+                                Podés acceder con las siguientes credenciales:
+                            </p>
+
+                            <div style='background-color: #f8f9fa; border: 1px solid #e1e8ed; border-radius: 5px; padding: 20px; margin: 20px 0;'>
+                                <p style='margin: 5px 0;'>
+                                    <strong>Email:</strong> {$toEmail}
+                                </p>
+
+                                <p style='margin: 5px 0;'>
+                                    <strong>Contraseña provisoria:</strong>
+                                    <span style='font-family: monospace; font-size: 18px; color: {$colorPrincipal};'>{$tempPassword}</span>
+                                </p>
+                            </div>
+
+                            <p style='color: #666666; font-size: 14px;'>
+                                Por seguridad, te recomendamos cambiar tu contraseña después de iniciar sesión.
+                            </p>
+
+                            <div style='margin: 30px 0; text-align: center;'>
+                                <a href='{$loginUrl}' style='background-color: {$colorPrincipal}; color: #ffffff; padding: 15px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;'>
+                                    Iniciar Sesión
+                                </a>
+                            </div>
+                        </div>
+
+                        <div style='background-color: #f8f9fa; padding: 15px; text-align: center; border-top: 1px solid #eeeeee;'>
+                            <p style='color: #aaaaaa; font-size: 11px; margin: 0;'>
+                                © " . date('Y') . " Escuela de Natación - Panel Administrativo
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            ";
+
+            $mail->send();
+
+            return true;
+
+        } catch (Exception $e) {
+            echo 'Error de PHPMailer: ' . $mail->ErrorInfo;
+            return false;
+        }
+    }
+
+    // Envía las credenciales iniciales al nadador.
+    public function sendWelcomeSwimmer($toEmail, $tempPassword, $swimmerName)
+    {
+        $colorPrincipal = '#007bff';
+        $colorFondo = '#f4f7f9';
+
+        $mail = new PHPMailer(true);
+
+        try {
+            $mail->isSMTP();
+            $mail->Host       = Env::get('MAIL_HOST');
+            $mail->SMTPAuth   = true;
+            $mail->Username   = Env::get('MAIL_USERNAME');
+            $mail->Password   = Env::get('MAIL_PASSWORD');
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = Env::get('MAIL_PORT');
+
+            $mail->setFrom(Env::get('MAIL_FROM'), 'Soporte Escuela de Natación');
+            $mail->addAddress($toEmail);
+
+            $mail->isHTML(true);
+            $mail->CharSet = 'UTF-8';
+            $mail->Subject = 'Bienvenido a la Escuela de Natación';
+
+            $baseUrl = rtrim(Env::get('APP_URL'), '/');
+            $loginUrl = $baseUrl . '/?url=login';
+
+            $mail->Body = "
+                <div style='background-color: {$colorFondo}; padding: 40px; font-family: Arial, sans-serif; line-height: 1.6;'>
+                    <div style='max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #e1e8ed;'>
+                        <div style='background-color: {$colorPrincipal}; padding: 20px; text-align: center;'>
+                            <h1 style='color: #ffffff; margin: 0; font-size: 24px;'>Escuela de Natación</h1>
+                        </div>
+
+                        <div style='padding: 30px;'>
+                            <h2 style='color: #333333;'>Bienvenido, {$swimmerName}</h2>
+
+                            <p style='color: #666666; font-size: 16px;'>
+                                Se ha creado tu cuenta como nadador en el sistema.
                                 Podés acceder con las siguientes credenciales:
                             </p>
 

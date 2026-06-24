@@ -75,7 +75,7 @@
                 }
             }
 
-            const resp = await fetch('?url=swimmer-update-profile', { method: 'POST', body: formData });
+            const resp = await fetch('?url=profile-update', { method: 'POST', body: formData });
             const data = await resp.json();
             if (data.status === 'success') {
                 Swal.fire({ icon: 'success', title: 'Perfil actualizado' }).then(() => location.reload());

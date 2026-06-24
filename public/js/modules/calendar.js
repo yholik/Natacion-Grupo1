@@ -1,3 +1,4 @@
+// Dibuja la grilla y conecta los clics del calendario.
 export function initCalendar(config) {
     const { data, dayMap, dayNames, onCellClick, onEmptyClick } = config;
 

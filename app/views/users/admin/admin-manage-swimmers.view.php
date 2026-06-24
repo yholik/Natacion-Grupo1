@@ -1,21 +1,25 @@
 <?php include __DIR__ . '/../layout/header.php'; ?>
 
 <?php
-$coaches = $coaches ?? [];
+$swimmers = $swimmers ?? [];
 $appUrl = htmlspecialchars(rtrim(Env::get('APP_URL'), '/'), ENT_QUOTES, 'UTF-8');
 
-function e($value)
-{
-    return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+if (!function_exists('e')) {
+    function e($value)
+    {
+        return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+    }
 }
 
-function formatDateOrDash($value)
-{
-    if (empty($value)) {
-        return '-';
-    }
+if (!function_exists('formatDateOrDash')) {
+    function formatDateOrDash($value)
+    {
+        if (empty($value)) {
+            return '-';
+        }
 
-    return e(date('Y-m-d', strtotime($value)));
+        return e(date('Y-m-d', strtotime($value)));
+    }
 }
 ?>
 
@@ -27,18 +31,18 @@ function formatDateOrDash($value)
     </div>
 
     <div class="flex-grow-1 p-5 bg-white">
-        <h1>Gestionar Profesores</h1>
+        <h1>Gestionar Nadadores</h1>
         <hr>
 
         <div class="d-flex gap-2 mb-4">
-            <a href="<?= $appUrl ?>/?url=admin-create-coach" class="btn btn-success">
+            <a href="<?= $appUrl ?>/?url=admin-create-swimmer" class="btn btn-success">
                 Agregar
             </a>
         </div>
 
         <div class="card shadow-sm">
             <div class="card-header bg-dark text-white">
-                Listado de Profesores
+                Listado de Nadadores
             </div>
 
             <div class="card-body p-0">
@@ -47,12 +51,12 @@ function formatDateOrDash($value)
                         <thead class="table-light">
                             <tr>
                                 <th>ID</th>
+                                <th>Foto</th>
                                 <th>Nombre</th>
                                 <th>Apellido</th>
                                 <th>Email</th>
                                 <th>Teléfono</th>
-                                <th>Especialidad</th>
-                                <th>Rol</th>
+                                <th>Fecha Nac.</th>
                                 <th>Última Actualización</th>
                                 <th>Fecha Alta</th>
                                 <th>Fecha Baja</th>
@@ -62,34 +66,41 @@ function formatDateOrDash($value)
                         </thead>
 
                         <tbody>
-                            <?php if (empty($coaches)): ?>
+                            <?php if (empty($swimmers)): ?>
                                 <tr>
                                     <td colspan="12" class="text-center py-4 text-muted">
-                                        No hay profesores registrados.
+                                        No hay nadadores registrados.
                                     </td>
                                 </tr>
                             <?php endif; ?>
 
-                            <?php foreach ($coaches as $coach): ?>
+                            <?php foreach ($swimmers as $swimmer): ?>
                                 <?php
-                                $userId = $coach['user_id'];
-                                $fullName = trim($coach['first_name'] . ' ' . $coach['last_name']);
-                                $isActive = empty($coach['deleted_at']);
-                                $formId = 'form-cambiar-estado-' . $userId;
+                                $userId = $swimmer['user_id'];
+                                $fullName = trim($swimmer['first_name'] . ' ' . $swimmer['last_name']);
+                                $isActive = empty($swimmer['deleted_at']);
+                                $formId = 'form-cambiar-estado-swimmer-' . $userId;
+                                $profileImage = $swimmer['profile_image'] ?? 'default-profile.png';
                                 ?>
 
                                 <tr>
-                                    <td><?= e($coach['id']) ?></td>
-                                    <td><?= e($coach['first_name']) ?></td>
-                                    <td><?= e($coach['last_name']) ?></td>
-                                    <td><?= e($coach['email']) ?></td>
-                                    <td><?= e($coach['phone']) ?></td>
-                                    <td><?= e($coach['specialty_names'] ?? '-') ?></td>
-                                    <td>Profesor</td>
-                                    <td><?= formatDateOrDash($coach['updated_at'] ?? null) ?></td>
-                                    <td><?= formatDateOrDash($coach['created_at'] ?? null) ?></td>
-                                    <td><?= formatDateOrDash($coach['deleted_at'] ?? null) ?></td>
-
+                                    <td><?= e($swimmer['id']) ?></td>
+                                    <td>
+                                        <img
+                                            src="<?= $appUrl ?>/public/img/uploads/profiles/swimmers/<?= e($profileImage) ?>"
+                                            alt="Foto de <?= e($fullName) ?>"
+                                            class="rounded-circle border"
+                                            style="width: 48px; height: 48px; object-fit: cover;"
+                                        >
+                                    </td>
+                                    <td><?= e($swimmer['first_name']) ?></td>
+                                    <td><?= e($swimmer['last_name']) ?></td>
+                                    <td><?= e($swimmer['email']) ?></td>
+                                    <td><?= e($swimmer['phone'] ?? '-') ?></td>
+                                    <td><?= formatDateOrDash($swimmer['birth_date'] ?? null) ?></td>
+                                    <td><?= formatDateOrDash($swimmer['updated_at'] ?? null) ?></td>
+                                    <td><?= formatDateOrDash($swimmer['created_at'] ?? null) ?></td>
+                                    <td><?= formatDateOrDash($swimmer['deleted_at'] ?? null) ?></td>
                                     <td>
                                         <?php if ($isActive): ?>
                                             <span class="badge bg-success">Activo</span>
@@ -97,11 +108,10 @@ function formatDateOrDash($value)
                                             <span class="badge bg-secondary">Baja</span>
                                         <?php endif; ?>
                                     </td>
-
                                     <td>
                                         <div class="d-flex gap-2">
                                             <a
-                                                href="<?= $appUrl ?>/?url=admin-edit-coach&id=<?= e($userId) ?>"
+                                                href="<?= $appUrl ?>/?url=admin-edit-swimmer&id=<?= e($userId) ?>"
                                                 class="btn btn-sm btn-primary"
                                             >
                                                 Editar
@@ -109,7 +119,7 @@ function formatDateOrDash($value)
 
                                             <form
                                                 id="<?= e($formId) ?>"
-                                                action="<?= $appUrl ?>/?url=<?= $isActive ? 'admin-deactivate-coach' : 'admin-activate-coach' ?>"
+                                                action="<?= $appUrl ?>/?url=<?= $isActive ? 'admin-deactivate-swimmer' : 'admin-activate-swimmer' ?>"
                                                 method="POST"
                                                 class="m-0"
                                             >
@@ -117,11 +127,10 @@ function formatDateOrDash($value)
 
                                                 <button
                                                     type="button"
-                                                    class="btn btn-sm <?= $isActive ? 'btn-danger' : 'btn-success' ?> btn-cambiar-estado"
+                                                    class="btn btn-sm <?= $isActive ? 'btn-danger' : 'btn-success' ?> btn-cambiar-estado-swimmer"
                                                     data-form-id="<?= e($formId) ?>"
                                                     data-nombre="<?= e($fullName) ?>"
                                                     data-accion="<?= $isActive ? 'baja' : 'alta' ?>"
-                                                    data-especialidades="<?= e($coach['specialty_names'] ?? '') ?>"
                                                 >
                                                     <?= $isActive ? 'Dar de Baja' : 'Dar de Alta' ?>
                                                 </button>
@@ -140,6 +149,6 @@ function formatDateOrDash($value)
     </div>
 </main>
 
-<script src="<?= $appUrl ?>/public/js/modules/admin/admin-manage-coaches.js"></script>
+<script src="<?= $appUrl ?>/public/js/modules/admin/admin-manage-swimmers.js"></script>
 
 <?php include __DIR__ . '/../layout/footer.php'; ?>

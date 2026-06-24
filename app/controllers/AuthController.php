@@ -1,5 +1,7 @@
 <?php
 
+// Maneja acceso, registro y recuperación de cuenta.
+
 require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/Auth.php';
 require_once __DIR__ . '/../models/Swimmer.php';
@@ -22,11 +24,13 @@ class AuthController extends BaseController
 
     // --- SECCIÓN: VISTAS DE AUTENTICACIÓN ---
 
+    // Carga la pantalla de ingreso.
     public function showLogin()
     {
         $this->render('auth/login.view');
     }
 
+    // Muestra el alta pública para nadadores.
     public function showRegister()
     {
         $this->render('auth/register.view', [
@@ -34,6 +38,7 @@ class AuthController extends BaseController
         ]);
     }
 
+    // Abre el formulario para pedir el reset.
     public function forgotPassword()
     {
         $this->render('auth/forgot-password.view', [
@@ -41,6 +46,7 @@ class AuthController extends BaseController
         ]);
     }
 
+    // Carga la vista donde el usuario define su nueva clave.
     public function showResetForm()
     {
         $token = $_GET['token'] ?? '';
@@ -58,6 +64,7 @@ class AuthController extends BaseController
 
     // --- SECCIÓN: REGISTRO ---
 
+    // Valida el alta pública y arma auth + perfil.
     public function register()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -121,6 +128,7 @@ class AuthController extends BaseController
         return $this->executeRegistration($fields, $tempFile);
     }
 
+    // Cierra el registro dentro de una transacción.
     private function executeRegistration($f, $tempFile = null)
     {
         try {
@@ -152,17 +160,15 @@ class AuthController extends BaseController
             $this->swimmerModel->create($f);
 
             $this->pdo->commit();
+            $_SESSION['user_id'] = $userId;
+            $_SESSION['role_id'] = 3;
+            $_SESSION['email'] = $f['email'];
+            $_SESSION['first_name'] = $f['first_name'];
+            $_SESSION['profile_image'] = $f['profile_image'] ?? 'default-profile.png';
 
-            $baseUrl = rtrim(Env::get('APP_URL'), '/');
+            $redirectUrl = rtrim(Env::get('APP_URL'), '/') . '/?url=swimmer-classes-avaliable';
 
-            if (empty($baseUrl)) {
-                $baseUrl = 'http://localhost/gestion-natacion-grupo1'; //NOVEDAD: AGREGUE -GRUPO1 PARA QUE APUNTE AL PROYECTO CORRECTO
-            }
-
-            $loginUrl = $baseUrl . '/?url=login';
-
-            return $this->json('success', '¡Registro completado!', $loginUrl);
-
+            return $this->json('success', '¡Registro completado!', $redirectUrl);
         } catch (Exception $e) {
             if ($this->pdo->inTransaction()) {
                 $this->pdo->rollBack();
@@ -178,6 +184,7 @@ class AuthController extends BaseController
 
     // --- SECCIÓN: LOGIN / LOGOUT ---
 
+    // Valida credenciales y arma la sesión.
     public function authenticate()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -210,6 +217,7 @@ class AuthController extends BaseController
         return $this->json('error', 'Credenciales incorrectas.');
     }
 
+    // Baja la sesión actual y vuelve al login.
     public function logout()
     {
         $_SESSION = [];
@@ -224,6 +232,7 @@ class AuthController extends BaseController
 
     // --- SECCIÓN: RECUPERACIÓN DE CONTRASEÑA ---
 
+    // Genera el token y envía el mail de recuperación.
     public function sendReset()
     {
         $email = $_POST['email'] ?? '';
@@ -256,6 +265,7 @@ class AuthController extends BaseController
         );
     }
 
+    // Cambia la contraseña si el token sigue válido.
     public function updatePassword()
     {
         $token = $_POST['token'] ?? '';
@@ -297,6 +307,7 @@ class AuthController extends BaseController
         return $this->json('error', 'El enlace es inválido o ha expirado.');
     }
 
+    // Revisa los obligatorios del registro.
     private function hasEmptyFields($f)
     {
         return empty($f['first_name'])
@@ -306,3 +317,4 @@ class AuthController extends BaseController
     }
 
 }
+

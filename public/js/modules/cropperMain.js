@@ -1,3 +1,4 @@
+// Prepara el recorte de imagen y devuelve el archivo ya recortado.
 export function initCropper(fileInput, options = {}) {
   const { aspectRatio = 1, format = 'jpeg', quality = 0.92 } = options;
 

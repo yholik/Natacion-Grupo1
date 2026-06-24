@@ -1,21 +1,17 @@
-﻿<?php
+<?php
 $appUrl = htmlspecialchars(rtrim(Env::get('APP_URL'), '/'), ENT_QUOTES, 'UTF-8');
 
-$coach = $coach ?? null;
-$specialties = $specialties ?? [];
-$isEdit = !empty($coach);
-$selectedSpecialtyIds = array_map('intval', $coach['specialty_ids'] ?? []);
+$swimmer = $swimmer ?? null;
+$isEdit = !empty($swimmer);
 
-// Estos textos cambian segun si el admin crea o edita un profesor.
-$pageTitle = $isEdit ? 'Editar Profesor' : 'Agregar Profesor';
+$pageTitle = $isEdit ? 'Editar Nadador' : 'Agregar Nadador';
 $buttonText = $isEdit ? 'Actualizar' : 'Guardar';
 
 $formAction = $isEdit
-    ? $appUrl . '/?url=admin-edit-coach'
-    : $appUrl . '/?url=admin-create-coach';
+    ? $appUrl . '/?url=admin-edit-swimmer'
+    : $appUrl . '/?url=admin-create-swimmer';
 
 if (!function_exists('e')) {
-    // Escapa texto antes de imprimirlo en atributos o contenido HTML.
     function e($value)
     {
         return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
@@ -38,25 +34,35 @@ include __DIR__ . '/../layout/header.php';
 
         <div class="card shadow-sm">
             <div class="card-header bg-dark text-white">
-                Datos del Profesor
+                Datos del Nadador
             </div>
 
             <div class="card-body">
                 <form
-                    id="formCrearCoach"
+                    id="formCrearSwimmer"
                     action="<?= e($formAction) ?>"
                     method="POST"
+                    enctype="multipart/form-data"
+                    data-mode="<?= $isEdit ? 'edit' : 'create' ?>"
                 >
-                    <!-- En edicion se conserva el auth id del profesor para actualizarlo. -->
                     <?php if ($isEdit): ?>
                         <input
                             type="hidden"
                             name="user_id"
-                            value="<?= e($coach['user_id'] ?? '') ?>"
+                            value="<?= e($swimmer['user_id'] ?? '') ?>"
                         >
                     <?php endif; ?>
 
                     <div class="row g-3">
+                        <div class="col-md-12 text-center">
+                            <img
+                                src="<?= $appUrl ?>/public/img/uploads/profiles/swimmers/<?= e($swimmer['profile_image'] ?? 'default-profile.png') ?>"
+                                alt="Foto de perfil"
+                                class="rounded-circle border"
+                                style="width: 110px; height: 110px; object-fit: cover;"
+                            >
+                        </div>
+
                         <div class="col-md-6">
                             <label for="first_name" class="form-label">Nombre</label>
                             <input
@@ -64,7 +70,7 @@ include __DIR__ . '/../layout/header.php';
                                 class="form-control"
                                 id="first_name"
                                 name="first_name"
-                                value="<?= e($coach['first_name'] ?? '') ?>"
+                                value="<?= e($swimmer['first_name'] ?? '') ?>"
                                 required
                             >
                         </div>
@@ -76,7 +82,7 @@ include __DIR__ . '/../layout/header.php';
                                 class="form-control"
                                 id="last_name"
                                 name="last_name"
-                                value="<?= e($coach['last_name'] ?? '') ?>"
+                                value="<?= e($swimmer['last_name'] ?? '') ?>"
                                 required
                             >
                         </div>
@@ -88,7 +94,7 @@ include __DIR__ . '/../layout/header.php';
                                 class="form-control"
                                 id="email"
                                 name="email"
-                                value="<?= e($coach['email'] ?? '') ?>"
+                                value="<?= e($swimmer['email'] ?? '') ?>"
                                 <?= $isEdit ? 'readonly' : '' ?>
                                 required
                             >
@@ -101,41 +107,36 @@ include __DIR__ . '/../layout/header.php';
                         </div>
 
                         <div class="col-md-6">
-                            <label for="phone" class="form-label">Telefono</label>
+                            <label for="phone" class="form-label">Teléfono</label>
                             <input
                                 type="text"
                                 class="form-control"
                                 id="phone"
                                 name="phone"
-                                value="<?= e($coach['phone'] ?? '') ?>"
-                                required
+                                value="<?= e($swimmer['phone'] ?? '') ?>"
                             >
                         </div>
 
-                        <div class="col-md-12">
-                            <label class="form-label d-block">Especialidades</label>
-                            <div class="border rounded p-3">
-                                <!-- Las especialidades del coach se guardan como relacion multiple. -->
-                                <div class="row g-2">
-                                    <?php foreach ($specialties as $specialty): ?>
-                                        <div class="col-md-6">
-                                            <div class="form-check">
-                                                <input
-                                                    class="form-check-input"
-                                                    type="checkbox"
-                                                    id="specialty_<?= e($specialty['id']) ?>"
-                                                    name="specialty_ids[]"
-                                                    value="<?= e($specialty['id']) ?>"
-                                                    <?= in_array((int) $specialty['id'], $selectedSpecialtyIds, true) ? 'checked' : '' ?>
-                                                >
-                                                <label class="form-check-label" for="specialty_<?= e($specialty['id']) ?>">
-                                                    <?= e($specialty['name']) ?>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
+                        <div class="col-md-6">
+                            <label for="birth_date" class="form-label">Fecha de Nacimiento</label>
+                            <input
+                                type="date"
+                                class="form-control"
+                                id="birth_date"
+                                name="birth_date"
+                                value="<?= e($swimmer['birth_date'] ?? '') ?>"
+                            >
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="profile_image" class="form-label">Foto de Perfil</label>
+                            <input
+                                type="file"
+                                class="form-control"
+                                id="profile_image"
+                                name="profile_image"
+                                accept="image/*"
+                            >
                         </div>
                     </div>
 
@@ -143,12 +144,12 @@ include __DIR__ . '/../layout/header.php';
                         <button
                             type="submit"
                             class="btn btn-success"
-                            id="btnGuardarCoach"
+                            id="btnGuardarSwimmer"
                         >
                             <?= e($buttonText) ?>
                         </button>
 
-                        <a href="<?= $appUrl ?>/?url=admin-manage-coaches" class="btn btn-secondary">
+                        <a href="<?= $appUrl ?>/?url=admin-manage-swimmers" class="btn btn-secondary">
                             Cancelar
                         </a>
                     </div>
@@ -156,11 +157,10 @@ include __DIR__ . '/../layout/header.php';
             </div>
         </div>
 
-        <!-- Modal comun del panel para confirmaciones del formulario. -->
         <?php require_once __DIR__ . '/../../components/modal_confirmacion.php'; ?>
     </div>
 </main>
 
-<script src="<?= $appUrl ?>/public/js/modules/admin/admin-create-coach.js"></script>
+<script type="module" src="<?= $appUrl ?>/public/js/modules/admin/admin-create-swimmer.js"></script>
 
 <?php include __DIR__ . '/../layout/footer.php'; ?>

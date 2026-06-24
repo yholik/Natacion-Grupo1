@@ -1,6 +1,8 @@
 <?php
 // app/controllers/BaseController.php
 
+// Reúne lo común a todos los controladores.
+
 class BaseController
 {
 
@@ -12,6 +14,7 @@ class BaseController
         }
     }
 
+    // Frena la ejecución si no hay sesión activa.
     protected function checkAuth()
     {
         if (!isset($_SESSION['user_id'])) {
@@ -41,6 +44,7 @@ class BaseController
      * @param string $view  Nombre del archivo ( ej: 'usuarios/register' )
      * @param array  $data  Diccionario de datos para la vista
     */
+    // Busca la vista pedida y le pasa los datos ya extraídos.
     protected function render($view, $data = [])
     {
         extract($data); // convierto las claves del array en variables
@@ -96,6 +100,7 @@ class BaseController
     }
 
 
+    // Da una respuesta homogénea para formularios y fetch.
     protected function json($status, $message, $redirect = null)
     {
         header('Content-Type: application/json');
