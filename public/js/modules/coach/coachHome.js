@@ -4,6 +4,11 @@
 */
 
 export async function initCoachHome() {
+
+      const welcome = document.getElementById('welcome-coach');
+        if (!welcome) return;
+
+
     try {
         const response = await fetch('?url=coach-stats');
         const data = await response.json();
