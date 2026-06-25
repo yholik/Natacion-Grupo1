@@ -200,6 +200,51 @@ class Coach
         }
     }
 
+
+    //devuelve cant de estudiantes por coach
+    public function countStudentsByCoach(int $userId): int
+    {
+    $stmt = $this->db->prepare("
+        SELECT COUNT(b.id) 
+        FROM bookings b
+        INNER JOIN lessons l ON b.lesson_id = l.id
+        INNER JOIN perfil p ON l.coach_id = p.id
+        WHERE p.user_id = ?
+    ");
+    $stmt->execute([$userId]);
+    return (int) $stmt->fetchColumn();
+    }
+
+    //devuelve cant de calses por coach
+    public function countClassesByCoach(int $userId): int
+    {
+    $stmt = $this->db->prepare("
+        SELECT COUNT(l.id)
+        FROM lessons l
+        INNER JOIN perfil p ON l.coach_id = p.id
+        WHERE p.user_id = ?
+    ");
+    $stmt->execute([$userId]);
+    return (int) $stmt->fetchColumn();
+    }
+
+
+    //devuelve la proxima clase a partir del horario actual
+    public function getNextClassByCoach(int $userId): array|false
+{
+    $stmt = $this->db->prepare("
+        SELECT l.day_of_week, l.start_time, l.level
+        FROM lessons l
+        INNER JOIN perfil p ON l.coach_id = p.id
+        WHERE p.user_id = ?
+        ORDER BY l.start_time ASC
+        LIMIT 1
+    ");
+    $stmt->execute([$userId]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+
     // Lista las especialidades disponibles para usar en combos y vistas.
     public function getAllSpecialties(): array
     {
@@ -227,7 +272,7 @@ class Coach
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Trae una especialidad puntual para editarla.
+    // Trae una especialidad por ID  para editarla.
     public function getSpecialtyById(int $specialtyId)
     {
         $stmt = $this->db->prepare("SELECT id, name FROM specialties WHERE id = ? LIMIT 1");
