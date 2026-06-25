@@ -20,7 +20,7 @@
                         <div class="card text-center shadow-sm h-100">
                             <div class="card-body">
                                 <h5 class="card-title text-muted">Alumnos</h5>
-                                <p class="display-6 fw-bold">-</p>
+                                <p class="display-6 fw-bold" id="statStudents"></p>
                             </div>
                         </div>
                     </a>
@@ -32,7 +32,7 @@
                         <div class="card text-center shadow-sm h-100">
                             <div class="card-body">
                                 <h5 class="card-title text-muted">Clases</h5>
-                                <p class="display-6 fw-bold">-</p>
+                                <p class="display-6 fw-bold" id="statClasses"></p>
                             </div>
                         </div>
                     </a>
@@ -44,7 +44,7 @@
                         <div class="card text-center shadow-sm h-100">
                             <div class="card-body">
                                 <h5 class="card-title text-muted">Próxima clase</h5>
-                                <p class="display-6 fw-bold">-</p>
+                                <p class="display-6 fw-bold" id="statNextClass"></p>
                             </div>
                         </div>
                     </a>
@@ -55,4 +55,6 @@
     </div>
 
 </main>
+
+<script type="module" src="<?= Env::get('ASSET_URL') ?>/js/modules/coachMain.js"></script>
 <?php include __DIR__ . '/../layout/footer.php'; ?>

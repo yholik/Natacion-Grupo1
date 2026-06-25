@@ -90,6 +90,7 @@ switch ( $route ) {
     case 'admin-create-specialty':
     case 'admin-edit-specialty':
     case 'admin-delete-specialty':
+    case 'coach-stats':
     
         require_once __DIR__ . '/../app/controllers/CoachController.php';
         $controller = new CoachController();         
@@ -98,6 +99,9 @@ switch ( $route ) {
         if ( $route === 'coach-lessons' ) $controller->showCoachLessons();
         if ( $route === 'coach-calendar' ) $controller->showCoachCalendar();
         if ( $route === 'coach-create-lesson' ) $controller->createLesson();
+        if($route === 'coach-stats' ) $controller->getCoachStats();
+
+        //especialidades
         if ( $route === 'admin-manage-specialties' ) $controller->getAllEspecialidades();
         if ( $route === 'admin-create-specialty' ) $controller->createSpecialty();
         if ( $route === 'admin-edit-specialty' ) $controller->updateSpecialty();
