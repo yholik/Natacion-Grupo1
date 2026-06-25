@@ -244,7 +244,16 @@ class Coach
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
+//crear updatePassword
 
+
+
+
+
+
+/*=======================================*/
+/*            SPECIALTIES                */
+/*=======================================*/
     // Lista las especialidades disponibles para usar en combos y vistas.
     public function getAllSpecialties(): array
     {

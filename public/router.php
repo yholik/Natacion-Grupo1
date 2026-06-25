@@ -73,11 +73,13 @@ switch ( $route ) {
     case 'coach-update-profile':
     case 'swimmer-profile':
     case 'swimmer-update-profile':
+    case 'update-profile-credentials':
         require_once __DIR__ . '/../app/controllers/PerfilController.php';
         $controller = new PerfilController();
 
         if ($route === 'profile' || $route === 'coach-profile' || $route === 'swimmer-profile') $controller->showProfile();
         if ($route === 'profile-update' || $route === 'coach-update-profile' || $route === 'swimmer-update-profile') $controller->updateProfile();
+        if($route === 'update-profile-credentials') $controller->updatePassword();
         break;
 
     // --- COACH ---
@@ -100,6 +102,7 @@ switch ( $route ) {
         if ( $route === 'coach-calendar' ) $controller->showCoachCalendar();
         if ( $route === 'coach-create-lesson' ) $controller->createLesson();
         if($route === 'coach-stats' ) $controller->getCoachStats();
+        
 
         //especialidades
         if ( $route === 'admin-manage-specialties' ) $controller->getAllEspecialidades();

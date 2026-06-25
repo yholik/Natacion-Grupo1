@@ -1,4 +1,5 @@
 <?php include __DIR__ . '/../layout/header.php'; ?>
+<link href="<?= Env::get('ASSET_URL') ?>/css/coach.css" rel="stylesheet">
 <?php
 $specialties = $specialties ?? [];
 $selectedSpecialtyIds = array_map('intval', $coach['specialty_ids'] ?? []);
@@ -13,10 +14,12 @@ $selectedSpecialtyIds = array_map('intval', $coach['specialty_ids'] ?? []);
 </aside>
 </div>
 
-<div class="p-4 w-100">
-    <h2 class="mb-4">Mis datos personales</h2>
-
-    <form id="updateProfileForm" class="w-100">
+<!--CONTENIDO PRINCIPAL-->
+<div class="coach-content">
+    <div>
+    <h2 class="profile-title">Mis datos personales</h2>
+</div>
+    <form id="updateProfileForm" class="profile-card">
         <div class="row g-3">
             <div class="col-md-6">
                 <label class="form-label">Nombre</label>
@@ -31,11 +34,16 @@ $selectedSpecialtyIds = array_map('intval', $coach['specialty_ids'] ?? []);
             <div class="col-md-6">
                 <label class="form-label">Telefono</label>
                 <input type="text" name="phone" class="form-control" value="<?= htmlspecialchars($coach['phone'] ?? '') ?>" disabled>
+            </div>            
+
+            <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" id="emailField" value="<?= htmlspecialchars($coach['email'] ?? '') ?>" disabled>
             </div>
 
             <div class="col-md-6">
                 <label class="form-label d-block">Especialidades</label>
-                <div class="border rounded p-3">
+                <div class="border rounded p-3 w-100">
                     <div class="row g-2">
                         <?php foreach ($specialties as $specialty): ?>
                             <div class="col-12">
@@ -58,45 +66,48 @@ $selectedSpecialtyIds = array_map('intval', $coach['specialty_ids'] ?? []);
                     </div>
                 </div>
             </div>
-
-            <div class="col-md-6">
-                <label class="form-label">Email</label>
-                <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($coach['email'] ?? '') ?>" disabled>
-            </div>
-        </div>
-
+        
         <div class="d-flex gap-2 mt-4">
-            <button type="button" class="btn btn-secondary" id="btnEdit">Editar</button>
-            <button type="submit" class="btn btn-primary d-none" id="btnSave">Guardar</button>
+            <button type="button" class="btn btn-secondary d-none" id="btnCancelProfile">Cancelar</button>
+            <button type="button" class="btn btn-secondary" id="btnEditProfile">Editar</button>
+            <button type="submit" class="btn btn-primary d-none" id="btnSaveProfile">Guardar</button>
         </div>
     </form>
 </div>
 
+<!--BLOQUE ACTUALIZACION DE CONTRASEÑA-->
+<div>
+<h2 class="profile-title">Actualización de contraseña</h2>
+</div>
+
+<form id="updatePasswordForm" class="profile-card">
+<div class="row g-3">
+<div class="col-md-6">
+    <label class="form-label">Contraseña actual</label>
+    <input type="password" name="current_password" class="form-control" disabled>
+</div>
+
+
+<div class="col-md-6">
+    <label class="form-label">Nueva contraseña</label>
+    <input  type="password"  name="new_password" class="form-control" disabled>
+</div>
+
+
+<div class="col-md-6">
+    <label class="form-label">Confirmar nueva contraseña</label>
+    <input type="password" name="confirm_password" class="form-control"  disabled>
+</div>
+<div class="d-flex gap-2 mt-4">
+    <button type="button" class="btn btn-secondary d-none" id="btnCancelPassword">Cancelar</button>
+            <button type="button" class="btn btn-secondary" id="btnEditPassword">Editar</button>
+            <button type="submit" class="btn btn-primary d-none" id="btnSavePassword">Guardar</button>
+        </div>
+</div>
+</form>
+
+</div>
 </main>
+<script type="module" src="<?= Env::get('ASSET_URL') ?>/js/modules/coachMain.js"></script>
 
-<script>
-const btnEdit = document.getElementById('btnEdit');
-const btnSave = document.getElementById('btnSave');
-const fields = document.querySelectorAll('#updateProfileForm input, #updateProfileForm select');
-
-document.getElementById('btnEdit').addEventListener('click', function() {
-    fields.forEach(field => field.removeAttribute('disabled'));
-    btnEdit.classList.add('d-none');
-    btnSave.classList.remove('d-none');
-});
-
-document.getElementById('updateProfileForm')?.addEventListener('submit', async function(e){
-    e.preventDefault();
-
-    const formData = new FormData(this);
-    const resp = await fetch('?url=profile-update', { method: 'POST', body: formData });
-    const data = await resp.json();
-
-    if (data.status === 'success') {
-        Swal.fire({ icon: 'success', title: 'Perfil actualizado' }).then(() => location.reload());
-    } else {
-        Swal.fire({ icon: 'error', title: data.message });
-    }
-});
-</script>
 <?php include __DIR__ . '/../layout/footer.php'; ?>
