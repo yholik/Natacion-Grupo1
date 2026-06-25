@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 // Reune lo que usa el profesor en su panel.
 
@@ -33,7 +33,10 @@ class CoachController extends BaseController {
         $userId = (int) $_SESSION['user_id'];
         $coachData = $this->coachModel->getCoachById($userId);
 
-        return ['coach' => $coachData];
+        return [
+            'coach' => $coachData,
+            'user_id' => $userId
+            ];
     }
 
     // Muestra la portada del panel coach.
@@ -70,7 +73,28 @@ class CoachController extends BaseController {
         );
     }
 
-    // Guarda una clase nueva para el coach logueado.
+
+    public function getCoachStats()
+{
+    $context = $this->getCoachContext();
+    $userId = $context['user_id'];
+
+    
+    $totalStudents = $this->coachModel->countStudentsByCoach($userId);    
+    $totalClasses = $this->coachModel->countClassesByCoach($userId);
+    $nextClass = $this->coachModel->getNextClassByCoach($userId);
+
+    return $this->json('success', 'Stats obtenidas', null, [
+        'students'   => $totalStudents,
+        'classes'    => $totalClasses,
+        'next_class' => $nextClass
+    ]);
+}
+
+
+
+    
+    // Guarda una clase nueva para el coach logueado. (creo que esta puede quedarse en este controlador)
     public function createLesson()
     {
         $this->checkAuth();
@@ -105,6 +129,11 @@ class CoachController extends BaseController {
 
         return $this->json('error', 'No se pudo crear la clase.');
     }
+
+
+
+
+
 
     // Carga la vista del admin con el catalogo de especialidades.
     public function getAllEspecialidades()

@@ -101,13 +101,14 @@ class BaseController
 
 
     // Da una respuesta homogénea para formularios y fetch.
-    protected function json($status, $message, $redirect = null)
+    protected function json($status, $message, $redirect = null, $data = [])
     {
         header('Content-Type: application/json');
         echo json_encode([
             'status' => $status,
             'message' => $message,
-            'redirect' => $redirect ?? Env::get('APP_URL') // Sin redirect, va al home
+            'redirect' => $redirect ?? Env::get('APP_URL'), // Sin redirect, va al home
+            'data' => $data
         ]);
         exit;
         // Importante para cortar la ejecución aquí
