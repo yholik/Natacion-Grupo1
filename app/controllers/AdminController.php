@@ -305,6 +305,10 @@ class AdminController extends BaseController
             return $this->json('error', 'ID de clase invalido.');
         }
 
+        if (!$this->lessonModel->getById($lessonId)) {
+            return $this->json('error', 'La clase no existe.');
+        }
+
         $data = $this->getLessonPayload();
 
         if ($data === null) {
@@ -343,6 +347,14 @@ class AdminController extends BaseController
         $lessonId = (int) ($_POST['lesson_id'] ?? 0);
         if ($lessonId <= 0) {
             return $this->respondLessonDeletion('error', 'ID de clase invalido.');
+        }
+
+        $bookingsCount = $this->lessonModel->countBookings($lessonId);
+        if ($bookingsCount > 0) {
+            return $this->respondLessonDeletion(
+                'warning',
+                "No se puede eliminar la clase porque tiene {$bookingsCount} reserva(s) en la base. Desinscribí a los nadadores primero."
+            );
         }
 
         if (!$this->lessonModel->delete($lessonId)) {

@@ -104,12 +104,33 @@ class Lesson {
         ]);
     }
 
-    // Elimina una clase por su ID.
+    // Elimina una clase por su ID solo si no tiene inscritos confirmados.
     public function delete(int $lessonId): bool
     {
-        $stmt = $this->db->prepare("DELETE FROM lessons WHERE id = ?");
+        if ($this->countEnrolled($lessonId) > 0) {
+            return false;
+        }
 
+        $stmt = $this->db->prepare("DELETE FROM lessons WHERE id = ?");
         return $stmt->execute([$lessonId]);
+    }
+
+    // Cuenta los inscritos confirmados de una clase.
+    public function countEnrolled(int $lessonId): int
+    {
+        $stmt = $this->db->prepare(
+            "SELECT COUNT(*) FROM bookings WHERE lesson_id = ? AND status = 'Confirmed'"
+        );
+        $stmt->execute([$lessonId]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    // Cuenta todas las reservas de una clase (cualquier estado).
+    public function countBookings(int $lessonId): int
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM bookings WHERE lesson_id = ?");
+        $stmt->execute([$lessonId]);
+        return (int) $stmt->fetchColumn();
     }
 
 }
