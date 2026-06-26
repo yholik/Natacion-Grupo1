@@ -43,7 +43,8 @@
         </div>
     </div>
 
-    <div class="login-image-side"></div>
+    <div class="login-image-side">
+    </div>
 
 </div>
 

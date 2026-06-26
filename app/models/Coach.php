@@ -234,7 +234,8 @@ class Coach
         $sql = "SELECT s.id, s.name
                 FROM specialties s
                 INNER JOIN perfil_specialty ps ON ps.specialty_id = s.id
-                WHERE ps.profile_id = ?
+                INNER JOIN perfil p ON p.id = ps.profile_id
+                WHERE p.user_id = ?
                 ORDER BY s.name ASC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$coachId]);
@@ -257,7 +258,6 @@ class Coach
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-//crear updatePassword
 
 
 
@@ -267,7 +267,8 @@ class Coach
 /*=======================================*/
 /*            SPECIALTIES                */
 /*=======================================*/
-    // Lista las especialidades disponibles para usar en combos y vistas.
+
+// Lista las especialidades disponibles para usar en combos y vistas.
     public function getAllSpecialties(): array
     {
         $sql = "
@@ -506,4 +507,48 @@ class Coach
 
         return true;
     }
+
+    public function getStudentsByFilters($coachId, $day, $time, $specialty)
+{
+    // 1. Base de la consulta: Traer alumnos que asisten a las clases de este Coach
+  
+    $sql = "SELECT 
+    p.first_name, 
+    p.last_name,
+    l.day_of_week,
+    l.start_time,
+    l.end_time,
+    l.level,
+    s.name AS specialty
+FROM bookings b
+INNER JOIN perfil p ON b.swimmer_id = p.id
+INNER JOIN lessons l ON b.lesson_id = l.id
+INNER JOIN perfil_specialty ps ON l.coach_id = ps.profile_id
+INNER JOIN specialties s ON ps.specialty_id = s.id
+WHERE l.coach_id = (SELECT id FROM perfil WHERE user_id = :coachId)
+  AND p.deleted_at IS NULL
+  AND b.status = 'Confirmed'
+  AND (:day1 IS NULL OR l.day_of_week = :day2)
+  AND (:time1 IS NULL OR l.start_time = :time2)
+  AND (:specialty1 IS NULL OR s.id = :specialty2)
+ORDER BY l.day_of_week, l.start_time";
+            
+    
+  
+
+
+    // 5. Ejecutamos la consulta de forma segura con PDO
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([
+    ':coachId'    => $coachId,
+    ':day1'       => $day ?: null,
+    ':day2'       => $day ?: null,
+    ':time1'      => $time ?: null,
+    ':time2'      => $time ?: null,
+    ':specialty1' => $specialty ?: null,
+    ':specialty2' => $specialty ?: null,
+]);
+    
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 }

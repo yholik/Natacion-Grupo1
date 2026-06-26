@@ -78,6 +78,47 @@ class CoachController extends BaseController {
     }
 
 
+// Carga la vista del admin con el catalogo de especialidades.
+    public function showAllEspecialidades()
+    {
+        $this->checkAuth();
+        $this->checkRole(1);
+
+        $editingSpecialty = null;
+
+        $specialtyId = (int) ($_GET['id'] ?? 0);
+        if ($specialtyId > 0) {
+            $editingSpecialty = $this->coachModel->getSpecialtyById($specialtyId);
+        }
+
+        $this->renderManageSpecialties($editingSpecialty);
+    }
+
+    private function renderManageSpecialties($editingSpecialty = null, ?string $modalMessage = null)
+    {
+        $specialties = $this->coachModel->getAllSpecialties();
+
+        $this->render('users/admin/admin-manage-specialties.view', [
+            'title' => 'Administrar Especialidades',
+            'specialties' => $specialties,
+            'editingSpecialty' => $editingSpecialty,
+            'modalMessage' => $modalMessage
+        ]);
+    }
+
+    // Devuelve al listado de especialidades.
+    private function redirectToManageSpecialties()
+    {
+        header('Location: ?url=admin-manage-specialties');
+        exit;
+    }
+
+
+
+
+
+
+
     public function getCoachStats()
 {
     $context = $this->getCoachContext();
@@ -95,10 +136,7 @@ class CoachController extends BaseController {
     ]);
 }
 
-
-
-    
-    // Guarda una clase nueva para el coach logueado.
+    // crear clase nueva para el coach logueado.
     public function createLesson()
     {
         $this->checkAuth();
@@ -150,28 +188,6 @@ class CoachController extends BaseController {
         return $this->json('error', 'Ya existe una clase en ese horario. No se permite la superposición.');
     }
 
-
-
-
-
-
-    // Carga la vista del admin con el catalogo de especialidades.
-    public function getAllEspecialidades()
-    {
-        $this->checkAuth();
-        $this->checkRole(1);
-
-        $editingSpecialty = null;
-
-        $specialtyId = (int) ($_GET['id'] ?? 0);
-        if ($specialtyId > 0) {
-            $editingSpecialty = $this->coachModel->getSpecialtyById($specialtyId);
-        }
-
-        $this->renderManageSpecialties($editingSpecialty);
-    }
-
-    // Crea una especialidad nueva desde el admin.
     public function createSpecialty()
     {
         $this->checkAuth();
@@ -194,8 +210,7 @@ class CoachController extends BaseController {
 
         return $this->redirectToManageSpecialties();
     }
-
-    // Guarda el cambio de nombre de una especialidad.
+    
     public function updateSpecialty()
     {
         $this->checkAuth();
@@ -242,23 +257,50 @@ class CoachController extends BaseController {
         return $this->redirectToManageSpecialties();
     }
 
-    // Devuelve al listado de especialidades.
-    private function redirectToManageSpecialties()
-    {
-        header('Location: ?url=admin-manage-specialties');
-        exit;
-    }
+    public function getSpecialtiesJSON()
+{
+    
+    $this->checkAuth();
+    $this->checkRole(2); 
+    $coachId = $_SESSION['user_id'] ?? 0;
+    
+    $specialties = $this->coachModel->getSpecialtiesByCoachId($coachId);
 
-    // Reutiliza la carga de la pantalla de especialidades.
-    private function renderManageSpecialties($editingSpecialty = null, ?string $modalMessage = null)
-    {
-        $specialties = $this->coachModel->getAllSpecialties();
+    
+    header('Content-Type: application/json');
+    echo json_encode([
+        'status' => 'success',
+        'data' => [
+          'especialidades' => $specialties
+        ]
+    ]);
+    exit;
+}
 
-        $this->render('users/admin/admin-manage-specialties.view', [
-            'title' => 'Administrar Especialidades',
-            'specialties' => $specialties,
-            'editingSpecialty' => $editingSpecialty,
-            'modalMessage' => $modalMessage
-        ]);
-    }
+public function getCoachStudents()
+{
+    
+    $this->checkAuth();
+    $this->checkRole(2);
+    
+    $coachId = $_SESSION['user_id'] ?? 0;
+    
+    $day = $_GET['day'] ?? '';
+    $time = $_GET['time'] ?? '';
+    $specialtyId = $_GET['specialty'] ? (int)$_GET['specialty'] : null;
+
+    
+    $students = $this->coachModel->getStudentsByFilters($coachId, $day, $time, $specialtyId);
+
+   
+    header('Content-Type: application/json');
+    echo json_encode([
+        'status' => 'success',
+        'data' => [
+            'students' => $students
+        ]
+    ]);
+    exit;
+}
+
 }
