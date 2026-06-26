@@ -7,23 +7,10 @@
     </div>
 
     <div class="container-fluid p-4">
-        <h2 class="mb-4">Calendario de clases</h2>
-        <div class="table-responsive">
-            <table class="table table-bordered text-center align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Horario</th>
-                        <th>Lunes</th>
-                        <th>Martes</th>
-                        <th>Miércoles</th>
-                        <th>Jueves</th>
-                        <th>Viernes</th>
-                        <th>Sábado</th>
-                    </tr>
-                </thead>
-                <tbody id="calendarBody"></tbody>
-            </table>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Calendario de clases</h2>
         </div>
+        <div id="calendarContainer"></div>
     </div>
 
     <!-- Modal CREAR clase -->
@@ -36,24 +23,35 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" name="day_of_week" id="createDay">
-                    <input type="hidden" name="start_time" id="createTime">
                     <p><strong>Día:</strong> <span id="createDayLabel"></span></p>
-                    <p><strong>Horario:</strong> <span id="createTimeLabel"></span></p>
                     <div class="mb-3">
-                        <label class="form-label">Nivel</label>
-                        <input type="text" name="level" class="form-control" required>
+                        <label class="form-label">Horario inicio</label>
+                        <select name="start_time" id="createTime" class="form-select" required>
+                            <?php for ($h = 7; $h <= 22; $h++): ?>
+                            <option value="<?= str_pad($h, 2, '0', STR_PAD_LEFT) ?>:00:00"><?= str_pad($h, 2, '0', STR_PAD_LEFT) ?>:00</option>
+                            <?php endfor; ?>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Horario fin</label>
-                        <select name="end_time" class="form-select" required>
+                        <select name="end_time" id="endTime" class="form-select" required>
                             <?php for ($h = 8; $h <= 23; $h++): ?>
                             <option value="<?= str_pad($h, 2, '0', STR_PAD_LEFT) ?>:00:00"><?= str_pad($h, 2, '0', STR_PAD_LEFT) ?>:00</option>
                             <?php endfor; ?>
                         </select>
                     </div>
                     <div class="mb-3">
+                        <label class="form-label">Especialidad</label>
+                        <select name="level" class="form-select" required>
+                            <option value="">Seleccionar especialidad...</option>
+                            <?php foreach ($specialties as $specialty): ?>
+                            <option value="<?= htmlspecialchars($specialty['name']) ?>"><?= htmlspecialchars($specialty['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label">Cupo máximo</label>
-                        <input type="number" name="capacity" class="form-control" min="1" required>
+                        <input type="number" name="capacity" class="form-control" min="1" value="1" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -74,6 +72,7 @@
                 <div class="modal-body">
                     <p><strong>Nivel:</strong> <span id="detailLevel"></span></p>
                     <p><strong>Horario:</strong> <span id="detailSchedule"></span></p>
+                    <p><strong>Especialidad:</strong> <span id="detailSpecialty"></span></p>
                     <p><strong>Cupo:</strong> <span id="detailCapacity"></span></p>
                 </div>
             </div>
@@ -86,6 +85,25 @@
     const dayKeys = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const lessons = <?= json_encode($lessons) ?>;
     const APP_URL = '<?= rtrim(Env::get('ASSET_URL'), '/') ?>';
+
+    function updateEndTimeOptions() {
+        const startTime = document.getElementById('createTime').value;
+        const endTimeSelect = document.getElementById('endTime');
+        const startHour = parseInt(startTime.substring(0, 2));
+
+        Array.from(endTimeSelect.options).forEach(option => {
+            const optionHour = parseInt(option.value.substring(0, 2));
+            option.disabled = optionHour <= startHour;
+        });
+
+        const nextHour = startHour + 1;
+        const nextHourStr = String(nextHour).padStart(2, '0') + ':00:00';
+        if (endTimeSelect.value <= startTime) {
+            endTimeSelect.value = nextHourStr;
+        }
+    }
+
+    document.getElementById('createTime').addEventListener('change', updateEndTimeOptions);
     </script>
     <script type="module">
     import { initCalendar } from '<?= rtrim(Env::get('ASSET_URL'), '/') ?>/js/modules/calendar.js';
@@ -115,20 +133,26 @@
 
     initCalendar({
         data: lessons, dayMap, dayNames,
-        onCellClick: (dayIdx, hour, lesson) => {
+        cardButtonLabel: 'Ver detalle',
+        onCardClick: (dayIdx, lesson) => {
+            const start = lesson.start_time.substring(0, 5);
+            const end = lesson.end_time.substring(0, 5);
+            const enrolled = lesson.enrolled || 0;
             document.getElementById('detailLevel').textContent = lesson.level;
             document.getElementById('detailSchedule').textContent =
-                dayNames[dayIdx] + ' ' + String(hour).padStart(2, '0') + ':00 - ' + lesson.end_time.substring(0, 5);
+                dayNames[dayIdx] + ' ' + start + ' - ' + end;
+            document.getElementById('detailSpecialty').textContent =
+                lesson.specialty || 'Sin especialidad';
             document.getElementById('detailCapacity').textContent =
-                (lesson.enrolled || 0) + '/' + lesson.capacity;
+                enrolled + '/' + lesson.capacity;
             new bootstrap.Modal(document.getElementById('detailModal')).show();
         },
-        onEmptyClick: (dayIdx, hour) => {
-            const time = String(hour).padStart(2, '0') + ':00';
-            document.getElementById('createDay').value = dayKeys[dayIdx];
-            document.getElementById('createDayLabel').textContent = dayNames[dayIdx];
-            document.getElementById('createTime').value = time + ':00';
-            document.getElementById('createTimeLabel').textContent = time;
+        onAddClick: (dayKey, dayName) => {
+            createForm.reset();
+            document.getElementById('createDay').value = dayKey;
+            document.getElementById('createDayLabel').textContent = dayName;
+            document.getElementById('createTime').value = '08:00:00';
+            updateEndTimeOptions();
             new bootstrap.Modal(document.getElementById('createModal')).show();
         }
     });
