@@ -242,9 +242,13 @@ class AdminController extends BaseController
 
         $lessons = $this->lessonModel->getAllWithCoach();
 
+        // Trae profesores activos para cargarlos en el combo del modal.
+        $coaches = $this->coachModel->getAll(true);
+
         $this->render('users/admin/admin-manage-lessons.view', [
             'title' => 'Gestionar Clases',
-            'lessons' => $lessons
+            'lessons' => $lessons,
+            'coaches' => $coaches
         ]);
     }
 
