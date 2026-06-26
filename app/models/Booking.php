@@ -52,7 +52,15 @@ class Booking {
     }
 
     // Registra una nueva inscripción confirmada.
+    // Si ya existe una reserva cancelada para la misma dupla, la reactiva.
     public function create(int $swimmerId, int $lessonId) {
+        $sql = "UPDATE bookings SET status = 'Confirmed'
+                WHERE swimmer_id = ? AND lesson_id = ? AND status = 'Cancelled'";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$swimmerId, $lessonId]);
+        if ($stmt->rowCount() > 0) {
+            return true;
+        }
         $sql = "INSERT INTO bookings (swimmer_id, lesson_id, status) VALUES (?, ?, 'Confirmed')";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$swimmerId, $lessonId]);
