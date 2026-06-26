@@ -89,11 +89,8 @@
     </div>
 
     <script>
-    const dayMap = { 'Monday': 0, 'Tuesday': 1, 'Wednesday': 2, 'Thursday': 3, 'Friday': 4, 'Saturday': 5 };
-    const dayNames = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-    const dayKeys = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const lessons = <?= json_encode($lessons) ?>;
-    const APP_URL = '<?= rtrim(Env::get('ASSET_URL'), '/') ?>';
+    const APP_URL = '<?= rtrim(Env::get('APP_URL'), '/') ?>';
 
     function updateEndTimeOptions() {
         const startTime = document.getElementById('createTime').value;
@@ -117,6 +114,7 @@
     <script type="module">
     import { initCalendar } from '<?= rtrim(Env::get('ASSET_URL'), '/') ?>/js/modules/calendar.js';
     import { handleAlert } from '<?= rtrim(Env::get('ASSET_URL'), '/') ?>/js/services/ui.js';
+    import { dayMap, dayNames } from '<?= rtrim(Env::get('ASSET_URL'), '/') ?>/js/modules/dayConstants.js';
 
     const createForm = document.querySelector('#createModal form');
     createForm.addEventListener('submit', async (e) => {
