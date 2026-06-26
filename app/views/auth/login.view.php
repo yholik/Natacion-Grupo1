@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 <link rel="stylesheet" href="<?= Env::get('ASSET_URL') ?>/css/auth-vistas.css">
 
-<div class="login-split-card">
+<div class="login-split-card flex-grow-1">
     
     <div class="login-form-side">
         <div class="login-form-content">
