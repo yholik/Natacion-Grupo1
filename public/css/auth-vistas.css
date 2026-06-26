@@ -24,6 +24,8 @@ body {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
     display: flex;
     margin: 40px auto;
+
+    flex-grow: 1;
 }
 
 /* FORM BLOCK */
