@@ -5,11 +5,14 @@
 require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/Swimmer.php';
 require_once __DIR__ . '/../models/Coach.php';
+require_once __DIR__ . '/../models/Auth.php';
 
 class PerfilController extends BaseController
 {
     private $swimmerModel;
     private $coachModel;
+
+    private $authModel;
     private $pdo;
 
     public function __construct()
@@ -18,6 +21,7 @@ class PerfilController extends BaseController
         $this->pdo = $pdo;
         $this->swimmerModel = new Swimmer($pdo);
         $this->coachModel = new Coach($pdo);
+        $this->authModel = new Auth($pdo);
     }
 
     // Muestra el perfil del usuario según su rol.
@@ -54,7 +58,7 @@ class PerfilController extends BaseController
         }
     }
 
-    // Guarda los cambios del perfil propio.
+    //Edicion de datos personales de un usuario
     public function updateProfile()
     {
         $this->checkAuth();
@@ -116,6 +120,63 @@ class PerfilController extends BaseController
 
         return $this->json('error', 'Rol no permitido.');
     }
+
+    //edicion de password de un usuario
+    public function updatePassword()
+{
+    $this->checkAuth();
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        return $this->json('error', 'Método no permitido.');
+    }
+
+    $currentPassword = $_POST['current_password'] ?? '';
+    $newPassword = $_POST['new_password'] ?? '';
+    $confirmPassword = $_POST['confirm_password'] ?? '';
+
+
+    if (empty($currentPassword) || empty($newPassword) || empty($confirmPassword)) {
+        return $this->json('warning', 'Debe completar todos los campos.');
+    }
+
+
+    if ($newPassword !== $confirmPassword) {
+        return $this->json('warning', 'Las contraseñas nuevas no coinciden.');
+    }
+
+
+    $email = $_SESSION['email'];
+
+    $auth = $this->authModel->getPasswordByEmail($email);
+
+
+    if (!$auth || !password_verify($currentPassword, $auth['password'])) {
+        return $this->json('error', 'La contraseña actual es incorrecta.');
+    }
+
+
+    $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
+
+
+    if ($this->authModel->updatePasswordByEmail($email, $hashedPassword)) {
+
+        return $this->json(
+            'success',
+            'Contraseña actualizada correctamente.'
+        );
+
+    }
+
+
+    return $this->json(
+        'error',
+        'No se pudo actualizar la contraseña.'
+    );
+}
+
+
+
+
 
     // Busca el perfil coach de la sesión actual.
     private function getCoachProfile(): array

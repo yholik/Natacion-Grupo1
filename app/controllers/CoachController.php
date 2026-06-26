@@ -63,12 +63,14 @@ class CoachController extends BaseController {
         $context = $this->getCoachContext();
         $coach = $context['coach'];
         $lessons = $this->lessonModel->getByCoachId((int) $coach['id']);
+        $specialties = $this->coachModel->getSpecialtiesByCoachId((int) $coach['id']);
 
         $this->render(
             'users/coach/coach-calendar.view',
             array_merge($context, [
-                'title'   => ' - Calendario',
-                'lessons' => $lessons
+                'title'       => ' - Calendario',
+                'lessons'     => $lessons,
+                'specialties' => $specialties
             ])
         );
     }
@@ -94,7 +96,7 @@ class CoachController extends BaseController {
 
 
     
-    // Guarda una clase nueva para el coach logueado. (creo que esta puede quedarse en este controlador)
+    // Guarda una clase nueva para el coach logueado.
     public function createLesson()
     {
         $this->checkAuth();
@@ -119,15 +121,19 @@ class CoachController extends BaseController {
             'capacity'    => (int) ($_POST['capacity'] ?? 0)
         ];
 
-        if (empty($data['level']) || empty($data['day_of_week']) || empty($data['start_time']) || empty($data['end_time']) || $data['capacity'] <= 0) {
+        if (empty($data['level']) || empty($data['day_of_week']) || empty($data['start_time']) || empty($data['end_time']) || $data['capacity'] < 1) {
             return $this->json('warning', 'Todos los campos son obligatorios y la capacidad debe ser mayor a 0.');
         }
 
-        if ($this->lessonModel->create($data)) {
-            return $this->json('success', 'Clase creada correctamente.');
+        if ($data['start_time'] >= $data['end_time']) {
+            return $this->json('warning', 'El horario de fin debe ser posterior al de inicio.');
         }
 
-        return $this->json('error', 'No se pudo crear la clase.');
+        if ($this->lessonModel->create($data)) {
+            return $this->json('success', 'Clase creada correctamente.', '?url=coach-calendar');
+        }
+
+        return $this->json('error', 'Ya existe una clase en ese horario. No se permite la superposición.');
     }
 
 

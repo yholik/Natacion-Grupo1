@@ -30,11 +30,11 @@ class SwimmerController extends BaseController {
         $this->checkAuth();
         $this->checkRole(3);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return $this->json('error', 'M�todo no permitido.');
+            return $this->json('error', 'Método no permitido.');
         }
         $lessonId = (int) ($_POST['lesson_id'] ?? 0);
         if ($lessonId <= 0) {
-            return $this->json('error', 'Clase inv�lida.');
+            return $this->json('error', 'Clase inválida.');
         }
         $userId = (int) $_SESSION['user_id'];
         $swimmer = $this->swimmerModel->getSwimmerById($userId);
@@ -43,12 +43,20 @@ class SwimmerController extends BaseController {
         }
         $swimmerId = (int) $swimmer['id'];
         if ($this->bookingModel->isEnrolled($swimmerId, $lessonId)) {
-            return $this->json('warning', 'Ya est�s inscripto en esta clase.');
+            return $this->json('warning', 'Ya estás inscripto en esta clase.');
+        }
+        $lesson = $this->lessonModel->getById($lessonId);
+        if (!$lesson) {
+            return $this->json('error', 'Clase no encontrada.');
+        }
+        $enrolled = $this->bookingModel->countEnrolled($lessonId);
+        if ($enrolled >= $lesson['capacity']) {
+            return $this->json('error', 'La clase está llena. No hay cupos disponibles.');
         }
         if ($this->bookingModel->create($swimmerId, $lessonId)) {
-            return $this->json('success', 'Inscripci�n realizada con �xito.');
+            return $this->json('success', 'Inscripción realizada con éxito.');
         }
-        return $this->json('error', 'No se pudo completar la inscripci�n.');
+        return $this->json('error', 'No se pudo completar la inscripción.');
     }
 
     // Cancela una inscripción confirmada.
@@ -57,16 +65,16 @@ class SwimmerController extends BaseController {
         $this->checkAuth();
         $this->checkRole(3);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return $this->json('error', 'M�todo no permitido.');
+            return $this->json('error', 'Método no permitido.');
         }
         $bookingId = (int) ($_POST['booking_id'] ?? 0);
         if ($bookingId <= 0) {
-            return $this->json('error', 'Inscripci�n inv�lida.');
+            return $this->json('error', 'Inscripción inválida.');
         }
         if ($this->bookingModel->cancel($bookingId)) {
-            return $this->json('success', 'Inscripci�n cancelada.');
+            return $this->json('success', 'Inscripción cancelada.');
         }
-        return $this->json('error', 'No se pudo cancelar la inscripci�n.');
+        return $this->json('error', 'No se pudo cancelar la inscripción.');
     }
 
     // Lista las clases disponibles para inscribirse.

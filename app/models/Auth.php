@@ -73,9 +73,6 @@ class Auth {
         return false;
     }
 
-    /**
-    * Valida las credenciales en el inicio de sesión.
-    */
     // Busca el usuario y valida la contraseña.
     public function login( $email, $password ) {
      $sql = "SELECT a.*, 
@@ -97,14 +94,27 @@ class Auth {
         return false;
     }
 
-    /**
-    * Actualiza la contraseña de un usuario mediante su email.
-    */
-    // Actualiza la contraseña usando el email como referencia.
+
+    //============   ZONA PASSWORD ======================
     public function updatePasswordByEmail( $email, $hashedPassword ) {
         $stmt = $this->db->prepare( 'UPDATE auth SET password = ? WHERE email = ?' );
         return $stmt->execute( [ $hashedPassword, $email ] );
     }
+
+    public function getPasswordByEmail($email){
+        $stmt = $this->db->prepare( 'SELECT password FROM auth WHERE email = ?');
+        $stmt->execute([$email]);
+        return $stmt->fetch( PDO::FETCH_ASSOC );
+    }
+
+
+
+
+
+
+
+
+
 
     // --- SECCIÓN: RECUPERACIÓN DE CONTRASEÑA ( TOKENS ) ---
 

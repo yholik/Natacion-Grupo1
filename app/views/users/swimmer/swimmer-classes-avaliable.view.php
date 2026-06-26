@@ -8,66 +8,63 @@
 </div>
     <div class="flex-grow-1 p-4 bg-white">
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">Clases Disponibles</h5>
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Clases Disponibles</h5>
+            </div>
+            <div class="card-body">
+                <?php if (!empty($lessons)): ?>
+                    <div class="row g-3">
+                        <?php foreach ($lessons as $lesson): ?>
+                            <?php
+                                $enrolled = isset($bookingsIds) && in_array($lesson['id'], $bookingsIds);
+                                $full = (int)$lesson['enrolled'] >= (int)$lesson['capacity'];
+                                $start = substr($lesson['start_time'], 0, 5);
+                                $end = substr($lesson['end_time'], 0, 5);
+                                $spots = (int)$lesson['capacity'] - (int)$lesson['enrolled'];
+                            ?>
+                            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                                <div class="card h-100 shadow-sm border-0">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="card-title fw-bold mb-0"><?= htmlspecialchars($lesson['level']) ?></h6>
+                                            <?php if ($enrolled): ?>
+                                                <span class="badge bg-secondary">Inscripto</span>
+                                            <?php elseif ($full): ?>
+                                                <span class="badge bg-danger">Completo</span>
+                                            <?php else: ?>
+                                                <span class="badge bg-success"><?= $spots ?> cupo<?= $spots !== 1 ? 's' : '' ?></span>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="card-text text-muted small">
+                                            <div class="mb-1">📅 <?= htmlspecialchars($lesson['day_of_week']) ?></div>
+                                            <div class="mb-1">🕐 <?= $start ?> - <?= $end ?></div>
+                                            <div class="mb-1">👨‍🏫 <?= htmlspecialchars(($lesson['coach_first_name'] ?? '') . ' ' . ($lesson['coach_last_name'] ?? '')) ?></div>
+                                            <?php if (!empty($lesson['specialty'])): ?>
+                                                <div class="mb-1">⭐ <?= htmlspecialchars($lesson['specialty']) ?></div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer bg-transparent border-0 pt-0 pb-2 px-3">
+                                        <?php if ($enrolled): ?>
+                                            <button class="btn btn-sm btn-secondary w-100" disabled>Inscripto</button>
+                                        <?php elseif ($full): ?>
+                                            <button class="btn btn-sm btn-danger w-100" disabled>Completo</button>
+                                        <?php else: ?>
+                                            <button class="btn btn-sm btn-success w-100 btn-enroll" data-lesson-id="<?= $lesson['id'] ?>">
+                                                Inscribirme
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-striped mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Nivel</th>
-                                        <th>Día</th>
-                                        <th>Horario</th>
-                                        <th>Profesor</th>
-                                        <th>Cupo</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (!empty($lessons)): ?>
-                                        <?php foreach ($lessons as $lesson): ?>
-                                            <?php
-                                                $enrolled = isset($bookingsIds) && in_array($lesson['id'], $bookingsIds);
-                                                $full = (int)$lesson['enrolled'] >= (int)$lesson['capacity'];
-                                            ?>
-                                            <tr>
-                                                <td><?= htmlspecialchars($lesson['level']) ?></td>
-                                                <td><?= htmlspecialchars($lesson['day_of_week']) ?></td>
-                                                <td><?= substr($lesson['start_time'], 0, 5) ?> - <?= substr($lesson['end_time'], 0, 5) ?></td>
-                                                <td>
-                                                    <?= htmlspecialchars(($lesson['coach_first_name'] ?? '') . ' ' . ($lesson['coach_last_name'] ?? '')) ?>
-                                                    <small class="d-block text-muted"><?= htmlspecialchars($lesson['specialty'] ?? '') ?></small>
-                                                </td>
-                                                <td>
-                                                    <span class="badge <?= $full ? 'bg-danger' : 'bg-success' ?>">
-                                                        <?= ($lesson['enrolled'] ?? 0) ?>/<?= $lesson['capacity'] ?>
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <?php if ($enrolled): ?>
-                                                        <button class="btn btn-sm btn-secondary" disabled>Inscripto</button>
-                                                    <?php elseif ($full): ?>
-                                                        <button class="btn btn-sm btn-danger" disabled>Completo</button>
-                                                    <?php else: ?>
-                                                        <button class="btn btn-sm btn-success btn-enroll" data-lesson-id="<?= $lesson['id'] ?>">
-                                                            Inscribirme
-                                                        </button>
-                                                    <?php endif; ?>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php else: ?>
-                                        <tr><td colspan="6" class="text-center py-3">No hay clases disponibles.</td></tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                <?php else: ?>
+                    <div class="text-center py-4 text-muted">
+                        <p class="mb-0">No hay clases disponibles.</p>
                     </div>
-                </div>
+                <?php endif; ?>
             </div>
         </div>
 
