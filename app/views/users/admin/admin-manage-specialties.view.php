@@ -25,8 +25,9 @@ if (!function_exists('e')) {
     </div>
 
     <div class="flex-grow-1 p-5 bg-white">
-        <h1>Administrar Especialidades</h1>
-        <hr>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Administrar Especialidades</h2>
+        </div>
 
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-dark text-white">
@@ -72,74 +73,40 @@ if (!function_exists('e')) {
             </div>
         </div>
 
-        <div class="card shadow-sm">
-            <div class="card-header bg-dark text-white">
-                Catalogo de Especialidades
+        <?php if (empty($specialties)): ?>
+            <div class="text-center py-4 text-muted">
+                <p class="mb-0">No hay especialidades registradas.</p>
             </div>
-
-            <div class="card-body p-0">
-                <!-- El listado refleja cuantas relaciones activas tiene cada especialidad. -->
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped mb-0 align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Profesores Asociados</th>
-                                <th style="width: 220px;">Acciones</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <?php if (empty($specialties)): ?>
-                                <tr>
-                                    <td colspan="4" class="text-center py-4 text-muted">
-                                        No hay especialidades registradas.
-                                    </td>
-                                </tr>
-                            <?php endif; ?>
-
-                            <?php foreach ($specialties as $specialty): ?>
-                                <!-- Cada fila deja editar o intentar borrar una especialidad puntual. -->
-                                <tr>
-                                    <td><?= e($specialty['id']) ?></td>
-                                    <td><?= e($specialty['name']) ?></td>
-                                    <td><?= e($specialty['coaches_count'] ?? 0) ?></td>
-                                    <td>
-                                        <div class="d-flex gap-2">
-                                            <a
-                                                href="<?= $appUrl ?>/?url=admin-manage-specialties&id=<?= e($specialty['id']) ?>"
-                                                class="btn btn-sm btn-primary"
-                                            >
-                                                Editar
-                                            </a>
-
-                                            <form
-                                                id="form-eliminar-especialidad-<?= e($specialty['id']) ?>"
-                                                action="<?= $appUrl ?>/?url=admin-delete-specialty"
-                                                method="POST"
-                                                class="m-0"
-                                            >
-                                                <input type="hidden" name="specialty_id" value="<?= e($specialty['id']) ?>">
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-sm btn-danger btn-eliminar-especialidad"
-                                                    data-form-id="form-eliminar-especialidad-<?= e($specialty['id']) ?>"
-                                                    data-nombre="<?= e($specialty['name']) ?>"
-                                                    data-coaches-count="<?= e($specialty['coaches_count'] ?? 0) ?>"
-                                                >
-                                                    Eliminar
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+        <?php else: ?>
+            <div class="row g-3">
+                <?php foreach ($specialties as $specialty): ?>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="card-title fw-bold mb-0"><?= e($specialty['name']) ?></h6>
+                                    <span class="badge bg-info"><?= e($specialty['coaches_count'] ?? 0) ?> profesores</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-0 pt-0 pb-2 px-3">
+                                <div class="d-flex gap-2">
+                                    <a href="<?= $appUrl ?>/?url=admin-manage-specialties&id=<?= e($specialty['id']) ?>" class="btn btn-sm btn-primary flex-fill">
+                                        Editar
+                                    </a>
+                                    <form id="form-eliminar-especialidad-<?= e($specialty['id']) ?>" action="<?= $appUrl ?>/?url=admin-delete-specialty" method="POST" class="m-0 flex-fill">
+                                        <input type="hidden" name="specialty_id" value="<?= e($specialty['id']) ?>">
+                                        <button type="button" class="btn btn-sm btn-danger w-100 btn-eliminar-especialidad"
+                                                data-form-id="form-eliminar-especialidad-<?= e($specialty['id']) ?>" data-nombre="<?= e($specialty['name']) ?>" data-coaches-count="<?= e($specialty['coaches_count'] ?? 0) ?>">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
-        </div>
+        <?php endif; ?>
 
         <!-- Modal comun del panel para confirmaciones y avisos. -->
         <?php require_once __DIR__ . '/../../components/modal_confirmacion.php'; ?>

@@ -27,114 +27,62 @@ function formatDateOrDash($value)
     </div>
 
     <div class="flex-grow-1 p-5 bg-white">
-        <h1>Gestionar Profesores</h1>
-        <hr>
-
-        <div class="d-flex gap-2 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Gestionar Profesores</h2>
             <a href="<?= $appUrl ?>/?url=admin-create-coach" class="btn btn-success">
                 Agregar
             </a>
         </div>
 
-        <div class="card shadow-sm">
-            <div class="card-header bg-dark text-white">
-                Listado de Profesores
+        <?php if (empty($coaches)): ?>
+            <div class="text-center py-4 text-muted">
+                <p class="mb-0">No hay profesores registrados.</p>
             </div>
-
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped mb-0 align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Apellido</th>
-                                <th>Email</th>
-                                <th>Teléfono</th>
-                                <th>Especialidad</th>
-                                <th>Rol</th>
-                                <th>Última Actualización</th>
-                                <th>Fecha Alta</th>
-                                <th>Fecha Baja</th>
-                                <th>Estado</th>
-                                <th style="width: 190px;">Acciones</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <?php if (empty($coaches)): ?>
-                                <tr>
-                                    <td colspan="12" class="text-center py-4 text-muted">
-                                        No hay profesores registrados.
-                                    </td>
-                                </tr>
-                            <?php endif; ?>
-
-                            <?php foreach ($coaches as $coach): ?>
-                                <?php
-                                $userId = $coach['user_id'];
-                                $fullName = trim($coach['first_name'] . ' ' . $coach['last_name']);
-                                $isActive = empty($coach['deleted_at']);
-                                $formId = 'form-cambiar-estado-' . $userId;
-                                ?>
-
-                                <tr>
-                                    <td><?= e($coach['id']) ?></td>
-                                    <td><?= e($coach['first_name']) ?></td>
-                                    <td><?= e($coach['last_name']) ?></td>
-                                    <td><?= e($coach['email']) ?></td>
-                                    <td><?= e($coach['phone']) ?></td>
-                                    <td><?= e($coach['specialty_names'] ?? '-') ?></td>
-                                    <td>Profesor</td>
-                                    <td><?= formatDateOrDash($coach['updated_at'] ?? null) ?></td>
-                                    <td><?= formatDateOrDash($coach['created_at'] ?? null) ?></td>
-                                    <td><?= formatDateOrDash($coach['deleted_at'] ?? null) ?></td>
-
-                                    <td>
-                                        <?php if ($isActive): ?>
-                                            <span class="badge bg-success">Activo</span>
-                                        <?php else: ?>
-                                            <span class="badge bg-secondary">Baja</span>
-                                        <?php endif; ?>
-                                    </td>
-
-                                    <td>
-                                        <div class="d-flex gap-2">
-                                            <a
-                                                href="<?= $appUrl ?>/?url=admin-edit-coach&id=<?= e($userId) ?>"
-                                                class="btn btn-sm btn-primary"
-                                            >
-                                                Editar
-                                            </a>
-
-                                            <form
-                                                id="<?= e($formId) ?>"
-                                                action="<?= $appUrl ?>/?url=<?= $isActive ? 'admin-deactivate-coach' : 'admin-activate-coach' ?>"
-                                                method="POST"
-                                                class="m-0"
-                                            >
-                                                <input type="hidden" name="user_id" value="<?= e($userId) ?>">
-
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-sm <?= $isActive ? 'btn-danger' : 'btn-success' ?> btn-cambiar-estado"
-                                                    data-form-id="<?= e($formId) ?>"
-                                                    data-nombre="<?= e($fullName) ?>"
-                                                    data-accion="<?= $isActive ? 'baja' : 'alta' ?>"
-                                                    data-especialidades="<?= e($coach['specialty_names'] ?? '') ?>"
-                                                >
-                                                    <?= $isActive ? 'Dar de Baja' : 'Dar de Alta' ?>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+        <?php else: ?>
+            <div class="row g-3">
+                <?php foreach ($coaches as $coach): ?>
+                    <?php
+                    $userId = $coach['user_id'];
+                    $fullName = trim($coach['first_name'] . ' ' . $coach['last_name']);
+                    $isActive = empty($coach['deleted_at']);
+                    $formId = 'form-cambiar-estado-' . $userId;
+                    ?>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="card-title fw-bold mb-0"><?= e($fullName) ?></h6>
+                                    <?php if ($isActive): ?>
+                                        <span class="badge bg-success">Activo</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-secondary">Baja</span>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="card-text text-muted small">
+                                    <div class="mb-1"><?= e($coach['email']) ?></div>
+                                    <div class="mb-1"><?= e($coach['phone'] ?? '-') ?></div>
+                                    <div class="mb-1"><?= e($coach['specialty_names'] ?? 'Sin especialidad') ?></div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-0 pt-0 pb-2 px-3">
+                                <div class="d-flex gap-2">
+                                    <a href="<?= $appUrl ?>/?url=admin-edit-coach&id=<?= e($userId) ?>" class="btn btn-sm btn-primary flex-fill">
+                                        Editar
+                                    </a>
+                                    <form id="<?= e($formId) ?>" action="<?= $appUrl ?>/?url=<?= $isActive ? 'admin-deactivate-coach' : 'admin-activate-coach' ?>" method="POST" class="m-0 flex-fill">
+                                        <input type="hidden" name="user_id" value="<?= e($userId) ?>">
+                                        <button type="button" class="btn btn-sm <?= $isActive ? 'btn-danger' : 'btn-success' ?> w-100 btn-cambiar-estado"
+                                                data-form-id="<?= e($formId) ?>" data-nombre="<?= e($fullName) ?>" data-accion="<?= $isActive ? 'baja' : 'alta' ?>" data-especialidades="<?= e($coach['specialty_names'] ?? '') ?>">
+                                            <?= $isActive ? 'Dar de Baja' : 'Dar de Alta' ?>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
-        </div>
+        <?php endif; ?>
 
         <?php require_once __DIR__ . '/../../components/modal_confirmacion.php'; ?>
     </div>

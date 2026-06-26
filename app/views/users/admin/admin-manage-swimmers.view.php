@@ -31,119 +31,68 @@ if (!function_exists('formatDateOrDash')) {
     </div>
 
     <div class="flex-grow-1 p-5 bg-white">
-        <h1>Gestionar Nadadores</h1>
-        <hr>
-
-        <div class="d-flex gap-2 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Gestionar Nadadores</h2>
             <a href="<?= $appUrl ?>/?url=admin-create-swimmer" class="btn btn-success">
                 Agregar
             </a>
         </div>
 
-        <div class="card shadow-sm">
-            <div class="card-header bg-dark text-white">
-                Listado de Nadadores
+        <?php if (empty($swimmers)): ?>
+            <div class="text-center py-4 text-muted">
+                <p class="mb-0">No hay nadadores registrados.</p>
             </div>
-
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped mb-0 align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>ID</th>
-                                <th>Foto</th>
-                                <th>Nombre</th>
-                                <th>Apellido</th>
-                                <th>Email</th>
-                                <th>Teléfono</th>
-                                <th>Fecha Nac.</th>
-                                <th>Última Actualización</th>
-                                <th>Fecha Alta</th>
-                                <th>Fecha Baja</th>
-                                <th>Estado</th>
-                                <th style="width: 190px;">Acciones</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <?php if (empty($swimmers)): ?>
-                                <tr>
-                                    <td colspan="12" class="text-center py-4 text-muted">
-                                        No hay nadadores registrados.
-                                    </td>
-                                </tr>
-                            <?php endif; ?>
-
-                            <?php foreach ($swimmers as $swimmer): ?>
-                                <?php
-                                $userId = $swimmer['user_id'];
-                                $fullName = trim($swimmer['first_name'] . ' ' . $swimmer['last_name']);
-                                $isActive = empty($swimmer['deleted_at']);
-                                $formId = 'form-cambiar-estado-swimmer-' . $userId;
-                                $profileImage = $swimmer['profile_image'] ?? 'default-profile.png';
-                                ?>
-
-                                <tr>
-                                    <td><?= e($swimmer['id']) ?></td>
-                                    <td>
-                                        <img
-                                            src="<?= $appUrl ?>/public/img/uploads/profiles/swimmers/<?= e($profileImage) ?>"
-                                            alt="Foto de <?= e($fullName) ?>"
-                                            class="rounded-circle border"
-                                            style="width: 48px; height: 48px; object-fit: cover;"
-                                        >
-                                    </td>
-                                    <td><?= e($swimmer['first_name']) ?></td>
-                                    <td><?= e($swimmer['last_name']) ?></td>
-                                    <td><?= e($swimmer['email']) ?></td>
-                                    <td><?= e($swimmer['phone'] ?? '-') ?></td>
-                                    <td><?= formatDateOrDash($swimmer['birth_date'] ?? null) ?></td>
-                                    <td><?= formatDateOrDash($swimmer['updated_at'] ?? null) ?></td>
-                                    <td><?= formatDateOrDash($swimmer['created_at'] ?? null) ?></td>
-                                    <td><?= formatDateOrDash($swimmer['deleted_at'] ?? null) ?></td>
-                                    <td>
-                                        <?php if ($isActive): ?>
-                                            <span class="badge bg-success">Activo</span>
-                                        <?php else: ?>
-                                            <span class="badge bg-secondary">Baja</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex gap-2">
-                                            <a
-                                                href="<?= $appUrl ?>/?url=admin-edit-swimmer&id=<?= e($userId) ?>"
-                                                class="btn btn-sm btn-primary"
-                                            >
-                                                Editar
-                                            </a>
-
-                                            <form
-                                                id="<?= e($formId) ?>"
-                                                action="<?= $appUrl ?>/?url=<?= $isActive ? 'admin-deactivate-swimmer' : 'admin-activate-swimmer' ?>"
-                                                method="POST"
-                                                class="m-0"
-                                            >
-                                                <input type="hidden" name="user_id" value="<?= e($userId) ?>">
-
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-sm <?= $isActive ? 'btn-danger' : 'btn-success' ?> btn-cambiar-estado-swimmer"
-                                                    data-form-id="<?= e($formId) ?>"
-                                                    data-nombre="<?= e($fullName) ?>"
-                                                    data-accion="<?= $isActive ? 'baja' : 'alta' ?>"
-                                                >
-                                                    <?= $isActive ? 'Dar de Baja' : 'Dar de Alta' ?>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+        <?php else: ?>
+            <div class="row g-3">
+                <?php foreach ($swimmers as $swimmer): ?>
+                    <?php
+                    $userId = $swimmer['user_id'];
+                    $fullName = trim($swimmer['first_name'] . ' ' . $swimmer['last_name']);
+                    $isActive = empty($swimmer['deleted_at']);
+                    $formId = 'form-cambiar-estado-swimmer-' . $userId;
+                    $profileImage = $swimmer['profile_image'] ?? 'default-profile.png';
+                    ?>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="<?= $appUrl ?>/public/img/uploads/profiles/swimmers/<?= e($profileImage) ?>"
+                                             alt="Foto de <?= e($fullName) ?>" class="rounded-circle border"
+                                             style="width: 40px; height: 40px; object-fit: cover;">
+                                        <h6 class="card-title fw-bold mb-0"><?= e($fullName) ?></h6>
+                                    </div>
+                                    <?php if ($isActive): ?>
+                                        <span class="badge bg-success">Activo</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-secondary">Baja</span>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="card-text text-muted small">
+                                    <div class="mb-1"><?= e($swimmer['email']) ?></div>
+                                    <div class="mb-1"><?= e($swimmer['phone'] ?? '-') ?></div>
+                                    <div class="mb-1">Nac: <?= formatDateOrDash($swimmer['birth_date'] ?? null) ?></div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-0 pt-0 pb-2 px-3">
+                                <div class="d-flex gap-2">
+                                    <a href="<?= $appUrl ?>/?url=admin-edit-swimmer&id=<?= e($userId) ?>" class="btn btn-sm btn-primary flex-fill">
+                                        Editar
+                                    </a>
+                                    <form id="<?= e($formId) ?>" action="<?= $appUrl ?>/?url=<?= $isActive ? 'admin-deactivate-swimmer' : 'admin-activate-swimmer' ?>" method="POST" class="m-0 flex-fill">
+                                        <input type="hidden" name="user_id" value="<?= e($userId) ?>">
+                                        <button type="button" class="btn btn-sm <?= $isActive ? 'btn-danger' : 'btn-success' ?> w-100 btn-cambiar-estado-swimmer"
+                                                data-form-id="<?= e($formId) ?>" data-nombre="<?= e($fullName) ?>" data-accion="<?= $isActive ? 'baja' : 'alta' ?>">
+                                            <?= $isActive ? 'Dar de Baja' : 'Dar de Alta' ?>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
-        </div>
+        <?php endif; ?>
 
         <?php require_once __DIR__ . '/../../components/modal_confirmacion.php'; ?>
     </div>
