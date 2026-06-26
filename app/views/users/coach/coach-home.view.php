@@ -49,9 +49,6 @@
             </a>
         </div>
 
-    </div>
-</div>
-
 </main>
 
 <script type="module" src="<?= Env::get('ASSET_URL') ?>/js/modules/coachMain.js"></script>
