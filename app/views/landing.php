@@ -5,8 +5,20 @@
         <a href="?url=landing">Club de Natacion - El Delfín Saltarín 🚩</a>
     </div>
     <nav class="header-nav">
-        <a href="?url=login" class="btn-login">Login</a>
-        <a href="?url=register" class="btn-register">Register</a>
+        <?php if (isset($_SESSION['user_id'])): ?>
+            <?php
+                $panelLink = match ((int) ($_SESSION['role_id'] ?? 0)) {
+                    1 => '?url=admin-manage-coaches',
+                    2 => '?url=coach-home',
+                    3 => '?url=swimmer-classes-avaliable',
+                    default => '?url=landing',
+                };
+            ?>
+            <a href="<?= $panelLink ?>" class="btn-register">Mi Panel</a>
+        <?php else: ?>
+            <a href="?url=login" class="btn-login">Login</a>
+            <a href="?url=register" class="btn-register">Register</a>
+        <?php endif; ?>
     </nav>
 </header>
 
