@@ -24,25 +24,29 @@
         <div id="tableView">
             <?php if (!empty($bookings)): ?>
                 <div class="row g-3">
+                    <?php
+                    $dayTranslations = [
+                        'Monday' => 'Lunes', 'Tuesday' => 'Martes', 'Wednesday' => 'Miércoles',
+                        'Thursday' => 'Jueves', 'Friday' => 'Viernes', 'Saturday' => 'Sábado'
+                    ];
+                    ?>
                     <?php foreach ($bookings as $b): ?>
                         <?php
                             $start = substr($b['start_time'], 0, 5);
                             $end = substr($b['end_time'], 0, 5);
+                            $dayEs = $dayTranslations[$b['day_of_week']] ?? $b['day_of_week'];
                         ?>
                         <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                            <div class="card h-100 shadow-sm border-0">
+                            <div class="card h-100 shadow-sm">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h6 class="card-title fw-bold mb-0"><?= htmlspecialchars($b['level']) ?></h6>
+                                        <h6 class="card-title fw-bold mb-0"><?= htmlspecialchars($b['specialty'] ?? 'Sin especialidad') ?></h6>
                                         <span class="badge bg-info">Inscripto</span>
                                     </div>
                                     <div class="card-text text-muted small">
-                                        <div class="mb-1">📅 <?= htmlspecialchars($b['day_of_week']) ?></div>
-                                        <div class="mb-1">🕐 <?= $start ?> - <?= $end ?></div>
-                                        <div class="mb-1">👨‍🏫 <?= htmlspecialchars(($b['coach_first_name'] ?? '') . ' ' . ($b['coach_last_name'] ?? '')) ?></div>
-                                        <?php if (!empty($b['specialty'])): ?>
-                                            <div class="mb-1">⭐ <?= htmlspecialchars($b['specialty']) ?></div>
-                                        <?php endif; ?>
+                                        <div class="mb-1"><?= $dayEs ?> · <?= $start ?> - <?= $end ?></div>
+                                        <div class="mb-1">Prof. <?= htmlspecialchars(($b['coach_first_name'] ?? '') . ' ' . ($b['coach_last_name'] ?? '')) ?></div>
+                                        <div class="mb-1"><?= htmlspecialchars($b['level']) ?></div>
                                     </div>
                                 </div>
                                 <div class="card-footer bg-transparent border-0 pt-0 pb-2 px-3">
@@ -153,16 +157,23 @@
             const bookingId = this.dataset.bookingId;
             const result = await Swal.fire({ icon: 'warning', title: '¿Cancelar inscripción?', showCancelButton: true });
             if (!result.isConfirmed) return;
-            const resp = await fetch('?url=swimmer-cancel-enrollment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'booking_id=' + bookingId
-            });
-            const data = await resp.json();
-            if (data.status === 'success') {
-                Swal.fire({ icon: 'success', title: 'Inscripción cancelada' }).then(() => location.reload());
-            } else {
-                Swal.fire({ icon: 'error', title: data.message });
+
+            try {
+                const formData = new FormData();
+                formData.append('booking_id', bookingId);
+                const res = await fetch(APP_URL + '/?url=swimmer-cancel-enrollment', {
+                    method: 'POST',
+                    body: formData
+                });
+                const json = await res.json();
+                if (json.status === 'success') {
+                    handleAlert(json.status, json.message, json.redirect);
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    handleAlert(json.status, json.message);
+                }
+            } catch (err) {
+                handleAlert('error', 'Error de conexión al servidor.');
             }
         });
     });

@@ -152,7 +152,7 @@ $assetUrl = rtrim(Env::get('ASSET_URL'), '/');
     <script>
     window.adminManageLessonsConfig = {
         dayMap: { 'Monday': 0, 'Tuesday': 1, 'Wednesday': 2, 'Thursday': 3, 'Friday': 4, 'Saturday': 5 },
-        dayNames: ['Lunes', 'Martes', 'Mi�rcoles', 'Jueves', 'Viernes', 'S�bado'],
+        dayNames: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
         lessons: <?= json_encode($lessons, JSON_UNESCAPED_UNICODE) ?>,
         appUrl: '<?= e($appUrl) ?>'
     };

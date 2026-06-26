@@ -54,7 +54,7 @@ export function initCalendar(config) {
                 col.className = 'col-12 col-sm-6 col-lg-4 col-xl-3';
 
                 const card = document.createElement('div');
-                card.className = 'card h-100 shadow-sm border-0';
+                card.className = 'card h-100 shadow-sm';
                 card.style.cursor = 'pointer';
                 card.style.transition = 'transform 0.15s, box-shadow 0.15s';
 
@@ -77,7 +77,7 @@ export function initCalendar(config) {
                 let capacityText = `${enrolled}/${capacity}`;
                 if (full) {
                     badgeClass = 'bg-danger';
-                    capacityText = 'Completo';
+                    capacityText = 'Lleno';
                 } else if (enrolled > 0) {
                     badgeClass = 'bg-warning text-dark';
                 }
@@ -85,20 +85,20 @@ export function initCalendar(config) {
                 card.innerHTML = `
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="card-title fw-bold mb-0">${escapeHtml(item.level)}</h6>
+                            <h6 class="card-title fw-bold mb-0">${escapeHtml(item.specialty || 'Sin especialidad')}</h6>
                             <span class="badge ${badgeClass}">${capacityText}</span>
                         </div>
                         <div class="card-text text-muted small">
-                            <div class="mb-1">🕐 ${start} - ${end}</div>
-                            ${item.coach_first_name ? `<div class="mb-1">👨‍🏫 ${escapeHtml(item.coach_first_name)} ${escapeHtml(item.coach_last_name)}</div>` : ''}
-                            ${item.specialty ? `<div class="mb-1">⭐ ${escapeHtml(item.specialty)}</div>` : ''}
+                            <div class="mb-1">${start} - ${end}</div>
+                            ${item.coach_first_name ? `<div class="mb-1">Prof. ${escapeHtml(item.coach_first_name)} ${escapeHtml(item.coach_last_name)}</div>` : ''}
+                            <div class="mb-1">${escapeHtml(item.level)}</div>
                         </div>
                     </div>
                     <div class="card-footer bg-transparent border-0 pt-0 pb-2 px-3">
                         <button class="btn btn-sm btn-outline-${full ? 'secondary' : 'success'} w-100 btn-card-action" 
                                 data-lesson-id="${item.id}"
                                 ${full && !item.booking_id ? 'disabled' : ''}>
-                            ${cardButtonLabel || (item.booking_id ? 'Cancelar' : (full ? 'Completo' : 'Inscribirme'))}
+                            ${cardButtonLabel || (item.booking_id ? 'Cancelar' : (full ? 'Lleno' : 'Inscribirme'))}
                         </button>
                     </div>
                 `;
