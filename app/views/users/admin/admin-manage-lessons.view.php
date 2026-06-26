@@ -3,37 +3,26 @@
 <?php
 $lessons = $lessons ?? [];
 $coaches = $coaches ?? [];
-
-$appUrl = htmlspecialchars(rtrim(Env::get('APP_URL'), '/'), ENT_QUOTES, 'UTF-8');
+$levels = $levels ?? [];
 
 if (!function_exists('e')) {
+    // Escapa texto antes de imprimirlo en la vista.
     function e($value)
     {
-        return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
     }
 }
 
-if (!function_exists('formatTimeOrDash')) {
-    function formatTimeOrDash($value)
+if (!function_exists('encodeJsonForAttr')) {
+    // Deja un array listo para usar dentro de data-*.
+    function encodeJsonForAttr($value)
     {
-        if (empty($value)) {
-            return '-';
-        }
-
-        return e(substr($value, 0, 5));
+        return htmlspecialchars(json_encode($value, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8');
     }
 }
 
-if (!function_exists('formatDateOrDash')) {
-    function formatDateOrDash($value)
-    {
-        if (empty($value)) {
-            return '-';
-        }
-
-        return e(date('Y-m-d', strtotime($value)));
-    }
-}
+$appUrl = rtrim(Env::get('APP_URL'), '/');
+$assetUrl = rtrim(Env::get('ASSET_URL'), '/');
 ?>
 
 <main class="d-flex flex-column flex-lg-row w-100">
@@ -43,457 +32,400 @@ if (!function_exists('formatDateOrDash')) {
         </aside>
     </div>
 
-    <div class="flex-grow-1 p-5 bg-white">
-        <h1>Gestionar Clases</h1>
-        <hr>
-
-        <div class="d-flex gap-2 mb-4">
-            <button
-                type="button"
-                class="btn btn-success"
-                id="btnAbrirModalCrearClase"
-            >
-                Agregar
-            </button>
+    <div class="container-fluid p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Calendario de clases</h2>
         </div>
 
-        <div class="card shadow-sm">
-            <div class="card-header bg-dark text-white">
-                Listado de Clases
-            </div>
+        <div id="calendarContainer"></div>
+    </div>
 
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped mb-0 align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>ID</th>
-                                <th>Profesor</th>
-                                <th>Especialidad</th>
-                                <th>Nivel</th>
-                                <th>Día</th>
-                                <th>Inicio</th>
-                                <th>Fin</th>
-                                <th>Cupo</th>
-                                <th>Inscriptos</th>
-                                <th>Disponibles</th>
-                                <th>Fecha Alta</th>
-                                <th style="width: 170px;">Acciones</th>
-                            </tr>
-                        </thead>
+    <!-- Un solo modal para alta y edición. -->
+    <div class="modal fade" id="lessonModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form id="lessonForm" method="POST" action="<?= e($appUrl) ?>/?url=admin-create-lesson" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="lessonModalTitle">Agregar clase</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="lesson_id" id="lessonId">
+                    <input type="hidden" name="day_of_week" id="lessonDay">
 
-                        <tbody>
-                            <?php if (empty($lessons)): ?>
-                                <tr>
-                                    <td colspan="12" class="text-center py-4 text-muted">
-                                        No hay clases registradas.
-                                    </td>
-                                </tr>
-                            <?php endif; ?>
+                    <p><strong>Día:</strong> <span id="lessonDayLabel"></span></p>
 
-                            <?php foreach ($lessons as $lesson): ?>
+                    <div class="mb-3">
+                        <label for="coach_id" class="form-label">Profesor</label>
+                        <select id="coach_id" name="coach_id" class="form-select" required>
+                            <option value="">Seleccionar profesor...</option>
+                            <?php foreach ($coaches as $coach): ?>
                                 <?php
-                                $lessonId = $lesson['id'];
-
-                                $coachName = trim(
-                                    ($lesson['coach_first_name'] ?? '') . ' ' . ($lesson['coach_last_name'] ?? '')
-                                );
-
-                                if ($coachName === '') {
-                                    $coachName = 'Profesor ID ' . ($lesson['coach_id'] ?? '-');
-                                }
-
-                                $capacity = (int) ($lesson['capacity'] ?? 0);
-                                $enrolled = (int) ($lesson['enrolled'] ?? 0);
-                                $available = max($capacity - $enrolled, 0);
-
-                                $formId = 'form-eliminar-clase-' . $lessonId;
-
-                                $lessonDescription = trim(
-                                    ($lesson['level'] ?? 'Clase') .
-                                    ' - ' .
-                                    ($lesson['day_of_week'] ?? '') .
-                                    ' ' .
-                                    formatTimeOrDash($lesson['start_time'] ?? null)
-                                );
+                                $coachId = $coach['id'] ?? '';
+                                $coachFullName = trim(($coach['first_name'] ?? '') . ' ' . ($coach['last_name'] ?? ''));
+                                $specialtyNames = array_values(array_filter(array_map('trim', explode(',', $coach['specialty_names'] ?? ''))));
                                 ?>
-
-                                <tr>
-                                    <td><?= e($lessonId) ?></td>
-                                    <td><?= e($coachName) ?></td>
-                                    <td><?= e($lesson['specialty'] ?? '-') ?></td>
-                                    <td><?= e($lesson['level'] ?? '-') ?></td>
-                                    <td><?= e($lesson['day_of_week'] ?? '-') ?></td>
-                                    <td><?= formatTimeOrDash($lesson['start_time'] ?? null) ?></td>
-                                    <td><?= formatTimeOrDash($lesson['end_time'] ?? null) ?></td>
-                                    <td><?= e($capacity) ?></td>
-                                    <td><?= e($enrolled) ?></td>
-                                    <td><?= e($available) ?></td>
-                                    <td><?= formatDateOrDash($lesson['created_at'] ?? null) ?></td>
-
-                                    <td>
-                                        <div class="d-flex gap-2">
-                                            <button
-                                                type="button"
-                                                class="btn btn-sm btn-primary btn-editar-clase"
-                                                data-lesson-id="<?= e($lessonId) ?>"
-                                                data-coach-id="<?= e($lesson['coach_id'] ?? '') ?>"
-                                                data-level="<?= e($lesson['level'] ?? '') ?>"
-                                                data-day-of-week="<?= e($lesson['day_of_week'] ?? '') ?>"
-                                                data-start-time="<?= e($lesson['start_time'] ?? '') ?>"
-                                                data-end-time="<?= e($lesson['end_time'] ?? '') ?>"
-                                                data-capacity="<?= e($capacity) ?>"
-                                            >
-                                                Editar
-                                            </button>
-
-                                            <form
-                                                id="<?= e($formId) ?>"
-                                                action="<?= $appUrl ?>/?url=admin-delete-lesson"
-                                                method="POST"
-                                                class="m-0"
-                                            >
-                                                <input type="hidden" name="lesson_id" value="<?= e($lessonId) ?>">
-
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-sm btn-danger btn-eliminar-clase"
-                                                    data-form-id="<?= e($formId) ?>"
-                                                    data-clase="<?= e($lessonDescription) ?>"
-                                                    data-profesor="<?= e($coachName) ?>"
-                                                >
-                                                    Eliminar
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
+                                <option
+                                    value="<?= e($coachId) ?>"
+                                    data-coach-name="<?= e($coachFullName !== '' ? $coachFullName : 'Profesor ID ' . $coachId) ?>"
+                                    data-specialties="<?= encodeJsonForAttr($specialtyNames) ?>"
+                                >
+                                    <?= e($coachFullName !== '' ? $coachFullName : 'Profesor ID ' . $coachId) ?>
+                                </option>
                             <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="createTime" class="form-label">Horario inicio</label>
+                        <select name="start_time" id="createTime" class="form-select" required>
+                            <?php for ($h = 7; $h <= 22; $h++): ?>
+                                <option value="<?= str_pad($h, 2, '0', STR_PAD_LEFT) ?>:00:00">
+                                    <?= str_pad($h, 2, '0', STR_PAD_LEFT) ?>:00
+                                </option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="endTime" class="form-label">Horario fin</label>
+                        <select name="end_time" id="endTime" class="form-select" required>
+                            <?php for ($h = 8; $h <= 23; $h++): ?>
+                                <option value="<?= str_pad($h, 2, '0', STR_PAD_LEFT) ?>:00:00">
+                                    <?= str_pad($h, 2, '0', STR_PAD_LEFT) ?>:00
+                                </option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="specialty" class="form-label">Especialidad</label>
+                        <select id="specialty" name="specialty" class="form-select" required>
+                            <option value="">Seleccionar especialidad...</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="level" class="form-label">Nivel</label>
+                        <select id="level" name="level" class="form-select" required>
+                            <option value="">Seleccionar nivel...</option>
+                            <?php foreach ($levels as $level): ?>
+                                <option value="<?= e($level) ?>"><?= e($level) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="capacity" class="form-label">Cupo máximo</label>
+                        <input type="number" name="capacity" id="capacity" class="form-control" min="1" value="1" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="lessonSubmitButton">Crear clase</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Muestra los datos y deja editar o borrar. -->
+    <div class="modal fade" id="detailModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalle de la clase</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Profesor:</strong> <span id="detailCoach"></span></p>
+                    <p><strong>Nivel:</strong> <span id="detailLevel"></span></p>
+                    <p><strong>Horario:</strong> <span id="detailSchedule"></span></p>
+                    <p><strong>Especialidad:</strong> <span id="detailSpecialty"></span></p>
+                    <p><strong>Cupo:</strong> <span id="detailCapacity"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" id="detailEditButton">Editar</button>
+                    <button type="button" class="btn btn-danger" id="detailDeleteButton">Eliminar</button>
                 </div>
             </div>
         </div>
-
-        <!-- Modal CREAR / EDITAR clase -->
-        <div class="modal fade" id="modalClase" tabindex="-1">
-            <div class="modal-dialog">
-                <form
-                    id="formClase"
-                    method="POST"
-                    action="<?= $appUrl ?>/?url=admin-create-lesson"
-                    class="modal-content"
-                >
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalClaseTitulo">Agregar Clase</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        <input type="hidden" name="lesson_id" id="lesson_id">
-
-                        <div class="mb-3">
-                            <label for="coach_id" class="form-label">Profesor</label>
-                            <select id="coach_id" name="coach_id" class="form-select" required>
-                                <option value="">Seleccione un profesor</option>
-
-                                <?php foreach ($coaches as $coach): ?>
-                                    <?php
-                                    $coachId = $coach['id'] ?? $coach['user_id'] ?? '';
-
-                                    $coachFullName = trim(
-                                        ($coach['first_name'] ?? '') . ' ' . ($coach['last_name'] ?? '')
-                                    );
-
-                                    if ($coachFullName === '') {
-                                        $coachFullName = 'Profesor ID ' . $coachId;
-                                    }
-                                    ?>
-
-                                    <option value="<?= e($coachId) ?>">
-                                        <?= e($coachFullName) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="level" class="form-label">Nivel</label>
-                            <input
-                                type="text"
-                                id="level"
-                                name="level"
-                                class="form-control"
-                                required
-                            >
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="day_of_week" class="form-label">Día</label>
-                            <select id="day_of_week" name="day_of_week" class="form-select" required>
-                                <option value="">Seleccione un día</option>
-                                <option value="Monday">Lunes</option>
-                                <option value="Tuesday">Martes</option>
-                                <option value="Wednesday">Miércoles</option>
-                                <option value="Thursday">Jueves</option>
-                                <option value="Friday">Viernes</option>
-                                <option value="Saturday">Sábado</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="start_time" class="form-label">Horario inicio</label>
-                            <select id="start_time" name="start_time" class="form-select" required>
-                                <option value="">Seleccione horario de inicio</option>
-
-                                <?php for ($h = 7; $h <= 22; $h++): ?>
-                                    <option value="<?= str_pad($h, 2, '0', STR_PAD_LEFT) ?>:00:00">
-                                        <?= str_pad($h, 2, '0', STR_PAD_LEFT) ?>:00
-                                    </option>
-                                <?php endfor; ?>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="end_time" class="form-label">Horario fin</label>
-                            <select id="end_time" name="end_time" class="form-select" required>
-                                <option value="">Seleccione horario de fin</option>
-
-                                <?php for ($h = 8; $h <= 23; $h++): ?>
-                                    <option value="<?= str_pad($h, 2, '0', STR_PAD_LEFT) ?>:00:00">
-                                        <?= str_pad($h, 2, '0', STR_PAD_LEFT) ?>:00
-                                    </option>
-                                <?php endfor; ?>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="capacity" class="form-label">Cupo máximo</label>
-                            <input
-                                type="number"
-                                id="capacity"
-                                name="capacity"
-                                class="form-control"
-                                min="1"
-                                required
-                            >
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button
-                            type="button"
-                            class="btn btn-secondary"
-                            data-bs-dismiss="modal"
-                        >
-                            Cancelar
-                        </button>
-
-                        <button
-                            type="submit"
-                            class="btn btn-success"
-                            id="btnGuardarClase"
-                        >
-                            Guardar
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <?php require_once __DIR__ . '/../../components/modal_confirmacion.php'; ?>
     </div>
-</main>
 
-<script src="<?= $appUrl ?>/public/js/modules/admin/admin-manage-lessons.js"></script>
+    <?php require_once __DIR__ . '/../../components/modal_confirmacion.php'; ?>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const appUrl = '<?= $appUrl ?>';
+    <script>
+    const dayMap = { 'Monday': 0, 'Tuesday': 1, 'Wednesday': 2, 'Thursday': 3, 'Friday': 4, 'Saturday': 5 };
+    const dayNames = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const lessons = <?= json_encode($lessons, JSON_UNESCAPED_UNICODE) ?>;
+    const APP_URL = '<?= e($appUrl) ?>';
+    const ASSET_URL = '<?= e($assetUrl) ?>';
+    </script>
 
-    const btnAbrirModalCrearClase = document.getElementById('btnAbrirModalCrearClase');
-    const botonesEditarClase = document.querySelectorAll('.btn-editar-clase');
+    <script type="module">
+    import { initCalendar } from '<?= e($assetUrl) ?>/js/modules/calendar.js';
 
-    const modalClaseElement = document.getElementById('modalClase');
-    const modalClaseTitulo = document.getElementById('modalClaseTitulo');
+    const lessonForm = document.getElementById('lessonForm');
+    const lessonModalElement = document.getElementById('lessonModal');
+    const detailModalElement = document.getElementById('detailModal');
+    const lessonModalTitle = document.getElementById('lessonModalTitle');
+    const lessonSubmitButton = document.getElementById('lessonSubmitButton');
+    const lessonIdInput = document.getElementById('lessonId');
+    const lessonDayInput = document.getElementById('lessonDay');
+    const lessonDayLabel = document.getElementById('lessonDayLabel');
+    const coachSelect = document.getElementById('coach_id');
+    const specialtySelect = document.getElementById('specialty');
+    const levelSelect = document.getElementById('level');
+    const startTimeSelect = document.getElementById('createTime');
+    const endTimeSelect = document.getElementById('endTime');
+    const capacityInput = document.getElementById('capacity');
+    const detailEditButton = document.getElementById('detailEditButton');
+    const detailDeleteButton = document.getElementById('detailDeleteButton');
 
-    const formClase = document.getElementById('formClase');
-    const btnGuardarClase = document.getElementById('btnGuardarClase');
+    let selectedLesson = null;
 
-    const inputLessonId = document.getElementById('lesson_id');
-    const inputCoachId = document.getElementById('coach_id');
-    const inputLevel = document.getElementById('level');
-    const inputDayOfWeek = document.getElementById('day_of_week');
-    const inputStartTime = document.getElementById('start_time');
-    const inputEndTime = document.getElementById('end_time');
-    const inputCapacity = document.getElementById('capacity');
+    // Ajusta los horarios de fin según la hora de inicio elegida.
+    function updateEndTimeOptions() {
+        const startTime = startTimeSelect.value;
+        const startHour = parseInt(startTime.substring(0, 2), 10);
 
-    function normalizarHora(value) {
-        if (!value) {
-            return '';
+        Array.from(endTimeSelect.options).forEach((option) => {
+            const optionHour = parseInt(option.value.substring(0, 2), 10);
+            option.disabled = optionHour <= startHour;
+        });
+
+        const nextHour = String(startHour + 1).padStart(2, '0') + ':00:00';
+        if (endTimeSelect.value <= startTime) {
+            endTimeSelect.value = nextHour;
+        }
+    }
+
+    // Devuelve las especialidades del profesor elegido.
+    function getCoachSpecialties() {
+        const selectedOption = coachSelect.options[coachSelect.selectedIndex];
+
+        if (!selectedOption || !selectedOption.dataset.specialties) {
+            return [];
         }
 
-        const time = String(value).trim();
-
-        if (time.length === 5) {
-            return time + ':00';
+        try {
+            return JSON.parse(selectedOption.dataset.specialties);
+        } catch (error) {
+            console.error('No se pudieron leer las especialidades del profesor.', error);
+            return [];
         }
-
-        return time.substring(0, 8);
     }
 
-    function abrirModalClase() {
-        const modalClase =
-            bootstrap.Modal.getInstance(modalClaseElement) ||
-            new bootstrap.Modal(modalClaseElement);
+    // Reconstruye el combo de especialidades según el profesor.
+    function rebuildSpecialtyOptions(selectedValue = '') {
+        const specialties = getCoachSpecialties();
 
-        modalClase.show();
+        specialtySelect.innerHTML = '<option value="">Seleccionar especialidad...</option>';
+
+        specialties.forEach((specialty) => {
+            const option = document.createElement('option');
+            option.value = specialty;
+            option.textContent = specialty;
+            option.selected = specialty === selectedValue;
+            specialtySelect.appendChild(option);
+        });
+
+        if (!specialties.includes(selectedValue)) {
+            specialtySelect.value = '';
+        }
     }
 
-    function limpiarFormularioClase() {
-        formClase.reset();
-
-        inputLessonId.value = '';
-        formClase.action = appUrl + '/?url=admin-create-lesson';
-        modalClaseTitulo.textContent = 'Agregar Clase';
-        btnGuardarClase.textContent = 'Guardar';
+    function openLessonModal() {
+        bootstrap.Modal.getOrCreateInstance(lessonModalElement).show();
     }
 
-    function cargarFormularioEdicion(button) {
-        formClase.reset();
-
-        inputLessonId.value = button.dataset.lessonId || '';
-        inputCoachId.value = button.dataset.coachId || '';
-        inputLevel.value = button.dataset.level || '';
-        inputDayOfWeek.value = button.dataset.dayOfWeek || '';
-        inputStartTime.value = normalizarHora(button.dataset.startTime || '');
-        inputEndTime.value = normalizarHora(button.dataset.endTime || '');
-        inputCapacity.value = button.dataset.capacity || '';
-
-        formClase.action = appUrl + '/?url=admin-edit-lesson';
-        modalClaseTitulo.textContent = 'Editar Clase';
-        btnGuardarClase.textContent = 'Actualizar';
+    function closeLessonModal() {
+        bootstrap.Modal.getOrCreateInstance(lessonModalElement).hide();
     }
 
-    if (btnAbrirModalCrearClase) {
-        btnAbrirModalCrearClase.addEventListener('click', () => {
-            limpiarFormularioClase();
-            abrirModalClase();
+    function closeDetailModal() {
+        bootstrap.Modal.getOrCreateInstance(detailModalElement).hide();
+    }
+
+    // Prepara el formulario para una clase nueva.
+    function setupCreateMode(dayKey, dayName) {
+        lessonForm.reset();
+        lessonForm.action = APP_URL + '/?url=admin-create-lesson';
+        lessonModalTitle.textContent = 'Agregar clase';
+        lessonSubmitButton.textContent = 'Crear clase';
+        lessonIdInput.value = '';
+        lessonDayInput.value = dayKey;
+        lessonDayLabel.textContent = dayName;
+        startTimeSelect.value = '08:00:00';
+        capacityInput.value = '1';
+        rebuildSpecialtyOptions();
+        updateEndTimeOptions();
+    }
+
+    // Carga los datos de una clase para editarla.
+    function setupEditMode(lesson) {
+        lessonForm.reset();
+        lessonForm.action = APP_URL + '/?url=admin-edit-lesson';
+        lessonModalTitle.textContent = 'Editar clase';
+        lessonSubmitButton.textContent = 'Guardar cambios';
+        lessonIdInput.value = lesson.id || '';
+        lessonDayInput.value = lesson.day_of_week || '';
+        lessonDayLabel.textContent = dayNames[dayMap[lesson.day_of_week]] || '';
+        coachSelect.value = lesson.coach_id || '';
+        rebuildSpecialtyOptions(lesson.specialty || '');
+        levelSelect.value = lesson.level || '';
+        startTimeSelect.value = lesson.start_time || '08:00:00';
+        updateEndTimeOptions();
+        endTimeSelect.value = lesson.end_time || '';
+        capacityInput.value = lesson.capacity || 1;
+    }
+
+    // Muestra un mensaje informativo usando el modal compartido.
+    async function showMessage(title, message, acceptClass = 'btn-primary') {
+        await window.mostrarConfirmacion(message, {
+            titulo: title,
+            textoAceptar: 'Aceptar',
+            claseAceptar: acceptClass,
+            mostrarCancelar: false
         });
     }
 
-    botonesEditarClase.forEach((button) => {
-        button.addEventListener('click', () => {
-            cargarFormularioEdicion(button);
-            abrirModalClase();
-        });
+    // Envía el alta o edición al backend.
+    async function submitLessonForm(event) {
+        event.preventDefault();
+
+        const isEditing = lessonIdInput.value !== '';
+        lessonSubmitButton.disabled = true;
+        lessonSubmitButton.textContent = isEditing ? 'Guardando...' : 'Creando...';
+
+        try {
+            const response = await fetch(lessonForm.action, {
+                method: 'POST',
+                body: new FormData(lessonForm),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                closeLessonModal();
+                await showMessage(
+                    isEditing ? 'Clase actualizada' : 'Clase creada',
+                    result.message || 'Operación finalizada.',
+                    'btn-success'
+                );
+                window.location.reload();
+                return;
+            }
+
+            await showMessage(
+                isEditing ? 'No se pudo actualizar' : 'No se pudo crear',
+                result.message || 'No se pudo guardar la clase.',
+                'btn-danger'
+            );
+        } catch (error) {
+            console.error('Error al guardar la clase.', error);
+            await showMessage('Error', 'No se pudo guardar la clase. Revisá la conexión o la respuesta del servidor.', 'btn-danger');
+        } finally {
+            lessonSubmitButton.disabled = false;
+            lessonSubmitButton.textContent = isEditing ? 'Guardar cambios' : 'Crear clase';
+        }
+    }
+
+    // Pide confirmación y borra la clase elegida.
+    async function deleteSelectedLesson() {
+        if (!selectedLesson) {
+            return;
+        }
+
+        const coachName = `${selectedLesson.coach_first_name || ''} ${selectedLesson.coach_last_name || ''}`.trim();
+        const confirmed = await window.mostrarConfirmacion(
+            `Se eliminará la clase de ${coachName || 'sin profesor'} del ${dayNames[dayMap[selectedLesson.day_of_week]]}.`,
+            {
+                titulo: 'Eliminar clase',
+                textoAceptar: 'Eliminar',
+                textoCancelar: 'Cancelar',
+                claseAceptar: 'btn-danger'
+            }
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append('lesson_id', selectedLesson.id);
+
+            const response = await fetch(APP_URL + '/?url=admin-delete-lesson', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                closeDetailModal();
+                await showMessage('Clase eliminada', result.message || 'Clase eliminada correctamente.', 'btn-success');
+                window.location.reload();
+                return;
+            }
+
+            await showMessage('No se pudo eliminar', result.message || 'No se pudo eliminar la clase.', 'btn-danger');
+        } catch (error) {
+            console.error('Error al eliminar la clase.', error);
+            await showMessage('Error', 'No se pudo eliminar la clase. Revisá la conexión o la respuesta del servidor.', 'btn-danger');
+        }
+    }
+
+    // Completa el modal detalle con la clase elegida.
+    function showLessonDetail(dayIdx, lesson) {
+        selectedLesson = lesson;
+
+        const start = lesson.start_time.substring(0, 5);
+        const end = lesson.end_time.substring(0, 5);
+        const enrolled = lesson.enrolled || 0;
+        const coachName = `${lesson.coach_first_name || ''} ${lesson.coach_last_name || ''}`.trim();
+
+        document.getElementById('detailCoach').textContent = coachName || 'Sin profesor';
+        document.getElementById('detailLevel').textContent = lesson.level || '-';
+        document.getElementById('detailSchedule').textContent = `${dayNames[dayIdx]} ${start} - ${end}`;
+        document.getElementById('detailSpecialty').textContent = lesson.specialty || 'Sin especialidad';
+        document.getElementById('detailCapacity').textContent = `${enrolled}/${lesson.capacity}`;
+
+        bootstrap.Modal.getOrCreateInstance(detailModalElement).show();
+    }
+
+    coachSelect.addEventListener('change', () => rebuildSpecialtyOptions());
+    startTimeSelect.addEventListener('change', updateEndTimeOptions);
+    lessonForm.addEventListener('submit', submitLessonForm);
+
+    detailEditButton.addEventListener('click', () => {
+        if (!selectedLesson) {
+            return;
+        }
+
+        closeDetailModal();
+        setupEditMode(selectedLesson);
+        openLessonModal();
     });
 
-    if (formClase && btnGuardarClase) {
-        formClase.addEventListener('submit', async (event) => {
-            event.preventDefault();
+    detailDeleteButton.addEventListener('click', deleteSelectedLesson);
 
-            const esEdicion = inputLessonId.value !== '';
-
-            btnGuardarClase.disabled = true;
-            btnGuardarClase.textContent = esEdicion ? 'Actualizando...' : 'Guardando...';
-
-            try {
-                const formData = new FormData(formClase);
-
-                const response = await fetch(formClase.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                const contentType = response.headers.get('content-type') || '';
-                const rawResponse = await response.text();
-
-                if (!contentType.includes('application/json')) {
-                    console.error('Respuesta no JSON del servidor:', rawResponse);
-
-                    await window.mostrarConfirmacion(
-                        esEdicion
-                            ? 'No se pudo actualizar la clase. El servidor devolvió una respuesta inválida.'
-                            : 'No se pudo crear la clase. El servidor devolvió una respuesta inválida.',
-                        {
-                            titulo: 'Error',
-                            textoAceptar: 'Aceptar',
-                            claseAceptar: 'btn-danger',
-                            mostrarCancelar: false
-                        }
-                    );
-
-                    return;
-                }
-
-                const result = JSON.parse(rawResponse);
-
-                const status = result.status || result.type || '';
-                const message = result.message || 'Operación finalizada.';
-                const redirectUrl = result.redirect || result.url || null;
-
-                if (status === 'success') {
-                    const modalClase =
-                        bootstrap.Modal.getInstance(modalClaseElement) ||
-                        new bootstrap.Modal(modalClaseElement);
-
-                    modalClase.hide();
-
-                    await window.mostrarConfirmacion(
-                        message,
-                        {
-                            titulo: esEdicion ? 'Clase actualizada' : 'Clase creada',
-                            textoAceptar: 'Aceptar',
-                            claseAceptar: 'btn-success',
-                            mostrarCancelar: false
-                        }
-                    );
-
-                    if (redirectUrl) {
-                        window.location.href = redirectUrl;
-                        return;
-                    }
-
-                    window.location.reload();
-                    return;
-                }
-
-                await window.mostrarConfirmacion(
-                    message || (esEdicion ? 'No se pudo actualizar la clase.' : 'No se pudo crear la clase.'),
-                    {
-                        titulo: esEdicion ? 'No se pudo actualizar' : 'No se pudo crear',
-                        textoAceptar: 'Aceptar',
-                        claseAceptar: 'btn-danger',
-                        mostrarCancelar: false
-                    }
-                );
-
-            } catch (error) {
-                console.error('Error capturado:', error);
-
-                await window.mostrarConfirmacion(
-                    esEdicion
-                        ? 'No se pudo actualizar la clase. Revisá la conexión, la ruta o el error del servidor.'
-                        : 'No se pudo crear la clase. Revisá la conexión, la ruta o el error del servidor.',
-                    {
-                        titulo: 'Error',
-                        textoAceptar: 'Aceptar',
-                        claseAceptar: 'btn-danger',
-                        mostrarCancelar: false
-                    }
-                );
-
-            } finally {
-                btnGuardarClase.disabled = false;
-                btnGuardarClase.textContent = esEdicion ? 'Actualizar' : 'Guardar';
-            }
-        });
-    }
-});
-</script>
+    initCalendar({
+        data: lessons,
+        dayMap,
+        dayNames,
+        cardButtonLabel: 'Ver detalle',
+        onCardClick: (dayIdx, lesson) => showLessonDetail(dayIdx, lesson),
+        onAddClick: (dayKey, dayName) => {
+            setupCreateMode(dayKey, dayName);
+            openLessonModal();
+        }
+    });
+    </script>
+</main>
 
 <?php include __DIR__ . '/../layout/footer.php'; ?>

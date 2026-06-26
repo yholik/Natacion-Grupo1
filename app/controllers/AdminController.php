@@ -8,6 +8,7 @@ require_once __DIR__ . '/../models/Admin.php';
 require_once __DIR__ . '/../models/Coach.php';
 require_once __DIR__ . '/../models/Lesson.php';
 require_once __DIR__ . '/../models/Swimmer.php';
+require_once __DIR__ . '/../support/LessonLevel.php';
 
 class AdminController extends BaseController
 {
@@ -248,8 +249,155 @@ class AdminController extends BaseController
         $this->render('users/admin/admin-manage-lessons.view', [
             'title' => 'Gestionar Clases',
             'lessons' => $lessons,
-            'coaches' => $coaches
+            'coaches' => $coaches,
+            'levels' => LessonLevel::all(),
+            'specialties' => $this->coachModel->getAllSpecialties()
         ]);
+    }
+
+    // Crea una clase desde el panel admin.
+    public function createLesson()
+    {
+        $this->checkAuth();
+        $this->checkRole(1);
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $this->json('error', 'Metodo no permitido.');
+        }
+
+        $data = $this->getLessonPayload();
+
+        if ($data === null) {
+            return $this->json('warning', 'Todos los campos son obligatorios y la capacidad debe ser mayor a 0.');
+        }
+
+        if (!LessonLevel::isValid($data['level'])) {
+            return $this->json('warning', 'El nivel seleccionado no es valido.');
+        }
+
+        if ($data['start_time'] >= $data['end_time']) {
+            return $this->json('warning', 'El horario de fin debe ser posterior al de inicio.');
+        }
+
+        if (!$this->lessonModel->create($data)) {
+            return $this->json('error', 'Ya existe una clase en ese horario. No se permite la superposicion.');
+        }
+
+        return $this->json(
+            'success',
+            'Clase creada correctamente.',
+            Env::get('APP_URL') . '/?url=admin-manage-lessons'
+        );
+    }
+
+    // Guarda los cambios de una clase existente.
+    public function editLesson()
+    {
+        $this->checkAuth();
+        $this->checkRole(1);
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $this->json('error', 'Metodo no permitido.');
+        }
+
+        $lessonId = (int) ($_POST['lesson_id'] ?? 0);
+        if ($lessonId <= 0) {
+            return $this->json('error', 'ID de clase invalido.');
+        }
+
+        $data = $this->getLessonPayload();
+
+        if ($data === null) {
+            return $this->json('warning', 'Todos los campos son obligatorios y la capacidad debe ser mayor a 0.');
+        }
+
+        if (!LessonLevel::isValid($data['level'])) {
+            return $this->json('warning', 'El nivel seleccionado no es valido.');
+        }
+
+        if ($data['start_time'] >= $data['end_time']) {
+            return $this->json('warning', 'El horario de fin debe ser posterior al de inicio.');
+        }
+
+        if (!$this->lessonModel->update($lessonId, $data)) {
+            return $this->json('error', 'No se pudo actualizar la clase porque se superpone con otra existente.');
+        }
+
+        return $this->json(
+            'success',
+            'Clase actualizada correctamente.',
+            Env::get('APP_URL') . '/?url=admin-manage-lessons'
+        );
+    }
+
+    // Borra una clase del listado admin.
+    public function deleteLesson()
+    {
+        $this->checkAuth();
+        $this->checkRole(1);
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $this->redirectToManageLessons();
+        }
+
+        $lessonId = (int) ($_POST['lesson_id'] ?? 0);
+        if ($lessonId <= 0) {
+            return $this->respondLessonDeletion('error', 'ID de clase invalido.');
+        }
+
+        if (!$this->lessonModel->delete($lessonId)) {
+            return $this->respondLessonDeletion('error', 'No se pudo eliminar la clase.');
+        }
+
+        return $this->respondLessonDeletion('success', 'Clase eliminada correctamente.');
+    }
+
+    // Vuelve al calendario de clases del admin.
+    private function redirectToManageLessons()
+    {
+        header('Location: ' . Env::get('APP_URL') . '/?url=admin-manage-lessons');
+        exit;
+    }
+
+    // Reune y normaliza los datos del formulario de clases.
+    private function getLessonPayload(): ?array
+    {
+        $data = [
+            'coach_id'    => (int) ($_POST['coach_id'] ?? 0),
+            'specialty'   => trim($_POST['specialty'] ?? ''),
+            'level'       => trim($_POST['level'] ?? ''),
+            'day_of_week' => trim($_POST['day_of_week'] ?? ''),
+            'start_time'  => trim($_POST['start_time'] ?? ''),
+            'end_time'    => trim($_POST['end_time'] ?? ''),
+            'capacity'    => (int) ($_POST['capacity'] ?? 0)
+        ];
+
+        if (
+            $data['coach_id'] <= 0 ||
+            $data['specialty'] === '' ||
+            $data['level'] === '' ||
+            $data['day_of_week'] === '' ||
+            $data['start_time'] === '' ||
+            $data['end_time'] === '' ||
+            $data['capacity'] < 1
+        ) {
+            return null;
+        }
+
+        return $data;
+    }
+
+    // Responde segun si la baja vino por fetch o por form clasico.
+    private function respondLessonDeletion(string $status, string $message)
+    {
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
+            && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+        if ($isAjax) {
+            return $this->json($status, $message, Env::get('APP_URL') . '/?url=admin-manage-lessons');
+        }
+
+        return $this->redirectToManageLessons();
     }
 
     // Lista nadadores activos y dados de baja.

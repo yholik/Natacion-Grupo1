@@ -42,10 +42,19 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Especialidad</label>
-                        <select name="level" class="form-select" required>
+                        <select name="specialty" class="form-select" required>
                             <option value="">Seleccionar especialidad...</option>
                             <?php foreach ($specialties as $specialty): ?>
                             <option value="<?= htmlspecialchars($specialty['name']) ?>"><?= htmlspecialchars($specialty['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nivel</label>
+                        <select name="level" class="form-select" required>
+                            <option value="">Seleccionar nivel...</option>
+                            <?php foreach (($levels ?? []) as $level): ?>
+                            <option value="<?= htmlspecialchars($level) ?>"><?= htmlspecialchars($level) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>

@@ -143,6 +143,9 @@ switch ( $route ) {
     case 'admin-activate-coach':
     case 'admin-activate-swimmer':
     case 'admin-manage-lessons':
+    case 'admin-create-lesson':
+    case 'admin-edit-lesson':
+    case 'admin-delete-lesson':
         require_once __DIR__ . '/../app/controllers/AdminController.php';
         $controller = new AdminController();
 
@@ -159,6 +162,9 @@ switch ( $route ) {
         if ($route === 'admin-activate-coach') { $controller->activateCoach(); }
         if ($route === 'admin-activate-swimmer') { $controller->activateSwimmer(); }
         if($route === 'admin-manage-lessons') { $controller->showAdminManageLessons(); }
+        if($route === 'admin-create-lesson') { $controller->createLesson(); }
+        if($route === 'admin-edit-lesson') { $controller->editLesson(); }
+        if($route === 'admin-delete-lesson') { $controller->deleteLesson(); }
 
         break;
 

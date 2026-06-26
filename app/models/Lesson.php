@@ -33,11 +33,12 @@ class Lesson {
             return false;
         }
 
-        $sql = "INSERT INTO lessons (coach_id, level, day_of_week, start_time, end_time, capacity)
-                VALUES (?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO lessons (coach_id, specialty, level, day_of_week, start_time, end_time, capacity)
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
             $data['coach_id'],
+            $data['specialty'],
             $data['level'],
             $data['day_of_week'],
             $data['start_time'],
@@ -49,12 +50,6 @@ class Lesson {
     // Trae las clases junto al nombre del coach.
     public function getAllWithCoach() {
         $sql = "SELECT l.*, c.first_name AS coach_first_name, c.last_name AS coach_last_name,
-                       (
-                           SELECT GROUP_CONCAT(s.name ORDER BY s.name SEPARATOR ', ')
-                           FROM perfil_specialty ps
-                           INNER JOIN specialties s ON ps.specialty_id = s.id
-                           WHERE ps.profile_id = c.id
-                       ) AS specialty,
                        (SELECT COUNT(*) FROM bookings b WHERE b.lesson_id = l.id AND b.status = 'Confirmed') AS enrolled
                 FROM lessons l
                 INNER JOIN perfil c ON l.coach_id = c.id
@@ -83,6 +78,38 @@ class Lesson {
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$coachId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Actualiza una clase existente.
+    public function update(int $lessonId, array $data): bool
+    {
+        if ($this->hasOverlap($data['coach_id'], $data['day_of_week'], $data['start_time'], $data['end_time'], $lessonId)) {
+            return false;
+        }
+
+        $sql = "UPDATE lessons
+                SET coach_id = ?, specialty = ?, level = ?, day_of_week = ?, start_time = ?, end_time = ?, capacity = ?
+                WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+
+        return $stmt->execute([
+            $data['coach_id'],
+            $data['specialty'],
+            $data['level'],
+            $data['day_of_week'],
+            $data['start_time'],
+            $data['end_time'],
+            $data['capacity'],
+            $lessonId
+        ]);
+    }
+
+    // Elimina una clase por su ID.
+    public function delete(int $lessonId): bool
+    {
+        $stmt = $this->db->prepare("DELETE FROM lessons WHERE id = ?");
+
+        return $stmt->execute([$lessonId]);
     }
 
 }
