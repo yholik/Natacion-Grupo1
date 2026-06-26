@@ -9,9 +9,30 @@ class Lesson {
     public function __construct($pdo) {
         $this->db = $pdo;
     }
+
+    // Verifica si existe superposición de horarios para un coach en un día.
+    public function hasOverlap(int $coachId, string $day, string $start, string $end, ?int $excludeId = null): bool {
+        $sql = "SELECT COUNT(*) FROM lessons
+                WHERE coach_id = ? AND day_of_week = ?
+                  AND start_time < ? AND end_time > ?";
+        $params = [$coachId, $day, $end, $start];
+
+        if ($excludeId !== null) {
+            $sql .= " AND id != ?";
+            $params[] = $excludeId;
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return (int) $stmt->fetchColumn() > 0;
+    }
     
     // Inserta una clase nueva para un coach.
     public function create(array $data) {
+        if ($this->hasOverlap($data['coach_id'], $data['day_of_week'], $data['start_time'], $data['end_time'])) {
+            return false;
+        }
+
         $sql = "INSERT INTO lessons (coach_id, level, day_of_week, start_time, end_time, capacity)
                 VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $this->db->prepare($sql);
@@ -42,6 +63,14 @@ class Lesson {
                 ORDER BY l.day_of_week, l.start_time";
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Busca una clase por su ID.
+    public function getById(int $id) {
+        $sql = "SELECT * FROM lessons WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     // Filtra las clases pertenecientes a un coach.
