@@ -107,7 +107,7 @@ class BaseController
         echo json_encode([
             'status' => $status,
             'message' => $message,
-            'redirect' => $redirect ?? Env::get('APP_URL'), // Sin redirect, va al home
+            'redirect' => $redirect,
             'data' => $data
         ]);
         exit;

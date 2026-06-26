@@ -117,7 +117,6 @@ switch ( $route ) {
     case 'swimmer-my-classes':
     case 'swimmer-enroll':
     case 'swimmer-cancel-enrollment':
-    case 'swimmer-calendar':
         require_once __DIR__ . '/../app/controllers/SwimmerController.php';
         $controller = new SwimmerController();         
 
@@ -126,8 +125,11 @@ switch ( $route ) {
         if ( $route === 'swimmer-my-classes' )          $controller->showMyClasses();
         if ( $route === 'swimmer-enroll' )              $controller->enroll();
         if ( $route === 'swimmer-cancel-enrollment' )   $controller->cancelEnrollment();
-        if ( $route === 'swimmer-calendar' )            $controller->showSwimmerCalendar();
     break;
+
+    case 'swimmer-calendar':
+        header('Location: ?url=swimmer-my-classes');
+        exit;
 
     // --- ADMIN ---
     case 'admin':
