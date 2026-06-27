@@ -30,7 +30,7 @@
         </div>
 
         <div class="col-md-4">
-            <a href="?url=coach-lessons" class="text-decoration-none">
+            <a href="?url=coach-calendar" class="text-decoration-none">
                 <div class="stat-card">
                     <div class="stat-icon">📋</div>
                     <p class="stat-value" id="statClasses"></p>

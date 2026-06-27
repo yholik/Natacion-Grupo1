@@ -40,32 +40,7 @@ $selectedSpecialtyIds = array_map('intval', $coach['specialty_ids'] ?? []);
                 <label class="form-label">Email</label>
                 <input type="email" name="email" class="form-control" id="emailField" value="<?= htmlspecialchars($coach['email'] ?? '') ?>" disabled>
             </div>
-
-            <div class="col-md-6">
-                <label class="form-label d-block">Especialidades</label>
-                <div class="border rounded p-3 w-100">
-                    <div class="row g-2">
-                        <?php foreach ($specialties as $specialty): ?>
-                            <div class="col-12">
-                                <div class="form-check">
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        id="specialty_<?= htmlspecialchars($specialty['id']) ?>"
-                                        name="specialty_ids[]"
-                                        value="<?= htmlspecialchars($specialty['id']) ?>"
-                                        <?= in_array((int) $specialty['id'], $selectedSpecialtyIds, true) ? 'checked' : '' ?>
-                                        disabled
-                                    >
-                                    <label class="form-check-label" for="specialty_<?= htmlspecialchars($specialty['id']) ?>">
-                                        <?= htmlspecialchars($specialty['name']) ?>
-                                    </label>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            </div>
+           
         
         <div class="d-flex gap-2 mt-4">
             <button type="button" class="btn btn-secondary d-none" id="btnCancelProfile">Cancelar</button>
