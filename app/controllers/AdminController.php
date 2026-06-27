@@ -8,7 +8,6 @@ require_once __DIR__ . '/../models/Admin.php';
 require_once __DIR__ . '/../models/Coach.php';
 require_once __DIR__ . '/../models/Lesson.php';
 require_once __DIR__ . '/../models/Swimmer.php';
-require_once __DIR__ . '/../support/LessonLevel.php';
 
 class AdminController extends BaseController
 {
@@ -250,8 +249,8 @@ class AdminController extends BaseController
             'title' => 'Gestionar Clases',
             'lessons' => $lessons,
             'coaches' => $coaches,
-            'levels' => LessonLevel::all(),
-            'specialties' => $this->coachModel->getAllSpecialties()
+            'levels' => $this->lessonModel->getAllLevels(),
+            'specialties' => $this->lessonModel->getAllSpecialties()
         ]);
     }
 
@@ -269,10 +268,6 @@ class AdminController extends BaseController
 
         if ($data === null) {
             return $this->json('warning', 'Todos los campos son obligatorios y la capacidad debe ser mayor a 0.');
-        }
-
-        if (!LessonLevel::isValid($data['level'])) {
-            return $this->json('warning', 'El nivel seleccionado no es valido.');
         }
 
         if ($data['start_time'] >= $data['end_time']) {
@@ -313,10 +308,6 @@ class AdminController extends BaseController
 
         if ($data === null) {
             return $this->json('warning', 'Todos los campos son obligatorios y la capacidad debe ser mayor a 0.');
-        }
-
-        if (!LessonLevel::isValid($data['level'])) {
-            return $this->json('warning', 'El nivel seleccionado no es valido.');
         }
 
         if ($data['start_time'] >= $data['end_time']) {
@@ -378,8 +369,8 @@ class AdminController extends BaseController
     {
         $data = [
             'coach_id'    => (int) ($_POST['coach_id'] ?? 0),
-            'specialty'   => trim($_POST['specialty'] ?? ''),
-            'level'       => trim($_POST['level'] ?? ''),
+            'specialty_id'=> (int) ($_POST['specialty_id'] ?? 0),
+            'level_id'    => (int) ($_POST['level_id'] ?? 0),
             'day_of_week' => trim($_POST['day_of_week'] ?? ''),
             'start_time'  => trim($_POST['start_time'] ?? ''),
             'end_time'    => trim($_POST['end_time'] ?? ''),
@@ -388,8 +379,8 @@ class AdminController extends BaseController
 
         if (
             $data['coach_id'] <= 0 ||
-            $data['specialty'] === '' ||
-            $data['level'] === '' ||
+            $data['specialty_id'] <= 0 ||
+            $data['level_id'] <= 0 ||
             $data['day_of_week'] === '' ||
             $data['start_time'] === '' ||
             $data['end_time'] === '' ||

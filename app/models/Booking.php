@@ -12,13 +12,16 @@ class Booking {
 
     // Trae las reservas del nadador con datos de la clase, coach, especialidad y cupo.
     public function getBySwimmer(int $swimmerId) {
-        $sql = "SELECT b.id AS booking_id, l.id AS lesson_id, l.level, l.day_of_week,
-                       l.start_time, l.end_time, l.capacity, l.specialty,
+        $sql = "SELECT b.id AS booking_id, l.id AS lesson_id, lv.name AS level_name, l.day_of_week,
+                       l.start_time, l.end_time, l.capacity, s.name AS specialty_name,
+                       l.specialty_id, l.level_id,
                        c.first_name AS coach_first_name, c.last_name AS coach_last_name,
                        (SELECT COUNT(*) FROM bookings b2
                         WHERE b2.lesson_id = l.id AND b2.status = 'Confirmed') AS enrolled
                 FROM bookings b
                 INNER JOIN lessons l ON b.lesson_id = l.id
+                INNER JOIN specialties s ON l.specialty_id = s.id
+                INNER JOIN levels lv ON l.level_id = lv.id
                 INNER JOIN perfil c ON l.coach_id = c.id
                 INNER JOIN auth a ON c.user_id = a.id
                 WHERE b.swimmer_id = ? AND b.status = 'Confirmed'

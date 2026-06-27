@@ -33,13 +33,13 @@ class Lesson {
             return false;
         }
 
-        $sql = "INSERT INTO lessons (coach_id, specialty, level, day_of_week, start_time, end_time, capacity)
+        $sql = "INSERT INTO lessons (coach_id, specialty_id, level_id, day_of_week, start_time, end_time, capacity)
                 VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
             $data['coach_id'],
-            $data['specialty'],
-            $data['level'],
+            $data['specialty_id'],
+            $data['level_id'],
             $data['day_of_week'],
             $data['start_time'],
             $data['end_time'],
@@ -47,14 +47,18 @@ class Lesson {
         ]);
     }
 
-    // Trae las clases junto al nombre del coach.
+    // Trae las clases junto al nombre del coach, especialidad y nivel.
     public function getAllWithCoach() {
         $sql = "SELECT l.*, c.first_name AS coach_first_name, c.last_name AS coach_last_name,
+                       s.name AS specialty_name,
+                       lv.name AS level_name,
                        (SELECT COUNT(*) FROM bookings b WHERE b.lesson_id = l.id AND b.status = 'Confirmed') AS enrolled,
                        (SELECT COUNT(*) FROM bookings b WHERE b.lesson_id = l.id) AS total_bookings
                 FROM lessons l
                 INNER JOIN perfil c ON l.coach_id = c.id
                 INNER JOIN auth a ON c.user_id = a.id
+                INNER JOIN specialties s ON l.specialty_id = s.id
+                INNER JOIN levels lv ON l.level_id = lv.id
                 WHERE a.role_id = 2
                 ORDER BY l.day_of_week, l.start_time";
         $stmt = $this->db->query($sql);
@@ -63,7 +67,11 @@ class Lesson {
 
     // Busca una clase por su ID.
     public function getById(int $id) {
-        $sql = "SELECT * FROM lessons WHERE id = ?";
+        $sql = "SELECT l.*, s.name AS specialty_name, lv.name AS level_name
+                FROM lessons l
+                INNER JOIN specialties s ON l.specialty_id = s.id
+                INNER JOIN levels lv ON l.level_id = lv.id
+                WHERE l.id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -72,9 +80,13 @@ class Lesson {
     // Filtra las clases pertenecientes a un coach.
     public function getByCoachId(int $coachId) {
         $sql = "SELECT l.*,
+                       s.name AS specialty_name,
+                       lv.name AS level_name,
                        (SELECT COUNT(*) FROM bookings b WHERE b.lesson_id = l.id AND b.status = 'Confirmed') AS enrolled,
                        (SELECT COUNT(*) FROM bookings b WHERE b.lesson_id = l.id) AS total_bookings
                 FROM lessons l
+                INNER JOIN specialties s ON l.specialty_id = s.id
+                INNER JOIN levels lv ON l.level_id = lv.id
                 WHERE l.coach_id = ?
                 ORDER BY l.day_of_week, l.start_time";
         $stmt = $this->db->prepare($sql);
@@ -90,14 +102,14 @@ class Lesson {
         }
 
         $sql = "UPDATE lessons
-                SET coach_id = ?, specialty = ?, level = ?, day_of_week = ?, start_time = ?, end_time = ?, capacity = ?
+                SET coach_id = ?, specialty_id = ?, level_id = ?, day_of_week = ?, start_time = ?, end_time = ?, capacity = ?
                 WHERE id = ?";
         $stmt = $this->db->prepare($sql);
 
         return $stmt->execute([
             $data['coach_id'],
-            $data['specialty'],
-            $data['level'],
+            $data['specialty_id'],
+            $data['level_id'],
             $data['day_of_week'],
             $data['start_time'],
             $data['end_time'],
@@ -142,4 +154,17 @@ class Lesson {
         $stmt->execute([$lessonId]);
     }
 
+    // Devuelve todos los niveles disponibles.
+    public function getAllLevels(): array
+    {
+        $stmt = $this->db->query("SELECT id, name FROM levels ORDER BY id");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Devuelve todas las especialidades disponibles.
+    public function getAllSpecialties(): array
+    {
+        $stmt = $this->db->query("SELECT id, name FROM specialties ORDER BY name");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

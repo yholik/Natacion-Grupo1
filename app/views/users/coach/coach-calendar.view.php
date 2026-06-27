@@ -42,19 +42,19 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Especialidad</label>
-                        <select name="specialty" class="form-select" required>
+                        <select name="specialty_id" class="form-select" required>
                             <option value="">Seleccionar especialidad...</option>
                             <?php foreach ($specialties as $specialty): ?>
-                            <option value="<?= htmlspecialchars($specialty['name']) ?>"><?= htmlspecialchars($specialty['name']) ?></option>
+                            <option value="<?= (int)$specialty['id'] ?>"><?= htmlspecialchars($specialty['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Nivel</label>
-                        <select name="level" class="form-select" required>
+                        <select name="level_id" class="form-select" required>
                             <option value="">Seleccionar nivel...</option>
                             <?php foreach (($levels ?? []) as $level): ?>
-                            <option value="<?= htmlspecialchars($level) ?>"><?= htmlspecialchars($level) ?></option>
+                            <option value="<?= (int)$level['id'] ?>"><?= htmlspecialchars($level['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -123,19 +123,19 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Especialidad</label>
-                        <select name="specialty" id="editSpecialty" class="form-select" required>
+                        <select name="specialty_id" id="editSpecialty" class="form-select" required>
                             <option value="">Seleccionar especialidad...</option>
                             <?php foreach ($specialties as $specialty): ?>
-                            <option value="<?= htmlspecialchars($specialty['name']) ?>"><?= htmlspecialchars($specialty['name']) ?></option>
+                            <option value="<?= (int)$specialty['id'] ?>"><?= htmlspecialchars($specialty['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Nivel</label>
-                        <select name="level" id="editLevel" class="form-select" required>
+                        <select name="level_id" id="editLevel" class="form-select" required>
                             <option value="">Seleccionar nivel...</option>
                             <?php foreach (($levels ?? []) as $level): ?>
-                            <option value="<?= htmlspecialchars($level) ?>"><?= htmlspecialchars($level) ?></option>
+                            <option value="<?= (int)$level['id'] ?>"><?= htmlspecialchars($level['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -236,8 +236,8 @@
         document.getElementById('editDayLabel').textContent = currentLesson.day_of_week_label;
         document.getElementById('editStartTime').value = currentLesson.start_time;
         document.getElementById('editEndTime').value = currentLesson.end_time;
-        document.getElementById('editSpecialty').value = currentLesson.specialty || '';
-        document.getElementById('editLevel').value = currentLesson.level || '';
+        document.getElementById('editSpecialty').value = currentLesson.specialty_id || '';
+        document.getElementById('editLevel').value = currentLesson.level_id || '';
         document.getElementById('editCapacity').value = currentLesson.capacity || 1;
 
         updateEndTimeOptions(document.getElementById('editEndTime'), currentLesson.start_time);
@@ -261,7 +261,7 @@
         const hasHistory = totalBookings > enrolled;
         const message = hasHistory
             ? `La clase tiene reservas en el historial que se eliminarán. ¿Desea continuar?`
-            : `Se eliminará la clase de ${currentLesson.specialty || 'Sin especialidad'} del día ${currentLesson.day_of_week_label}. ¿Desea continuar?`;
+            : `Se eliminará la clase de ${currentLesson.specialty_name || 'Sin especialidad'} del día ${currentLesson.day_of_week_label}. ¿Desea continuar?`;
 
         const confirmado = await mostrarConfirmacion(
             message,
@@ -299,11 +299,11 @@
             const start = lesson.start_time.substring(0, 5);
             const end = lesson.end_time.substring(0, 5);
             const enrolled = lesson.enrolled || 0;
-            document.getElementById('detailLevel').textContent = lesson.level;
+            document.getElementById('detailLevel').textContent = lesson.level_name;
             document.getElementById('detailSchedule').textContent =
                 dayNames[dayIdx] + ' ' + start + ' - ' + end;
             document.getElementById('detailSpecialty').textContent =
-                lesson.specialty || 'Sin especialidad';
+                lesson.specialty_name || 'Sin especialidad';
             document.getElementById('detailCapacity').textContent =
                 enrolled + '/' + lesson.capacity;
             new bootstrap.Modal(document.getElementById('detailModal')).show();

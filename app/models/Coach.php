@@ -247,9 +247,10 @@ class Coach
     public function getNextClassByCoach(int $userId): array|false
 {
     $stmt = $this->db->prepare("
-        SELECT l.day_of_week, l.start_time, l.level
+        SELECT l.day_of_week, l.start_time, lv.name AS level_name
         FROM lessons l
         INNER JOIN perfil p ON l.coach_id = p.id
+        INNER JOIN levels lv ON l.level_id = lv.id
         WHERE p.user_id = ?
         ORDER BY l.start_time ASC
         LIMIT 1
@@ -518,20 +519,20 @@ class Coach
     l.day_of_week,
     l.start_time,
     l.end_time,
-    l.level,
-    GROUP_CONCAT(s.name SEPARATOR ', ') AS specialty  /* NUEVO: agrupa especialidades */
+    lv.name AS level_name,
+    GROUP_CONCAT(s.name SEPARATOR ', ') AS specialty_names
 FROM bookings b
 INNER JOIN perfil p ON b.swimmer_id = p.id
 INNER JOIN lessons l ON b.lesson_id = l.id
-INNER JOIN perfil_specialty ps ON l.coach_id = ps.profile_id
-INNER JOIN specialties s ON ps.specialty_id = s.id
+INNER JOIN levels lv ON l.level_id = lv.id
+INNER JOIN specialties s ON l.specialty_id = s.id
 WHERE l.coach_id = (SELECT id FROM perfil WHERE user_id = :coachId)
   AND p.deleted_at IS NULL
   AND b.status = 'Confirmed'
   AND (:day1 IS NULL OR l.day_of_week = :day2)
   AND (:time1 IS NULL OR l.start_time = :time2)
-GROUP BY p.id, p.first_name, p.last_name, l.day_of_week, l.start_time, l.end_time, l.level  /* NUEVO */
-HAVING (:specialty1 IS NULL OR SUM(s.id = :specialty2) > 0)  /* NUEVO: filtro especialidad post-agrupacion */
+GROUP BY p.id, p.first_name, p.last_name, l.day_of_week, l.start_time, l.end_time, lv.name
+HAVING (:specialty1 IS NULL OR SUM(s.id = :specialty2) > 0)
 ORDER BY l.day_of_week, l.start_time";
             
     

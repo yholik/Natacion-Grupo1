@@ -4,6 +4,7 @@
 $lessons = $lessons ?? [];
 $coaches = $coaches ?? [];
 $levels = $levels ?? [];
+$specialties = $specialties ?? [];
 
 if (!function_exists('e')) {
     // Escapa texto antes de imprimirlo en la vista.
@@ -98,18 +99,21 @@ $assetUrl = rtrim(Env::get('ASSET_URL'), '/');
                     </div>
 
                     <div class="mb-3">
-                        <label for="specialty" class="form-label">Especialidad</label>
-                        <select id="specialty" name="specialty" class="form-select" required>
+                        <label for="specialty_id" class="form-label">Especialidad</label>
+                        <select id="specialty_id" name="specialty_id" class="form-select" required>
                             <option value="">Seleccionar especialidad...</option>
+                            <?php foreach ($specialties as $specialty): ?>
+                                <option value="<?= e($specialty['id']) ?>"><?= e($specialty['name']) ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label for="level" class="form-label">Nivel</label>
-                        <select id="level" name="level" class="form-select" required>
+                        <label for="level_id" class="form-label">Nivel</label>
+                        <select id="level_id" name="level_id" class="form-select" required>
                             <option value="">Seleccionar nivel...</option>
                             <?php foreach ($levels as $level): ?>
-                                <option value="<?= e($level) ?>"><?= e($level) ?></option>
+                                <option value="<?= e($level['id']) ?>"><?= e($level['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>

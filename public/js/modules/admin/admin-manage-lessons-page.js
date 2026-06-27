@@ -18,8 +18,8 @@ export function initAdminManageLessonsPage() {
     const lessonDayInput = document.getElementById("lessonDay");
     const lessonDayLabel = document.getElementById("lessonDayLabel");
     const coachSelect = document.getElementById("coach_id");
-    const specialtySelect = document.getElementById("specialty");
-    const levelSelect = document.getElementById("level");
+    const specialtySelect = document.getElementById("specialty_id");
+    const levelSelect = document.getElementById("level_id");
     const startTimeSelect = document.getElementById("createTime");
     const endTimeSelect = document.getElementById("endTime");
     const capacityInput = document.getElementById("capacity");
@@ -41,41 +41,6 @@ export function initAdminManageLessonsPage() {
         const nextHour = String(startHour + 1).padStart(2, "0") + ":00:00";
         if (endTimeSelect.value <= startTime) {
             endTimeSelect.value = nextHour;
-        }
-    }
-
-    // Devuelve las especialidades del profesor elegido.
-    function getCoachSpecialties() {
-        const selectedOption = coachSelect.options[coachSelect.selectedIndex];
-
-        if (!selectedOption || !selectedOption.dataset.specialties) {
-            return [];
-        }
-
-        try {
-            return JSON.parse(selectedOption.dataset.specialties);
-        } catch (error) {
-            console.error("No se pudieron leer las especialidades del profesor.", error);
-            return [];
-        }
-    }
-
-    // Reconstruye el combo de especialidades según el profesor.
-    function rebuildSpecialtyOptions(selectedValue = "") {
-        const specialties = getCoachSpecialties();
-
-        specialtySelect.innerHTML = '<option value="">Seleccionar especialidad...</option>';
-
-        specialties.forEach((specialty) => {
-            const option = document.createElement("option");
-            option.value = specialty;
-            option.textContent = specialty;
-            option.selected = specialty === selectedValue;
-            specialtySelect.appendChild(option);
-        });
-
-        if (!specialties.includes(selectedValue)) {
-            specialtySelect.value = "";
         }
     }
 
@@ -102,7 +67,8 @@ export function initAdminManageLessonsPage() {
         lessonDayLabel.textContent = dayName;
         startTimeSelect.value = "08:00:00";
         capacityInput.value = "1";
-        rebuildSpecialtyOptions();
+        specialtySelect.value = "";
+        levelSelect.value = "";
         updateEndTimeOptions();
     }
 
@@ -116,8 +82,8 @@ export function initAdminManageLessonsPage() {
         lessonDayInput.value = lesson.day_of_week || "";
         lessonDayLabel.textContent = dayNames[dayMap[lesson.day_of_week]] || "";
         coachSelect.value = lesson.coach_id || "";
-        rebuildSpecialtyOptions(lesson.specialty || "");
-        levelSelect.value = lesson.level || "";
+        specialtySelect.value = lesson.specialty_id || "";
+        levelSelect.value = lesson.level_id || "";
         startTimeSelect.value = lesson.start_time || "08:00:00";
         updateEndTimeOptions();
         endTimeSelect.value = lesson.end_time || "";
@@ -184,9 +150,19 @@ export function initAdminManageLessonsPage() {
             return;
         }
 
+        const enrolled = selectedLesson.enrolled || 0;
+        if (enrolled > 0) {
+            await showMessage(
+                "Clase con inscriptos",
+                `No se puede eliminar la clase porque tiene ${enrolled} alumno(s) inscripto(s) actualmente. Primero desinscribilos.`,
+                "btn-primary"
+            );
+            return;
+        }
+
         const coachName = `${selectedLesson.coach_first_name || ""} ${selectedLesson.coach_last_name || ""}`.trim();
         const confirmed = await window.mostrarConfirmacion(
-            `Se eliminará la clase de ${coachName || "sin profesor"} del ${dayNames[dayMap[selectedLesson.day_of_week]]}.`,
+            `Se eliminará la clase de ${selectedLesson.specialty_name || "sin especialidad"} del ${dayNames[dayMap[selectedLesson.day_of_week]]}.`,
             {
                 titulo: "Eliminar clase",
                 textoAceptar: "Eliminar",
@@ -237,15 +213,14 @@ export function initAdminManageLessonsPage() {
         const coachName = `${lesson.coach_first_name || ""} ${lesson.coach_last_name || ""}`.trim();
 
         document.getElementById("detailCoach").textContent = coachName || "Sin profesor";
-        document.getElementById("detailLevel").textContent = lesson.level || "-";
+        document.getElementById("detailLevel").textContent = lesson.level_name || "-";
         document.getElementById("detailSchedule").textContent = `${dayNames[dayIdx]} ${start} - ${end}`;
-        document.getElementById("detailSpecialty").textContent = lesson.specialty || "Sin especialidad";
+        document.getElementById("detailSpecialty").textContent = lesson.specialty_name || "Sin especialidad";
         document.getElementById("detailCapacity").textContent = `${enrolled}/${lesson.capacity}`;
 
         bootstrap.Modal.getOrCreateInstance(detailModalElement).show();
     }
 
-    coachSelect.addEventListener("change", () => rebuildSpecialtyOptions());
     startTimeSelect.addEventListener("change", updateEndTimeOptions);
     lessonForm.addEventListener("submit", submitLessonForm);
 
