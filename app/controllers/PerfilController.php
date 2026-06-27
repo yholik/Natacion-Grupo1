@@ -73,12 +73,11 @@ class PerfilController extends BaseController
             $data = [
                 'first_name' => trim($_POST['first_name'] ?? ''),
                 'last_name'  => trim($_POST['last_name'] ?? ''),
-                'phone'      => trim($_POST['phone'] ?? ''),
-                'specialty_ids'  => array_map('intval', $_POST['specialty_ids'] ?? [])
+                'phone'      => trim($_POST['phone'] ?? '')
             ];
 
-            if (empty($data['first_name']) || empty($data['last_name']) || empty($data['specialty_ids'])) {
-                return $this->json('warning', 'Nombre, apellido y especialidades son obligatorios.');
+            if (empty($data['first_name']) || empty($data['last_name'])) {
+                return $this->json('warning', 'Nombre y apellido son obligatorios.');
             }
 
             $uploaded = $this->handleCoachImageUpload($data);
