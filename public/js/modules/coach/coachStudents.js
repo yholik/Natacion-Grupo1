@@ -41,13 +41,16 @@ export function initCoachStudents() {
         try {
             const resp = await fetch('?url=coach-get-specialties');
             const data = await resp.json();
-
             if (data.status === 'success') {
                 data.data.especialidades.forEach(esp => {
                     filterSpecialty.innerHTML += `<option value="${esp.id}">${esp.name}</option>`;
                 });
             }
+console.log(data.data.especialidades)
+
         } catch (error) {
+console.log(data.data.especialidades)
+
             console.error("Error al cargar las especialidades:", error);
         }
     }
