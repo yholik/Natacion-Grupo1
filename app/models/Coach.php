@@ -229,7 +229,7 @@ class Coach
     return (int) $stmt->fetchColumn();
     }
 
-    // Devuelve las especialidades asignadas a un coach por su profile_id.
+    //sirve cuando tenes el dato user_id
     public function getSpecialtiesByCoachId(int $coachId): array
     {
         $sql = "SELECT s.id, s.name
@@ -243,7 +243,7 @@ class Coach
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Devuelve las especialidades de un coach por su perfil.id (para admin).
+    //sirve cuando tenes el dato profile_id
     public function getSpecialtiesByProfileId(int $profileId): array
     {
         $sql = "SELECT s.id, s.name
@@ -273,17 +273,51 @@ class Coach
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
+ public function getStudentsByFilters($coachId, $day, $time, $specialty)
+{
+  $sql = "SELECT 
+    p.first_name, 
+    p.last_name,
+    l.day_of_week,
+    l.start_time,
+    l.end_time,
+    lv.name AS level_name,
+    GROUP_CONCAT(s.name SEPARATOR ', ') AS specialty_names
+FROM bookings b
+INNER JOIN perfil p ON b.swimmer_id = p.id
+INNER JOIN lessons l ON b.lesson_id = l.id
+INNER JOIN levels lv ON l.level_id = lv.id
+INNER JOIN specialties s ON l.specialty_id = s.id
+WHERE l.coach_id = (SELECT id FROM perfil WHERE user_id = :coachId)
+  AND p.deleted_at IS NULL
+  AND b.status = 'Confirmed'
+  AND (:day1 IS NULL OR l.day_of_week = :day2)
+  AND (:time1 IS NULL OR l.start_time = :time2)
+GROUP BY p.id, p.first_name, p.last_name, l.day_of_week, l.start_time, l.end_time, lv.name
+HAVING (:specialty1 IS NULL OR SUM(s.id = :specialty2) > 0)
+ORDER BY l.day_of_week, l.start_time";
+            
 
-
-
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([
+    ':coachId'    => $coachId,
+    ':day1'       => $day ?: null,
+    ':day2'       => $day ?: null,
+    ':time1'      => $time ?: null,
+    ':time2'      => $time ?: null,
+    ':specialty1' => $specialty ?: null,
+    ':specialty2' => $specialty ?: null,
+]);
+    
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
 
 
 /*=======================================*/
-/*            SPECIALTIES                */
+/*   SPECIALTIES . USA EL ADMIN          */
 /*=======================================*/
 
-// Lista las especialidades disponibles para usar en combos y vistas.
     public function getAllSpecialties(): array
     {
         $sql = "
@@ -497,6 +531,7 @@ class Coach
 
         return (int) $stmt->fetchColumn();
     }
+    
 
     // Reemplaza las especialidades asignadas al coach por el nuevo set.
     private function syncCoachSpecialties(int $profileId, array $specialtyIds): bool
@@ -523,48 +558,4 @@ class Coach
         return true;
     }
 
-    public function getStudentsByFilters($coachId, $day, $time, $specialty)
-{
-    // 1. Base de la consulta: Traer alumnos que asisten a las clases de este Coach
-  
-  $sql = "SELECT 
-    p.first_name, 
-    p.last_name,
-    l.day_of_week,
-    l.start_time,
-    l.end_time,
-    lv.name AS level_name,
-    GROUP_CONCAT(s.name SEPARATOR ', ') AS specialty_names
-FROM bookings b
-INNER JOIN perfil p ON b.swimmer_id = p.id
-INNER JOIN lessons l ON b.lesson_id = l.id
-INNER JOIN levels lv ON l.level_id = lv.id
-INNER JOIN specialties s ON l.specialty_id = s.id
-WHERE l.coach_id = (SELECT id FROM perfil WHERE user_id = :coachId)
-  AND p.deleted_at IS NULL
-  AND b.status = 'Confirmed'
-  AND (:day1 IS NULL OR l.day_of_week = :day2)
-  AND (:time1 IS NULL OR l.start_time = :time2)
-GROUP BY p.id, p.first_name, p.last_name, l.day_of_week, l.start_time, l.end_time, lv.name
-HAVING (:specialty1 IS NULL OR SUM(s.id = :specialty2) > 0)
-ORDER BY l.day_of_week, l.start_time";
-            
-    
-  
-
-
-    // 5. Ejecutamos la consulta de forma segura con PDO
-    $stmt = $this->db->prepare($sql);
-    $stmt->execute([
-    ':coachId'    => $coachId,
-    ':day1'       => $day ?: null,
-    ':day2'       => $day ?: null,
-    ':time1'      => $time ?: null,
-    ':time2'      => $time ?: null,
-    ':specialty1' => $specialty ?: null,
-    ':specialty2' => $specialty ?: null,
-]);
-    
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
 }
