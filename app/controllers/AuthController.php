@@ -77,6 +77,7 @@ class AuthController extends BaseController
             'email'         => trim($_POST['email'] ?? ''),
             'password'      => $_POST['password'] ?? '',
             'phone'         => trim($_POST['telefono'] ?? ''),
+            'birth_date'    => !empty($_POST['cumple']) ? trim($_POST['cumple']) : null,
             'profile_image' => 'default-profile.png'
         ];
 
