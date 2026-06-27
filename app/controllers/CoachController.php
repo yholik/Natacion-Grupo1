@@ -6,7 +6,6 @@ require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/Auth.php';
 require_once __DIR__ . '/../models/Coach.php';
 require_once __DIR__ . '/../models/Lesson.php';
-require_once __DIR__ . '/../support/LessonLevel.php';
 
 class CoachController extends BaseController {
 
@@ -65,6 +64,7 @@ class CoachController extends BaseController {
         $coach = $context['coach'];
         $lessons = $this->lessonModel->getByCoachId((int) $coach['id']);
         $specialties = $this->coachModel->getSpecialtiesByCoachId((int) $coach['id']);
+        $levels = $this->lessonModel->getAllLevels();
 
         $this->render(
             'users/coach/coach-calendar.view',
@@ -72,7 +72,7 @@ class CoachController extends BaseController {
                 'title'       => ' - Calendario',
                 'lessons'     => $lessons,
                 'specialties' => $specialties,
-                'levels'      => LessonLevel::all()
+                'levels'      => $levels
             ])
         );
     }
@@ -116,9 +116,6 @@ class CoachController extends BaseController {
 
 
 
-
-
-
     public function getCoachStats()
 {
     $context = $this->getCoachContext();
@@ -154,8 +151,8 @@ class CoachController extends BaseController {
 
         $data = [
             'coach_id'    => (int) $coach['id'],
-            'specialty'   => trim($_POST['specialty'] ?? ''),
-            'level'       => trim($_POST['level'] ?? ''),
+            'specialty_id'=> (int) ($_POST['specialty_id'] ?? 0),
+            'level_id'    => (int) ($_POST['level_id'] ?? 0),
             'day_of_week' => trim($_POST['day_of_week'] ?? ''),
             'start_time'  => trim($_POST['start_time'] ?? ''),
             'end_time'    => trim($_POST['end_time'] ?? ''),
@@ -163,18 +160,14 @@ class CoachController extends BaseController {
         ];
 
         if (
-            empty($data['specialty']) ||
-            empty($data['level']) ||
+            $data['specialty_id'] <= 0 ||
+            $data['level_id'] <= 0 ||
             empty($data['day_of_week']) ||
             empty($data['start_time']) ||
             empty($data['end_time']) ||
             $data['capacity'] < 1
         ) {
             return $this->json('warning', 'Todos los campos son obligatorios y la capacidad debe ser mayor a 0.');
-        }
-
-        if (!LessonLevel::isValid($data['level'])) {
-            return $this->json('warning', 'El nivel seleccionado no es valido.');
         }
 
         if ($data['start_time'] >= $data['end_time']) {
@@ -220,8 +213,8 @@ class CoachController extends BaseController {
 
         $data = [
             'coach_id'    => (int) $coach['id'],
-            'specialty'   => trim($_POST['specialty'] ?? ''),
-            'level'       => trim($_POST['level'] ?? ''),
+            'specialty_id'=> (int) ($_POST['specialty_id'] ?? 0),
+            'level_id'    => (int) ($_POST['level_id'] ?? 0),
             'day_of_week' => trim($_POST['day_of_week'] ?? ''),
             'start_time'  => trim($_POST['start_time'] ?? ''),
             'end_time'    => trim($_POST['end_time'] ?? ''),
@@ -229,18 +222,14 @@ class CoachController extends BaseController {
         ];
 
         if (
-            empty($data['specialty']) ||
-            empty($data['level']) ||
+            $data['specialty_id'] <= 0 ||
+            $data['level_id'] <= 0 ||
             empty($data['day_of_week']) ||
             empty($data['start_time']) ||
             empty($data['end_time']) ||
             $data['capacity'] < 1
         ) {
             return $this->json('warning', 'Todos los campos son obligatorios y la capacidad debe ser mayor a 0.');
-        }
-
-        if (!LessonLevel::isValid($data['level'])) {
-            return $this->json('warning', 'El nivel seleccionado no es valido.');
         }
 
         if ($data['start_time'] >= $data['end_time']) {

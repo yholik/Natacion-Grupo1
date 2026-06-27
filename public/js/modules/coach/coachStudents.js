@@ -124,7 +124,7 @@ export function initCoachStudents() {
                     <td class="text-center">
 
                         <div class="d-flex flex-wrap gap-1">
-                        ${student.specialty ? student.specialty.split(', ').map(actividad => `
+                        ${student.specialty_names ? student.specialty_names.split(', ').map(actividad => `
                          <span class="badge bg-primary">${actividad}</span>
                          `).join('') : '<span class="badge bg-secondary">Sin actividad</span>'}
                         </div>

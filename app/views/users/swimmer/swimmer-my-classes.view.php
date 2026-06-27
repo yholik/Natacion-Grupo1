@@ -36,17 +36,17 @@
                             $end = substr($b['end_time'], 0, 5);
                             $dayEs = $dayTranslations[$b['day_of_week']] ?? $b['day_of_week'];
                         ?>
-                        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
-                            <div class="card h-100 shadow-sm">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h6 class="card-title fw-bold mb-0"><?= htmlspecialchars($b['specialty'] ?? 'Sin especialidad') ?></h6>
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="card-title fw-bold mb-0"><?= htmlspecialchars($b['specialty_name'] ?? 'Sin especialidad') ?></h6>
                                         <span class="badge bg-info">Inscripto</span>
                                     </div>
                                     <div class="card-text text-muted small">
                                         <div class="mb-1"><?= $dayEs ?> · <?= $start ?> - <?= $end ?></div>
                                         <div class="mb-1">Prof. <?= htmlspecialchars(($b['coach_first_name'] ?? '') . ' ' . ($b['coach_last_name'] ?? '')) ?></div>
-                                        <div class="mb-1"><?= htmlspecialchars($b['level']) ?></div>
+                                        <div class="mb-1"><?= htmlspecialchars($b['level_name']) ?></div>
                                     </div>
                                 </div>
                                 <div class="card-footer bg-transparent border-0 pt-0 pb-2 px-3">
@@ -136,13 +136,13 @@
                     const start = booking.start_time.substring(0, 5);
                     const end = booking.end_time.substring(0, 5);
                     const enrolled = booking.enrolled || 0;
-                    document.getElementById('detailLevel').textContent = booking.level;
+                    document.getElementById('detailLevel').textContent = booking.level_name;
                     document.getElementById('detailSchedule').textContent =
                         dayNames[dayIdx] + ' ' + start + ' - ' + end;
                     document.getElementById('detailCoach').textContent =
                         (booking.coach_first_name || '') + ' ' + (booking.coach_last_name || '');
                     document.getElementById('detailSpecialty').textContent =
-                        booking.specialty || 'Sin especialidad';
+                        booking.specialty_name || 'Sin especialidad';
                     document.getElementById('detailCapacity').textContent =
                         enrolled + '/' + booking.capacity;
                     new bootstrap.Modal(document.getElementById('detailModal')).show();

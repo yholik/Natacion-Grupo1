@@ -85,13 +85,13 @@ export function initCalendar(config) {
                 card.innerHTML = `
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="card-title fw-bold mb-0">${escapeHtml(item.specialty || 'Sin especialidad')}</h6>
+                            <h6 class="card-title fw-bold mb-0">${escapeHtml(item.specialty_name || 'Sin especialidad')}</h6>
                             <span class="badge ${badgeClass}">${capacityText}</span>
                         </div>
                         <div class="card-text text-muted small">
                             <div class="mb-1">${start} - ${end}</div>
                             ${item.coach_first_name ? `<div class="mb-1">Prof. ${escapeHtml(item.coach_first_name)} ${escapeHtml(item.coach_last_name)}</div>` : ''}
-                            <div class="mb-1">${escapeHtml(item.level)}</div>
+                            <div class="mb-1">${escapeHtml(item.level_name)}</div>
                         </div>
                     </div>
                     <div class="card-footer bg-transparent border-0 pt-0 pb-2 px-3">

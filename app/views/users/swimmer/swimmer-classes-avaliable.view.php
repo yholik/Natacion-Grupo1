@@ -33,7 +33,7 @@
                         <div class="card h-100 shadow-sm">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h6 class="card-title fw-bold mb-0"><?= htmlspecialchars($lesson['specialty'] ?? 'Sin especialidad') ?></h6>
+                                    <h6 class="card-title fw-bold mb-0"><?= htmlspecialchars($lesson['specialty_name'] ?? 'Sin especialidad') ?></h6>
                                     <?php if ($enrolled): ?>
                                         <span class="badge bg-secondary">Inscripto</span>
                                     <?php elseif ($full): ?>
@@ -45,7 +45,7 @@
                                 <div class="card-text text-muted small">
                                     <div class="mb-1"><?= $dayEs ?> · <?= $start ?> - <?= $end ?></div>
                                     <div class="mb-1">Prof. <?= htmlspecialchars(($lesson['coach_first_name'] ?? '') . ' ' . ($lesson['coach_last_name'] ?? '')) ?></div>
-                                    <div class="mb-1"><?= htmlspecialchars($lesson['level']) ?></div>
+                                    <div class="mb-1"><?= htmlspecialchars($lesson['level_name']) ?></div>
                                 </div>
                             </div>
                             <div class="card-footer bg-transparent border-0 pt-0 pb-2 px-3">
