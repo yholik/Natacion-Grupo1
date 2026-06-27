@@ -59,21 +59,30 @@ $selectedSpecialtyIds = array_map('intval', $coach['specialty_ids'] ?? []);
 
 <form id="updatePasswordForm" class="profile-card">
 <div class="row g-3">
-<div class="col-md-6">
+<div class="col-md-6" style="position:relative">
     <label class="form-label">Contraseña actual</label>
-    <input type="password" name="current_password" class="form-control" disabled>
+    <input type="password" name="current_password" class="form-control" disabled style="padding-right:40px">
+    <button type="button" class="btn-toggle-password" onclick="this.previousElementSibling.type = this.previousElementSibling.type === 'password' ? 'text' : 'password'; this.querySelector('i').classList.toggle('bi-eye'); this.querySelector('i').classList.toggle('bi-eye-slash');" style="position:absolute;right:8px;top:38px;background:none;border:none;cursor:pointer;padding:0">
+        <i class="bi bi-eye" style="font-size:1.1rem;color:#6c757d"></i>
+    </button>
 </div>
 
 
-<div class="col-md-6">
+<div class="col-md-6" style="position:relative">
     <label class="form-label">Nueva contraseña</label>
-    <input  type="password"  name="new_password" class="form-control" disabled>
+    <input type="password" name="new_password" class="form-control" disabled style="padding-right:40px">
+    <button type="button" class="btn-toggle-password" onclick="this.previousElementSibling.type = this.previousElementSibling.type === 'password' ? 'text' : 'password'; this.querySelector('i').classList.toggle('bi-eye'); this.querySelector('i').classList.toggle('bi-eye-slash');" style="position:absolute;right:8px;top:38px;background:none;border:none;cursor:pointer;padding:0">
+        <i class="bi bi-eye" style="font-size:1.1rem;color:#6c757d"></i>
+    </button>
 </div>
 
 
-<div class="col-md-6">
+<div class="col-md-6" style="position:relative">
     <label class="form-label">Confirmar nueva contraseña</label>
-    <input type="password" name="confirm_password" class="form-control"  disabled>
+    <input type="password" name="confirm_password" class="form-control" disabled style="padding-right:40px">
+    <button type="button" class="btn-toggle-password" onclick="this.previousElementSibling.type = this.previousElementSibling.type === 'password' ? 'text' : 'password'; this.querySelector('i').classList.toggle('bi-eye'); this.querySelector('i').classList.toggle('bi-eye-slash');" style="position:absolute;right:8px;top:38px;background:none;border:none;cursor:pointer;padding:0">
+        <i class="bi bi-eye" style="font-size:1.1rem;color:#6c757d"></i>
+    </button>
 </div>
 <div class="d-flex gap-2 mt-4">
     <button type="button" class="btn btn-secondary d-none" id="btnCancelPassword">Cancelar</button>
