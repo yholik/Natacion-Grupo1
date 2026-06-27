@@ -205,11 +205,12 @@ class Coach
     public function countStudentsByCoach(int $userId): int
     {
     $stmt = $this->db->prepare("
-        SELECT COUNT(b.id) 
+        SELECT COUNT(DISTINCT b.swimmer_id) 
         FROM bookings b
         INNER JOIN lessons l ON b.lesson_id = l.id
         INNER JOIN perfil p ON l.coach_id = p.id
-        WHERE p.user_id = ?
+        WHERE p.user_id = ? 
+          AND p.deleted_at IS NULL -- Aseguramos no contar alumnos borrados
     ");
     $stmt->execute([$userId]);
     return (int) $stmt->fetchColumn();

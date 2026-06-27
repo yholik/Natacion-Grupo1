@@ -21,16 +21,17 @@ const btnSavePassword = document.getElementById('btnSavePassword');
 
 
 function toogleBlockMode(fields, isEditing, btnCancel, btnEdit, btnSave){
-
-fields.forEach(field =>{
-
-if(field.id !== 'emailField'){
-        field.removeAttribute('disabled');
+    fields.forEach(field => {
+        if(field.id !== 'emailField'){
+            if (isEditing) {
+                field.removeAttribute('disabled');  // editar: habilita
+            } else {
+                field.setAttribute('disabled', true); // cancelar: deshabilita
+            }
         }
-});
+    });
 
-//habilitacion de botones
-if (isEditing) {
+    if (isEditing) {
         btnEdit?.classList.add('d-none');
         btnSave?.classList.remove('d-none');
         btnCancel?.classList.remove('d-none');
@@ -39,8 +40,7 @@ if (isEditing) {
         btnSave?.classList.add('d-none');
         btnCancel?.classList.add('d-none');
     }   
-
-};
+}
 
 
 
