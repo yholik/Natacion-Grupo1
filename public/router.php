@@ -172,6 +172,7 @@ case 'swimmer-calendar':
     case 'admin-create-lesson':
     case 'admin-edit-lesson':
     case 'admin-delete-lesson':
+    case 'admin-get-coach-specialties':
         require_once __DIR__ . '/../app/controllers/AdminController.php';
         $controller = new AdminController();
 
@@ -191,6 +192,7 @@ case 'swimmer-calendar':
         if($route === 'admin-create-lesson') { $controller->createLesson(); }
         if($route === 'admin-edit-lesson') { $controller->editLesson(); }
         if($route === 'admin-delete-lesson') { $controller->deleteLesson(); }
+        if($route === 'admin-get-coach-specialties') { $controller->getCoachSpecialties(); }
 
         break;
 

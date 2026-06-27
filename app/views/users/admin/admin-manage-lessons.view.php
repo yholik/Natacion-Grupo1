@@ -63,12 +63,12 @@ $assetUrl = rtrim(Env::get('ASSET_URL'), '/');
                                 <?php
                                 $coachId = $coach['id'] ?? '';
                                 $coachFullName = trim(($coach['first_name'] ?? '') . ' ' . ($coach['last_name'] ?? ''));
-                                $specialtyNames = array_values(array_filter(array_map('trim', explode(',', $coach['specialty_names'] ?? ''))));
+                                $specialtyIds = $coach['specialty_ids_csv'] ?? '';
                                 ?>
                                 <option
                                     value="<?= e($coachId) ?>"
                                     data-coach-name="<?= e($coachFullName !== '' ? $coachFullName : 'Profesor ID ' . $coachId) ?>"
-                                    data-specialties="<?= encodeJsonForAttr($specialtyNames) ?>"
+                                    data-specialty-ids="<?= e($specialtyIds) ?>"
                                 >
                                     <?= e($coachFullName !== '' ? $coachFullName : 'Profesor ID ' . $coachId) ?>
                                 </option>
@@ -100,6 +100,7 @@ $assetUrl = rtrim(Env::get('ASSET_URL'), '/');
 
                     <div class="mb-3">
                         <label for="specialty_id" class="form-label">Especialidad</label>
+                        <input type="hidden" name="specialty_id" id="specialty_id_hidden" value="">
                         <select id="specialty_id" name="specialty_id" class="form-select" required>
                             <option value="">Seleccionar especialidad...</option>
                             <?php foreach ($specialties as $specialty): ?>
@@ -110,6 +111,7 @@ $assetUrl = rtrim(Env::get('ASSET_URL'), '/');
 
                     <div class="mb-3">
                         <label for="level_id" class="form-label">Nivel</label>
+                        <input type="hidden" name="level_id" id="level_id_hidden" value="">
                         <select id="level_id" name="level_id" class="form-select" required>
                             <option value="">Seleccionar nivel...</option>
                             <?php foreach ($levels as $level): ?>

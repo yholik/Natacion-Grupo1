@@ -19,7 +19,9 @@ export function initAdminManageLessonsPage() {
     const lessonDayLabel = document.getElementById("lessonDayLabel");
     const coachSelect = document.getElementById("coach_id");
     const specialtySelect = document.getElementById("specialty_id");
+    const specialtyHidden = document.getElementById("specialty_id_hidden");
     const levelSelect = document.getElementById("level_id");
+    const levelHidden = document.getElementById("level_id_hidden");
     const startTimeSelect = document.getElementById("createTime");
     const endTimeSelect = document.getElementById("endTime");
     const capacityInput = document.getElementById("capacity");
@@ -27,6 +29,83 @@ export function initAdminManageLessonsPage() {
     const detailDeleteButton = document.getElementById("detailDeleteButton");
 
     let selectedLesson = null;
+    let allSpecialties = [];
+    let allCoachOptions = [];
+
+    function syncHiddenInputs() {
+        specialtyHidden.value = specialtySelect.value;
+        levelHidden.value = levelSelect.value;
+    }
+
+    function filterCoachesBySpecialty(specialtyId) {
+        const currentCoach = coachSelect.value;
+        const firstOption = coachSelect.querySelector("option:first-child");
+        coachSelect.innerHTML = "";
+        coachSelect.appendChild(firstOption);
+
+        allCoachOptions.forEach((opt) => {
+            if (!specialtyId) {
+                coachSelect.appendChild(opt.cloneNode(true));
+            } else {
+                const ids = (opt.getAttribute("data-specialty-ids") || "").split(",").map((s) => s.trim());
+                if (ids.includes(String(specialtyId))) {
+                    coachSelect.appendChild(opt.cloneNode(true));
+                }
+            }
+        });
+
+        if (currentCoach && coachSelect.querySelector(`option[value="${currentCoach}"]`)) {
+            coachSelect.value = currentCoach;
+        } else {
+            coachSelect.value = "";
+        }
+    }
+
+    function populateSpecialtySelect(specialties, preserveSelected) {
+        const prev = preserveSelected ? specialtySelect.value : "";
+        specialtySelect.innerHTML = '<option value="">Seleccionar especialidad...</option>';
+        specialties.forEach((s) => {
+            const opt = document.createElement("option");
+            opt.value = s.id;
+            opt.textContent = s.name;
+            specialtySelect.appendChild(opt);
+        });
+        if (preserveSelected && prev && specialties.some((s) => String(s.id) === prev)) {
+            specialtySelect.value = prev;
+        } else {
+            specialtySelect.value = "";
+        }
+        syncHiddenInputs();
+    }
+
+    async function fetchCoachSpecialties(coachProfileId) {
+        if (specialtySelect.disabled) {
+            return;
+        }
+        if (!coachProfileId) {
+            populateSpecialtySelect(allSpecialties, false);
+            return;
+        }
+        try {
+            const res = await fetch(appUrl + "/?url=admin-get-coach-specialties&coach_id=" + coachProfileId);
+            const json = await res.json();
+            if (json.status === "success" && json.data.specialties) {
+                populateSpecialtySelect(json.data.specialties, true);
+            } else {
+                populateSpecialtySelect([], false);
+            }
+        } catch (err) {
+            console.error("Error al cargar especialidades del profesor.", err);
+            populateSpecialtySelect([], false);
+        }
+    }
+
+    coachSelect.addEventListener("change", () => {
+        fetchCoachSpecialties(coachSelect.value);
+    });
+
+    specialtySelect.addEventListener("change", syncHiddenInputs);
+    levelSelect.addEventListener("change", syncHiddenInputs);
 
     // Ajusta los horarios de fin según la hora de inicio elegida.
     function updateEndTimeOptions() {
@@ -67,13 +146,19 @@ export function initAdminManageLessonsPage() {
         lessonDayLabel.textContent = dayName;
         startTimeSelect.value = "08:00:00";
         capacityInput.value = "1";
+        coachSelect.value = "";
         specialtySelect.value = "";
         levelSelect.value = "";
+        specialtySelect.disabled = false;
+        levelSelect.disabled = false;
+        populateSpecialtySelect(allSpecialties, false);
+        filterCoachesBySpecialty(null);
         updateEndTimeOptions();
+        syncHiddenInputs();
     }
 
     // Carga los datos de una clase para editarla.
-    function setupEditMode(lesson) {
+    async function setupEditMode(lesson) {
         lessonForm.reset();
         lessonForm.action = appUrl + "/?url=admin-edit-lesson";
         lessonModalTitle.textContent = "Editar clase";
@@ -81,13 +166,23 @@ export function initAdminManageLessonsPage() {
         lessonIdInput.value = lesson.id || "";
         lessonDayInput.value = lesson.day_of_week || "";
         lessonDayLabel.textContent = dayNames[dayMap[lesson.day_of_week]] || "";
-        coachSelect.value = lesson.coach_id || "";
-        specialtySelect.value = lesson.specialty_id || "";
-        levelSelect.value = lesson.level_id || "";
         startTimeSelect.value = lesson.start_time || "08:00:00";
         updateEndTimeOptions();
         endTimeSelect.value = lesson.end_time || "";
         capacityInput.value = lesson.capacity || 1;
+
+        const hasEnrolled = (lesson.enrolled || 0) > 0;
+        specialtySelect.disabled = hasEnrolled;
+        levelSelect.disabled = hasEnrolled;
+
+        if (!hasEnrolled) {
+            await fetchCoachSpecialties(lesson.coach_id || "");
+        }
+        specialtySelect.value = lesson.specialty_id || "";
+        levelSelect.value = lesson.level_id || "";
+        filterCoachesBySpecialty(hasEnrolled ? lesson.specialty_id : null);
+        coachSelect.value = lesson.coach_id || "";
+        syncHiddenInputs();
     }
 
     // Muestra un mensaje informativo usando el modal compartido.
@@ -160,7 +255,6 @@ export function initAdminManageLessonsPage() {
             return;
         }
 
-        const coachName = `${selectedLesson.coach_first_name || ""} ${selectedLesson.coach_last_name || ""}`.trim();
         const confirmed = await window.mostrarConfirmacion(
             `Se eliminará la clase de ${selectedLesson.specialty_name || "sin especialidad"} del ${dayNames[dayMap[selectedLesson.day_of_week]]}.`,
             {
@@ -235,6 +329,16 @@ export function initAdminManageLessonsPage() {
     });
 
     detailDeleteButton.addEventListener("click", deleteSelectedLesson);
+
+    // Guarda todas las especialidades al cargar la pagina.
+    allSpecialties = Array.from(specialtySelect.options)
+        .filter((opt) => opt.value !== "")
+        .map((opt) => ({ id: opt.value, name: opt.textContent }));
+
+    // Guarda todas las opciones de profesores al cargar la pagina.
+    allCoachOptions = Array.from(coachSelect.options)
+        .filter((opt) => opt.value !== "")
+        .map((opt) => opt.cloneNode(true));
 
     initCalendar({
         data: lessons,
