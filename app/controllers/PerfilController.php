@@ -81,8 +81,18 @@ class PerfilController extends BaseController
                 return $this->json('warning', 'Nombre, apellido y especialidades son obligatorios.');
             }
 
+            $uploaded = $this->handleCoachImageUpload($data);
+
+            if ($uploaded === false) {
+                return;
+            }
+
             if ($this->coachModel->updateCoach($userId, $data)) {
                 return $this->json('success', 'Perfil actualizado correctamente.');
+            }
+
+            if ($uploaded && file_exists($uploaded)) {
+                unlink($uploaded);
             }
 
             return $this->json('error', 'Error al actualizar el perfil. Intente nuevamente.');
@@ -228,6 +238,44 @@ class PerfilController extends BaseController
         $lastName = strtolower(str_replace(' ', '', $data['last_name']));
         $randomNumber = rand(1000, 9999);
         $newFileName = 'swimmer_' . $initial . $lastName . '_' . $randomNumber . '.' . $extension;
+        $absolutePath = $uploadDir . $newFileName;
+
+        if (!move_uploaded_file($_FILES['profile_image']['tmp_name'], $absolutePath)) {
+            $this->json('error', 'No se pudo guardar la imagen de perfil.');
+            return false;
+        }
+
+        $data['profile_image'] = $newFileName;
+        $_SESSION['profile_image'] = $newFileName;
+
+        return $absolutePath;
+    }
+
+    // Procesa la foto del coach antes de guardar.
+    private function handleCoachImageUpload(array &$data)
+    {
+        if (!isset($_FILES['profile_image']) || $_FILES['profile_image']['error'] !== UPLOAD_ERR_OK) {
+            return null;
+        }
+
+        $uploadDir = __DIR__ . '/../../public/img/uploads/profiles/swimmers/';
+
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $extension = strtolower(pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION));
+        $allowed = ['jpg', 'jpeg', 'png', 'gif'];
+
+        if (!in_array($extension, $allowed, true)) {
+            $this->json('warning', 'Formato de imagen no válido (jpg, png, gif).');
+            return false;
+        }
+
+        $initial = strtolower(substr($data['first_name'], 0, 1));
+        $lastName = strtolower(str_replace(' ', '', $data['last_name']));
+        $randomNumber = rand(1000, 9999);
+        $newFileName = 'coach_' . $initial . $lastName . '_' . $randomNumber . '.' . $extension;
         $absolutePath = $uploadDir . $newFileName;
 
         if (!move_uploaded_file($_FILES['profile_image']['tmp_name'], $absolutePath)) {
