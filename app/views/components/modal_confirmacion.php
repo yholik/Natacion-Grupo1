@@ -1,8 +1,8 @@
 <!-- Modal reutilizable para confirmar acciones del panel. -->
 <div class="modal fade" id="modalConfirmacionGenerico" tabindex="-1" aria-labelledby="modalConfirmacionGenericoLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content shadow">
-            <div class="modal-header bg-dark text-white">
+        <div class="modal-content">
+            <div class="modal-header">
                 <h5 class="modal-title" id="modalConfirmacionGenericoLabel">
                     Confirmar acción
                 </h5>
@@ -11,11 +11,11 @@
             </div>
 
             <div class="modal-body">
-                <p class="mb-0 fs-5" id="modalConfirmacionMensaje"></p>
+                <p class="mb-0" id="modalConfirmacionMensaje"></p>
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="modalConfirmacionCancelar">
+                <button type="button" class="btn" id="modalConfirmacionCancelar">
                     Cancelar
                 </button>
 
