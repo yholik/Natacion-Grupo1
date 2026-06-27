@@ -14,7 +14,6 @@ class AdminController extends BaseController
     private $adminModel;
     private $coachModel;
     private $swimmerModel;
-    private $pdo;
     private $lessonModel;
 
     // Carga los modelos que usa el admin.
@@ -22,7 +21,6 @@ class AdminController extends BaseController
     {
         global $pdo;
 
-        $this->pdo = $pdo;
         $this->adminModel = new Admin($pdo);
         $this->coachModel = new Coach($pdo);
         $this->swimmerModel = new Swimmer($pdo);
@@ -142,7 +140,29 @@ class AdminController extends BaseController
             return $this->redirectToManageCoaches();
         }
 
+        $profileId = $this->coachModel->getCoachProfileIdByUserId($userId);
+        if ($profileId > 0) {
+            $activeLessons = $this->lessonModel->countActiveLessonsByCoach($profileId);
+            if ($activeLessons > 0) {
+                $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
+                    && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+                if ($isAjax) {
+                    return $this->json('error', 'No se puede dar de baja al profesor porque tiene ' . $activeLessons . ' clase(s) con alumnos inscriptos. Primero eliminá esas clases o cambia de profesor.');
+                }
+
+                return $this->redirectToManageCoaches();
+            }
+        }
+
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
+            && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
         $this->adminModel->deactivateCoach($userId);
+
+        if ($isAjax) {
+            return $this->json('success', 'Profesor dado de baja correctamente.', Env::get('APP_URL') . '/?url=admin-manage-coaches');
+        }
 
         return $this->redirectToManageCoaches();
     }
@@ -219,6 +239,28 @@ class AdminController extends BaseController
             empty($fields['specialty_ids'])
         ) {
             return $this->json('warning', 'Faltan datos obligatorios.');
+        }
+
+        $profileId = $this->coachModel->getCoachProfileIdByUserId($userId);
+        if ($profileId > 0) {
+            $currentSpecialties = $this->coachModel->getSpecialtiesByProfileId($profileId);
+            $currentIds = array_column($currentSpecialties, 'id');
+            $newIds = $fields['specialty_ids'];
+            $removedIds = array_diff($currentIds, $newIds);
+
+            foreach ($removedIds as $specialtyId) {
+                $lessonsCount = $this->lessonModel->countLessonsByCoachAndSpecialty($profileId, $specialtyId);
+                if ($lessonsCount > 0) {
+                    $specialtyName = '';
+                    foreach ($currentSpecialties as $s) {
+                        if ((int) $s['id'] === (int) $specialtyId) {
+                            $specialtyName = $s['name'];
+                            break;
+                        }
+                    }
+                    return $this->json('error', 'No se puede desvincular la especialidad "' . $specialtyName . '" porque el profesor tiene ' . $lessonsCount . ' clase(s) activa(s) con esa especialidad. Primero eliminá o cambia de especialidad esas clases.');
+                }
+            }
         }
 
         $updated = $this->adminModel->updateCoach($userId, $fields);

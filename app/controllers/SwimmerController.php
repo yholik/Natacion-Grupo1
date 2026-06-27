@@ -11,14 +11,12 @@ class SwimmerController extends BaseController {
     private $swimmerModel;
     private $lessonModel;
     private $bookingModel;
-    private $pdo;
 
     // Carga los modelos que usa el panel swimmer.
     public function __construct()
     {
         global $pdo;
 
-        $this->pdo = $pdo;
         $this->swimmerModel = new Swimmer($pdo);
         $this->lessonModel = new Lesson($pdo);
         $this->bookingModel = new Booking($pdo);
@@ -105,21 +103,6 @@ class SwimmerController extends BaseController {
         $bookings = $this->bookingModel->getBySwimmer($swimmer['id']);
         $this->render('users/swimmer/swimmer-my-classes.view', [
             'title'    => 'Mis Clases',
-            'bookings' => $bookings,
-            'swimmer'  => $swimmer
-        ]);
-    }
-
-    // Reutiliza las reservas para armar la agenda.
-    public function showSwimmerCalendar()
-    {
-        $this->checkAuth();
-        $this->checkRole(3);
-        $userId = (int) $_SESSION['user_id'];
-        $swimmer = $this->swimmerModel->getSwimmerById($userId);
-        $bookings = $this->bookingModel->getBySwimmer($swimmer['id']);
-        $this->render('users/swimmer/swimmer-calendar.view', [
-            'title'    => ' - Mi Calendario',
             'bookings' => $bookings,
             'swimmer'  => $swimmer
         ]);

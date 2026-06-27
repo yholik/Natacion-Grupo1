@@ -139,11 +139,26 @@ class Lesson {
         return (int) $stmt->fetchColumn();
     }
 
-    // Cuenta todas las reservas de una clase (cualquier estado).
-    public function countBookings(int $lessonId): int
+    // Cuenta las clases activas de un coach con una especialidad específica.
+    public function countLessonsByCoachAndSpecialty(int $coachId, int $specialtyId): int
     {
-        $stmt = $this->db->prepare("SELECT COUNT(*) FROM bookings WHERE lesson_id = ?");
-        $stmt->execute([$lessonId]);
+        $stmt = $this->db->prepare(
+            "SELECT COUNT(*) FROM lessons WHERE coach_id = ? AND specialty_id = ?"
+        );
+        $stmt->execute([$coachId, $specialtyId]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    // Cuenta las clases de un coach que tienen inscriptos confirmados.
+    public function countActiveLessonsByCoach(int $coachId): int
+    {
+        $stmt = $this->db->prepare(
+            "SELECT COUNT(DISTINCT l.id) 
+             FROM lessons l
+             INNER JOIN bookings b ON b.lesson_id = l.id AND b.status = 'Confirmed'
+             WHERE l.coach_id = ?"
+        );
+        $stmt->execute([$coachId]);
         return (int) $stmt->fetchColumn();
     }
 

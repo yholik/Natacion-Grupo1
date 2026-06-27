@@ -3,23 +3,18 @@
 // Reune lo que usa el profesor en su panel.
 
 require_once __DIR__ . '/../core/BaseController.php';
-require_once __DIR__ . '/../models/Auth.php';
 require_once __DIR__ . '/../models/Coach.php';
 require_once __DIR__ . '/../models/Lesson.php';
 
 class CoachController extends BaseController {
 
     private $coachModel;
-    private $authModel;
     private $lessonModel;
-    private $pdo;
 
     // Prepara los modelos que necesita el rol coach.
     public function __construct()
     {
         global $pdo;
-        $this->pdo = $pdo;
-        $this->authModel = new Auth($pdo);
         $this->coachModel = new Coach($pdo);
         $this->lessonModel = new Lesson($pdo);
     }

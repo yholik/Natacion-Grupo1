@@ -480,7 +480,7 @@ class Coach
     }
 
     // Busca el id de perfil interno del coach a partir del auth id.
-    private function getCoachProfileIdByUserId(int $userId): int
+    public function getCoachProfileIdByUserId(int $userId): int
     {
         $sql = "
             SELECT c.id

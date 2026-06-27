@@ -46,6 +46,7 @@ include __DIR__ . '/../layout/header.php';
                     id="formCrearCoach"
                     action="<?= e($formAction) ?>"
                     method="POST"
+                    <?= $isEdit ? 'data-mode="edit"' : '' ?>
                 >
                     <!-- En edicion se conserva el auth id del profesor para actualizarlo. -->
                     <?php if ($isEdit): ?>

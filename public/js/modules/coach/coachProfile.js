@@ -44,7 +44,7 @@ function toogleBlockMode(fields, isEditing, btnCancel, btnEdit, btnSave){
 
 
 
-async function handleFormSubmit(e, url, succesMessage){
+async function handleFormSubmit(e, url){
 e.preventDefault();
 const formData = new FormData(e.target);
 

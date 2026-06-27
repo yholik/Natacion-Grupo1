@@ -73,9 +73,6 @@ export function initCoachStudents() {
 
         await new Promise(resolve => setTimeout(resolve, 800));
 
-    // recién acá va el fetch
-    const resp = await fetch(`?${params.toString()}`);
-
         try {
             const resp = await fetch(`?${params.toString()}`);
             const data = await resp.json();
