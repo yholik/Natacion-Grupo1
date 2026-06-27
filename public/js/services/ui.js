@@ -45,17 +45,17 @@ export const handleAlert = (status, message, redirectUrl = null) => {
 
     case "error":
       // Errores críticos (ej: fallo en la base de datos o excepción)
-      Swal.fire("System Error", message, "error");
+      Swal.fire("Error", message, "error");
       break;
 
     case "warning":
       // Validaciones de formulario (ej: campos vacíos, contraseñas cortas)
-      Swal.fire("Attention", message, "warning");
+      Swal.fire("Atención", message, "warning");
       break;
 
     default:
       // Avisos generales
-      Swal.fire("Notice", message, "info");
+      Swal.fire("Aviso", message, "info");
       break;
   }
 };
