@@ -47,7 +47,7 @@ Para la aprobación, se evaluará estrictamente el cumplimiento de los siguiente
 ### C. Usuario Swimmer (Nadador)
 * **Panel Personal:** Modificación de datos personales (teléfono, dirección, etc.).
 * **Inscripción a Clases:** * Visualizar oferta de clases disponibles ordenadas por cronograma.
-    * Realizar la inscripción (debe figurar claramente el profesor responsable).
+* Realizar la inscripción (debe figurar claramente el profesor responsable).
 
 ---
 

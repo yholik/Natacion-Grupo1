@@ -20,15 +20,9 @@ export const handleAlert = (status, message, redirectUrl = null) => {
         confirmButtonText: "Ir a Login",
         confirmButtonColor: "#0d6efd",
         allowOutsideClick: false,
-        /*     }).then((result) => {
+             }).then((result) => {
         if (result.isConfirmed && redirectUrl) {  
           window.location.href=redirectUrl;
-        }
-      }); */
-      }).then((result) => {
-        if (result.isConfirmed) {
-          console.log("Redirigiendo a:", redirectUrl); // Mirá qué sale acá en la consola
-          window.location.href = "http://localhost/gestion-natacion/?url=login";
         }
       });
       break;

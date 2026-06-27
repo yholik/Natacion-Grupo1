@@ -1,0 +1,62 @@
+#modalConfirmacionGenerico .modal-content {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+#modalConfirmacionGenerico .modal-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #fff;
+    padding: 1rem 1.25rem;
+    border-bottom: 3px solid #0284c7;
+}
+
+#modalConfirmacionGenerico .modal-header .modal-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.02em;
+}
+
+#modalConfirmacionGenerico .modal-body {
+    padding: 1.75rem 1.5rem 1.25rem;
+}
+
+#modalConfirmacionGenerico .modal-body p {
+    color: #0f172a;
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+#modalConfirmacionGenerico .modal-footer {
+    padding: 0.75rem 1.25rem 1.25rem;
+    border-top: none;
+    gap: 0.5rem;
+}
+
+#modalConfirmacionGenerico .modal-footer .btn {
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+#modalConfirmacionGenerico .modal-footer .btn:active {
+    transform: scale(0.97);
+}
+
+#modalConfirmacionGenerico .btn-secondary {
+    background-color: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #475569;
+}
+
+#modalConfirmacionGenerico .btn-secondary:hover {
+    background-color: #e2e8f0;
+    border-color: #cbd5e1;
+    color: #1e293b;
+}
+
+#modalConfirmacionGenerico .modal-backdrop {
+    backdrop-filter: blur(2px);
+}

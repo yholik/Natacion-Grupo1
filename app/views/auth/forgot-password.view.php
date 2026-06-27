@@ -1,45 +1,44 @@
 <?php include __DIR__ . '/../users/layout/header.php'; ?>
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+<link rel="stylesheet" href="<?= Env::get('ASSET_URL') ?>/css/auth-vistas.css">
 
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-4">
+<div class="login-split-card forgot-split-card">
+    
+    <div class="login-form-side forgot-form-side">
+        <div class="login-form-content">
+            
+            <div class="brand-text-wrapper">
+                <span class="brand-title-text">Club de Natación - El Delfín Saltarín</span>
+                <span class="brand-flag">🚩</span>
+            </div>
 
-                    <h4 class="text-center mb-4">
-                        <i class="bi bi-shield-lock"></i> Recuperar contraseña
-                    </h4>
+            <h2 class="welcome-title">Recuperar contraseña</h2>
+            <p class="welcome-subtitle">Ingresá tu correo electrónico y te enviaremos un enlace para que puedas generar una nueva contraseña.</p>
 
-                    <p class="text-muted text-center small mb-4">
-                        Ingresá tu correo electrónico y te enviaremos un enlace para que puedas generar una nueva
-                        contraseña.
-                    </p>
+            <form id="formForgotPassword" action="?url=send-reset" method="POST">
+                
+                <div class="input-icon-group">
+                    <i class="bi bi-envelope form-icon"></i>
+                    <input type="email" name="email" class="form-control" placeholder="ejemplo@correo.com" required>
+                </div>
 
-                    <form id="formForgotPassword" action="?url=send-reset" method="POST">
+                <button type="submit" class="btn-login-submit">Enviar enlace de recuperación</button>
+            </form>
 
-                        <div class="mb-3">
-                            <label class="form-label">Email registrado</label>
-                            <input type="email" name="email" class="form-control" placeholder="ejemplo@correo.com"
-                                required>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100 py-2">
-                            Enviar enlace de recuperación
-                        </button>
-
-                    </form>
-
-                    <div class="text-center mt-4">
-                        <a href="?url=login" class="text-decoration-none small">
-                            <i class="bi bi-arrow-left"></i> Volver al login
-                        </a>
-                    </div>
-
+            <div class="auth-footer-links">
+                <div class="secondary-link-container">
+                    <a href="?url=login" class="register-link">
+                        <i class="bi bi-arrow-left"></i> Volver al login
+                    </a>
                 </div>
             </div>
 
         </div>
     </div>
+
+    <div class="login-image-side forgot-image-side"></div>
+
 </div>
+
 <?php include __DIR__ . '/../users/layout/footer.php'; ?>

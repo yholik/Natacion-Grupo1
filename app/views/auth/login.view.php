@@ -1,34 +1,51 @@
-<?php include __DIR__ . '/..//users/layout/header.php'; ?>
+<?php include __DIR__ . '/../users/layout/header.php'; ?>
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-4">
-            <div class="card shadow">
-                <div class="card-body">
-                    <h3 class="text-center mb-4">Iniciar Sesión</h3>
-                    <form id="formLogin">
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="email" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Contraseña</label>
-                            <input type="password" name="password" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-success w-100">Entrar</button>
-                    </form>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+<link rel="stylesheet" href="<?= Env::get('ASSET_URL') ?>/css/auth-vistas.css">
 
-                    <hr>
-                    <div class="mt-3 text-center">
-                        <p class="mb-1">¿No tienes cuenta? <a href="?url=register">Regístrate aquí</a></p>
-                        <a href="?url=forgot-password" class="text-muted small">Olvidé mi contraseña</a>
-                    </div>
+<div class="login-split-card flex-grow-1">
+    
+    <div class="login-form-side">
+        <div class="login-form-content">
+            
+            <div class="brand-text-wrapper">
+                <span class="brand-title-text">Club de Natación - El Delfín Saltarín</span>
+                <span class="brand-flag">🚩</span>
+            </div>
+
+            <h2 class="welcome-title">Bienvenido</h2>
+            <p class="welcome-subtitle">Iniciá sesión para continuar</p>
+
+            <form id="formLogin" method="POST">
+                
+                <div class="input-icon-group">
+                    <i class="bi bi-person form-icon"></i>
+                    <input type="email" name="email" class="form-control" placeholder="Correo electrónico" required>
+                </div>
+
+                <div class="input-icon-group">
+                    <i class="bi bi-lock form-icon"></i>
+                    <input type="password" name="password" class="form-control" placeholder="Contraseña" required>
+                </div>
+
+                <button type="submit" class="btn-login-submit">Ingresar</button>
+            </form>
+
+            <div class="auth-footer-links">
+                <a href="?url=forgot-password" class="forgot-link">¿Olvidaste tu contraseña?</a>
+                
+                <div class="secondary-link-container">
+                    <span class="no-account-text">¿No tenés cuenta? </span>
+                    <a href="?url=register" class="register-link">Registrate aquí</a>
                 </div>
             </div>
+
         </div>
     </div>
+
+    <div class="login-image-side">
+    </div>
+
 </div>
-
-
 
 <?php include __DIR__ . '/../users/layout/footer.php'; ?>
