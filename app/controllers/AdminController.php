@@ -349,13 +349,15 @@ class AdminController extends BaseController
             return $this->respondLessonDeletion('error', 'ID de clase invalido.');
         }
 
-        $bookingsCount = $this->lessonModel->countBookings($lessonId);
-        if ($bookingsCount > 0) {
+        $enrolled = $this->lessonModel->countEnrolled($lessonId);
+        if ($enrolled > 0) {
             return $this->respondLessonDeletion(
                 'warning',
-                "No se puede eliminar la clase porque tiene {$bookingsCount} reserva(s) en la base. Desinscribí a los nadadores primero."
+                "No se puede eliminar la clase porque tiene {$enrolled} alumno(s) inscripto(s) actualmente. Desinscribí a los nadadores primero."
             );
         }
+
+        $this->lessonModel->deleteBookingsByLesson($lessonId);
 
         if (!$this->lessonModel->delete($lessonId)) {
             return $this->respondLessonDeletion('error', 'No se pudo eliminar la clase.');

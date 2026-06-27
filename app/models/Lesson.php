@@ -50,7 +50,8 @@ class Lesson {
     // Trae las clases junto al nombre del coach.
     public function getAllWithCoach() {
         $sql = "SELECT l.*, c.first_name AS coach_first_name, c.last_name AS coach_last_name,
-                       (SELECT COUNT(*) FROM bookings b WHERE b.lesson_id = l.id AND b.status = 'Confirmed') AS enrolled
+                       (SELECT COUNT(*) FROM bookings b WHERE b.lesson_id = l.id AND b.status = 'Confirmed') AS enrolled,
+                       (SELECT COUNT(*) FROM bookings b WHERE b.lesson_id = l.id) AS total_bookings
                 FROM lessons l
                 INNER JOIN perfil c ON l.coach_id = c.id
                 INNER JOIN auth a ON c.user_id = a.id
@@ -71,7 +72,8 @@ class Lesson {
     // Filtra las clases pertenecientes a un coach.
     public function getByCoachId(int $coachId) {
         $sql = "SELECT l.*,
-                       (SELECT COUNT(*) FROM bookings b WHERE b.lesson_id = l.id AND b.status = 'Confirmed') AS enrolled
+                       (SELECT COUNT(*) FROM bookings b WHERE b.lesson_id = l.id AND b.status = 'Confirmed') AS enrolled,
+                       (SELECT COUNT(*) FROM bookings b WHERE b.lesson_id = l.id) AS total_bookings
                 FROM lessons l
                 WHERE l.coach_id = ?
                 ORDER BY l.day_of_week, l.start_time";
@@ -131,6 +133,13 @@ class Lesson {
         $stmt = $this->db->prepare("SELECT COUNT(*) FROM bookings WHERE lesson_id = ?");
         $stmt->execute([$lessonId]);
         return (int) $stmt->fetchColumn();
+    }
+
+    // Elimina todas las reservas de una clase (confirmadas y canceladas).
+    public function deleteBookingsByLesson(int $lessonId): void
+    {
+        $stmt = $this->db->prepare("DELETE FROM bookings WHERE lesson_id = ?");
+        $stmt->execute([$lessonId]);
     }
 
 }
