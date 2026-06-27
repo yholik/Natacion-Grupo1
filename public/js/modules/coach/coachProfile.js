@@ -88,12 +88,12 @@ btnCancelPassword?.addEventListener('click', () => {
 
 //envio de form profile
 document.getElementById('updateProfileForm')?.addEventListener('submit', (e) => {
-    handleFormSubmit(e, '?url=coach-update-profile', 'Perfil actualizado');
+    handleFormSubmit(e, '?url=coach-update-profile');
 });
 
 //envio de form passw
 document.getElementById('updatePasswordForm')?.addEventListener('submit', (e) => {
-    handleFormSubmit(e, '?url=update-profile-credentials', 'Perfil actualizado');
+    handleFormSubmit(e, '?url=update-profile-credentials');
 });
 
 }
