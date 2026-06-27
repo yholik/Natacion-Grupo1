@@ -512,14 +512,14 @@ class Coach
 {
     // 1. Base de la consulta: Traer alumnos que asisten a las clases de este Coach
   
-    $sql = "SELECT 
+  $sql = "SELECT 
     p.first_name, 
     p.last_name,
     l.day_of_week,
     l.start_time,
     l.end_time,
     l.level,
-    s.name AS specialty
+    GROUP_CONCAT(s.name SEPARATOR ', ') AS specialty  /* NUEVO: agrupa especialidades */
 FROM bookings b
 INNER JOIN perfil p ON b.swimmer_id = p.id
 INNER JOIN lessons l ON b.lesson_id = l.id
@@ -530,7 +530,8 @@ WHERE l.coach_id = (SELECT id FROM perfil WHERE user_id = :coachId)
   AND b.status = 'Confirmed'
   AND (:day1 IS NULL OR l.day_of_week = :day2)
   AND (:time1 IS NULL OR l.start_time = :time2)
-  AND (:specialty1 IS NULL OR s.id = :specialty2)
+GROUP BY p.id, p.first_name, p.last_name, l.day_of_week, l.start_time, l.end_time, l.level  /* NUEVO */
+HAVING (:specialty1 IS NULL OR SUM(s.id = :specialty2) > 0)  /* NUEVO: filtro especialidad post-agrupacion */
 ORDER BY l.day_of_week, l.start_time";
             
     
