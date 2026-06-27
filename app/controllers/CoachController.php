@@ -63,16 +63,12 @@ class CoachController extends BaseController {
         $context = $this->getCoachContext();
         $coach = $context['coach'];
         $lessons = $this->lessonModel->getByCoachId((int) $coach['id']);
-        $specialties = $this->coachModel->getSpecialtiesByCoachId((int) $coach['id']);
-        $levels = $this->lessonModel->getAllLevels();
 
         $this->render(
             'users/coach/coach-calendar.view',
             array_merge($context, [
-                'title'       => ' - Calendario',
-                'lessons'     => $lessons,
-                'specialties' => $specialties,
-                'levels'      => $levels
+                'title'   => ' - Calendario',
+                'lessons' => $lessons
             ])
         );
     }
@@ -136,155 +132,19 @@ class CoachController extends BaseController {
     // crear clase nueva para el coach logueado.
     public function createLesson()
     {
-        $this->checkAuth();
-        $this->checkRole(2);
-
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return $this->json('error', 'Metodo no permitido.');
-        }
-
-        $userId = (int) $_SESSION['user_id'];
-        $coach = $this->coachModel->getCoachById($userId);
-        if (!$coach) {
-            return $this->json('error', 'Perfil de coach no encontrado.');
-        }
-
-        $data = [
-            'coach_id'    => (int) $coach['id'],
-            'specialty_id'=> (int) ($_POST['specialty_id'] ?? 0),
-            'level_id'    => (int) ($_POST['level_id'] ?? 0),
-            'day_of_week' => trim($_POST['day_of_week'] ?? ''),
-            'start_time'  => trim($_POST['start_time'] ?? ''),
-            'end_time'    => trim($_POST['end_time'] ?? ''),
-            'capacity'    => (int) ($_POST['capacity'] ?? 0)
-        ];
-
-        if (
-            $data['specialty_id'] <= 0 ||
-            $data['level_id'] <= 0 ||
-            empty($data['day_of_week']) ||
-            empty($data['start_time']) ||
-            empty($data['end_time']) ||
-            $data['capacity'] < 1
-        ) {
-            return $this->json('warning', 'Todos los campos son obligatorios y la capacidad debe ser mayor a 0.');
-        }
-
-        if ($data['start_time'] >= $data['end_time']) {
-            return $this->json('warning', 'El horario de fin debe ser posterior al de inicio.');
-        }
-
-        if ($this->lessonModel->create($data)) {
-            return $this->json('success', 'Clase creada correctamente.', '?url=coach-calendar');
-        }
-
-        return $this->json('error', 'Ya existe una clase en ese horario. No se permite la superposición.');
+        return $this->json('error', 'No tenes permiso para crear clases. Solo el administrador puede gestionar clases.');
     }
 
     // Actualiza una clase existente del coach logueado.
     public function editLesson()
     {
-        $this->checkAuth();
-        $this->checkRole(2);
-
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return $this->json('error', 'Metodo no permitido.');
-        }
-
-        $userId = (int) $_SESSION['user_id'];
-        $coach = $this->coachModel->getCoachById($userId);
-        if (!$coach) {
-            return $this->json('error', 'Perfil de coach no encontrado.');
-        }
-
-        $lessonId = (int) ($_POST['lesson_id'] ?? 0);
-        if ($lessonId <= 0) {
-            return $this->json('error', 'Clase no valida.');
-        }
-
-        $lesson = $this->lessonModel->getById($lessonId);
-        if (!$lesson) {
-            return $this->json('error', 'La clase no existe.');
-        }
-
-        if ((int) $lesson['coach_id'] !== (int) $coach['id']) {
-            return $this->json('error', 'No tenes permiso para editar esta clase.');
-        }
-
-        $data = [
-            'coach_id'    => (int) $coach['id'],
-            'specialty_id'=> (int) ($_POST['specialty_id'] ?? 0),
-            'level_id'    => (int) ($_POST['level_id'] ?? 0),
-            'day_of_week' => trim($_POST['day_of_week'] ?? ''),
-            'start_time'  => trim($_POST['start_time'] ?? ''),
-            'end_time'    => trim($_POST['end_time'] ?? ''),
-            'capacity'    => (int) ($_POST['capacity'] ?? 0)
-        ];
-
-        if (
-            $data['specialty_id'] <= 0 ||
-            $data['level_id'] <= 0 ||
-            empty($data['day_of_week']) ||
-            empty($data['start_time']) ||
-            empty($data['end_time']) ||
-            $data['capacity'] < 1
-        ) {
-            return $this->json('warning', 'Todos los campos son obligatorios y la capacidad debe ser mayor a 0.');
-        }
-
-        if ($data['start_time'] >= $data['end_time']) {
-            return $this->json('warning', 'El horario de fin debe ser posterior al de inicio.');
-        }
-
-        if ($this->lessonModel->update($lessonId, $data)) {
-            return $this->json('success', 'Clase actualizada correctamente.', '?url=coach-calendar');
-        }
-
-        return $this->json('error', 'Ya existe una clase en ese horario. No se permite la superposición.');
+        return $this->json('error', 'No tenes permiso para editar clases. Solo el administrador puede gestionar clases.');
     }
 
     // Elimina una clase del coach logueado si no tiene inscritos.
     public function deleteLesson()
     {
-        $this->checkAuth();
-        $this->checkRole(2);
-
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return $this->json('error', 'Metodo no permitido.');
-        }
-
-        $userId = (int) $_SESSION['user_id'];
-        $coach = $this->coachModel->getCoachById($userId);
-        if (!$coach) {
-            return $this->json('error', 'Perfil de coach no encontrado.');
-        }
-
-        $lessonId = (int) ($_POST['lesson_id'] ?? 0);
-        if ($lessonId <= 0) {
-            return $this->json('error', 'Clase no valida.');
-        }
-
-        $lesson = $this->lessonModel->getById($lessonId);
-        if (!$lesson) {
-            return $this->json('error', 'La clase no existe.');
-        }
-
-        if ((int) $lesson['coach_id'] !== (int) $coach['id']) {
-            return $this->json('error', 'No tenes permiso para eliminar esta clase.');
-        }
-
-        $enrolled = $this->lessonModel->countEnrolled($lessonId);
-        if ($enrolled > 0) {
-            return $this->json('error', 'No se puede eliminar la clase porque tiene ' . $enrolled . ' alumno(s) inscripto(s) actualmente. Primero desinscribilos.');
-        }
-
-        $this->lessonModel->deleteBookingsByLesson($lessonId);
-
-        if ($this->lessonModel->delete($lessonId)) {
-            return $this->json('success', 'Clase eliminada correctamente.', '?url=coach-calendar');
-        }
-
-        return $this->json('error', 'No se pudo eliminar la clase.');
+        return $this->json('error', 'No tenes permiso para eliminar clases. Solo el administrador puede gestionar clases.');
     }
 
     public function createSpecialty()

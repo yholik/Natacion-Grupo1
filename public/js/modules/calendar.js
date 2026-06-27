@@ -98,7 +98,7 @@ export function initCalendar(config) {
                         <button class="btn btn-sm btn-outline-${full ? 'secondary' : 'success'} w-100 btn-card-action" 
                                 data-lesson-id="${item.id}"
                                 ${full && !item.booking_id ? 'disabled' : ''}>
-                            ${cardButtonLabel || (item.booking_id ? 'Cancelar' : (full ? 'Lleno' : 'Inscribirme'))}
+                            ${cardButtonLabel || (item.booking_id ? 'Cancelar' : (full ? 'Ver detalle' : 'Inscribirme'))}
                         </button>
                     </div>
                 `;
