@@ -254,6 +254,26 @@ class AdminController extends BaseController
         ]);
     }
 
+    // Devuelve las especialidades de un profesor por su perfil.id (JSON).
+    public function getCoachSpecialties()
+    {
+        $this->checkAuth();
+        $this->checkRole(1);
+
+        $profileId = (int) ($_GET['coach_id'] ?? 0);
+        if ($profileId <= 0) {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'data' => ['specialties' => []]]);
+            exit;
+        }
+
+        $specialties = $this->coachModel->getSpecialtiesByProfileId($profileId);
+
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'success', 'data' => ['specialties' => $specialties]]);
+        exit;
+    }
+
     // Crea una clase desde el panel admin.
     public function createLesson()
     {
@@ -300,7 +320,8 @@ class AdminController extends BaseController
             return $this->json('error', 'ID de clase invalido.');
         }
 
-        if (!$this->lessonModel->getById($lessonId)) {
+        $current = $this->lessonModel->getById($lessonId);
+        if (!$current) {
             return $this->json('error', 'La clase no existe.');
         }
 
@@ -312,6 +333,16 @@ class AdminController extends BaseController
 
         if ($data['start_time'] >= $data['end_time']) {
             return $this->json('warning', 'El horario de fin debe ser posterior al de inicio.');
+        }
+
+        $enrolled = $this->lessonModel->countEnrolled($lessonId);
+        if ($enrolled > 0) {
+            if ((int) $data['specialty_id'] !== (int) $current['specialty_id']) {
+                return $this->json('error', 'No se puede cambiar la especialidad porque la clase tiene ' . $enrolled . ' alumno(s) inscripto(s). Primero desinscribilos.');
+            }
+            if ((int) $data['level_id'] !== (int) $current['level_id']) {
+                return $this->json('error', 'No se puede cambiar el nivel porque la clase tiene ' . $enrolled . ' alumno(s) inscripto(s). Primero desinscribilos.');
+            }
         }
 
         if (!$this->lessonModel->update($lessonId, $data)) {
