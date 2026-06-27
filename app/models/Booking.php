@@ -71,4 +71,14 @@ class Booking {
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$bookingId]);
     }
+
+    // Cancela todas las reservas activas de un nadador usando su user_id (auth.id).
+    public function cancelAllByUserId(int $userId) {
+        $sql = "UPDATE bookings b
+                INNER JOIN perfil p ON b.swimmer_id = p.id
+                SET b.status = 'Cancelled'
+                WHERE p.user_id = ? AND b.status = 'Confirmed'";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$userId]);
+    }
 }

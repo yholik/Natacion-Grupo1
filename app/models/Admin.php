@@ -4,6 +4,7 @@
 // Encapsula las altas y cambios que hace el admin sobre otros usuarios.
 
 require_once __DIR__ . '/Auth.php';
+require_once __DIR__ . '/Booking.php';
 require_once __DIR__ . '/Coach.php';
 require_once __DIR__ . '/Swimmer.php';
 require_once __DIR__ . '/../services/MailService.php';
@@ -13,6 +14,7 @@ class Admin
 {
     private $db;
     private $authModel;
+    private $bookingModel;
     private $coachModel;
     private $swimmerModel;
     private $mailService;
@@ -23,6 +25,7 @@ class Admin
     {
         $this->db = $pdo;
         $this->authModel = new Auth($pdo);
+        $this->bookingModel = new Booking($pdo);
         $this->coachModel = new Coach($pdo);
         $this->swimmerModel = new Swimmer($pdo);
         $this->mailService = new MailService();
@@ -180,12 +183,14 @@ class Admin
         }
     }
 
-    // Da de baja lógica a un nadador.
+    // Da de baja lógica a un nadador y cancela sus inscripciones activas.
     public function deactivateSwimmer(int $userId): bool
     {
         if ($userId <= 0) {
             return false;
         }
+
+        $this->bookingModel->cancelAllByUserId($userId);
 
         return $this->swimmerModel->deactivateByUserId($userId);
     }
