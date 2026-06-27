@@ -1,3 +1,5 @@
+import { initCropper } from '../cropperMain.js';
+
 export function initCoachProfile(){
       const form = document.getElementById("updateProfileForm");
     if (!form) return;
@@ -16,6 +18,8 @@ const btnSaveProfile = document.getElementById('btnSaveProfile');
 const btnCancelPassword = document.getElementById('btnCancelPassword');
 const btnEditPassword = document.getElementById('btnEditPassword');
 const btnSavePassword = document.getElementById('btnSavePassword');
+
+let profileCropper = null;
 
 
 
@@ -47,6 +51,13 @@ function toogleBlockMode(fields, isEditing, btnCancel, btnEdit, btnSave){
 async function handleFormSubmit(e, url){
 e.preventDefault();
 const formData = new FormData(e.target);
+
+if (profileCropper) {
+    const croppedFile = profileCropper.getCroppedFile();
+    if (croppedFile) {
+        formData.set('profile_image', croppedFile, croppedFile.name);
+    }
+}
 
 try{
     const resp = await fetch(url, { method: 'POST', body: formData });
@@ -95,5 +106,11 @@ document.getElementById('updateProfileForm')?.addEventListener('submit', (e) => 
 document.getElementById('updatePasswordForm')?.addEventListener('submit', (e) => {
     handleFormSubmit(e, '?url=update-profile-credentials');
 });
+
+// Inicializar cropper para foto de perfil
+const fileInput = form.querySelector('input[name="profile_image"]');
+if (fileInput && typeof initCropper !== 'undefined') {
+    profileCropper = initCropper(fileInput, { aspectRatio: 1 });
+}
 
 }

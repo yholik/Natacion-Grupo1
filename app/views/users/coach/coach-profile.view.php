@@ -20,8 +20,13 @@ $selectedSpecialtyIds = array_map('intval', $coach['specialty_ids'] ?? []);
     <h2 class="coach-title">Mis datos personales</h2>
         <p class="coach-subtitle">Actualiza datos personales desde este panel</p>
     </div>
-    <form id="updateProfileForm" class="profile-card">
+    <form id="updateProfileForm" class="profile-card" enctype="multipart/form-data">
         <div class="row g-3">
+            <div class="col-md-12 text-center mb-3">
+                <img src="<?= rtrim(Env::get('ASSET_URL'), '/') ?>/img/uploads/profiles/swimmers/<?= htmlspecialchars($coach['profile_image'] ?? 'default-profile.png') ?>"
+                    alt="Foto" class="rounded-circle" style="width:100px;height:100px;object-fit:cover">
+            </div>
+
             <div class="col-md-6">
                 <label class="form-label">Nombre</label>
                 <input type="text" name="first_name" class="form-control" value="<?= htmlspecialchars($coach['first_name'] ?? '') ?>" disabled>
@@ -41,8 +46,12 @@ $selectedSpecialtyIds = array_map('intval', $coach['specialty_ids'] ?? []);
                 <label class="form-label">Email</label>
                 <input type="email" name="email" class="form-control" id="emailField" value="<?= htmlspecialchars($coach['email'] ?? '') ?>" disabled>
             </div>
+
+            <div class="col-md-12">
+                <label class="form-label">Foto de Perfil</label>
+                <input type="file" name="profile_image" class="form-control" accept="image/*" disabled>
+            </div>
            
-        
         <div class="d-flex gap-2 mt-4">
             <button type="button" class="btn btn-secondary d-none" id="btnCancelProfile">Cancelar</button>
             <button type="button" class="btn btn-secondary" id="btnEditProfile">Editar</button>
@@ -94,6 +103,7 @@ $selectedSpecialtyIds = array_map('intval', $coach['specialty_ids'] ?? []);
 
 </div>
 </main>
+<?php require_once __DIR__ . '/../../components/cropper-modal.php'; ?>
 <script type="module" src="<?= Env::get('ASSET_URL') ?>/js/modules/coachMain.js"></script>
 
 <?php include __DIR__ . '/../layout/footer.php'; ?>
