@@ -27,7 +27,9 @@ $route = $_GET[ 'url' ] ?? 'landing';
 */
 switch ( $route ) {
 
-    // --- VISTA PÚBLICA DE BIENVENIDA ---
+/*====================================*/
+/*           RUTAS PUBLICAS           */
+/*====================================*/
     case 'landing':
         //Aquí mostramos el landing previo al inicio de sesión
         require_once __DIR__ .'/../app/controllers/HomeController.php';
@@ -41,7 +43,10 @@ switch ( $route ) {
     ( new HomeController() )->index();
     break;
 
-    // --- MÓDULO DE USUARIOS Y AUTENTICACIÓN ---
+
+/*====================================*/
+/*           AUTH & USERS          */
+/*====================================*/
     // Agrupamos rutas relacionadas para evitar repetir el require_once
     case 'login':
     case 'authenticate':
@@ -66,7 +71,10 @@ switch ( $route ) {
     if ( $route === 'update-password' ) $controller->updatePassword();
     break;
 
-    // --- PERFIL ---
+
+/*====================================*/
+/*           RUTAS DE PROFILE         */
+/*====================================*/
     case 'profile':
     case 'profile-update':
     case 'coach-profile':
@@ -82,7 +90,11 @@ switch ( $route ) {
         if($route === 'update-profile-credentials') $controller->updatePassword();
         break;
 
-    // --- COACH ---
+    
+
+/*====================================*/
+/*           RUTAS DE COACH           */
+/*====================================*/
     case 'coach':   
     case 'coach-home':
     case 'coach-lessons':
@@ -93,6 +105,8 @@ switch ( $route ) {
     case 'admin-edit-specialty':
     case 'admin-delete-specialty':
     case 'coach-stats':
+    case 'coach-get-specialties':
+    case 'coach-get-students':
     
         require_once __DIR__ . '/../app/controllers/CoachController.php';
         $controller = new CoachController();         
@@ -102,21 +116,28 @@ switch ( $route ) {
         if ( $route === 'coach-calendar' ) $controller->showCoachCalendar();
         if ( $route === 'coach-create-lesson' ) $controller->createLesson();
         if($route === 'coach-stats' ) $controller->getCoachStats();
+        if($route === 'coach-get-specialties') $controller->getSpecialtiesJSON();
+        if($route === 'coach-get-students' ) $controller->getCoachStudents();
         
 
         //especialidades
-        if ( $route === 'admin-manage-specialties' ) $controller->getAllEspecialidades();
+        if ( $route === 'admin-manage-specialties' ) $controller->showAllEspecialidades();
         if ( $route === 'admin-create-specialty' ) $controller->createSpecialty();
         if ( $route === 'admin-edit-specialty' ) $controller->updateSpecialty();
         if ( $route === 'admin-delete-specialty' ) $controller->deleteSpecialty();
         break;
 
-    /// --- SWIMMER ---
+  
+
+/*====================================*/
+/*           RUTAS DE SWIMMER         */
+/*====================================*/
     case 'swimmer':  
     case 'swimmer-classes-avaliable':
     case 'swimmer-my-classes':
     case 'swimmer-enroll':
-    case 'swimmer-cancel-enrollment':
+    case 'swimmer-cancel-enrollment':      
+
         require_once __DIR__ . '/../app/controllers/SwimmerController.php';
         $controller = new SwimmerController();         
 
@@ -126,10 +147,15 @@ switch ( $route ) {
         if ( $route === 'swimmer-enroll' )              $controller->enroll();
         if ( $route === 'swimmer-cancel-enrollment' )   $controller->cancelEnrollment();
     break;
-
-    case 'swimmer-calendar':
+case 'swimmer-calendar':
         header('Location: ?url=swimmer-my-classes');
         exit;
+  
+
+/*====================================*/
+/*           RUTAS DE ADMIN           */
+/*====================================*/
+   
 
     // --- ADMIN ---
     case 'admin':
@@ -171,7 +197,10 @@ switch ( $route ) {
         break;
 
 
-    // --- SEGURIDAD: CIERRE DE SESIÓN ---
+
+/*====================================*/
+/*          SECURITY/LOGOUT           */
+/*====================================*/
     case 'logout':
     /**
     * Para destruir una sesión, primero debemos estar seguros de que

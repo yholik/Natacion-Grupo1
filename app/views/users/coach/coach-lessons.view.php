@@ -15,41 +15,35 @@
             <div class=" col-md-3">
                 <label class="form-label">Día</label>
                 <select class="form-select" id="filterDay">
-                    <option value="">Todos</option>
-                    <option value="Monday">Lunes</option>
-                    <option value="Tuesday">Martes</option>
-                    <option value="Wednesday">Miércoles</option>
-                    <option value="Thursday">Jueves</option>
-                    <option value="Friday">Viernes</option>
-                    <option value="Saturday">Sábado</option>
+                    <option value="">Todos</option>                    
                 </select>
             </div>
+
             <div class="col-md-3">
                 <label class="form-label">Horario</label>
                 <select class="form-select" id="filterTime">
-                    <option value="">Todos</option>
-                    <option value="08:00">08:00</option>
-                    <option value="10:00">10:00</option>
-                    <option value="16:00">16:00</option>
-                    <option value="18:00">18:00</option>
+                    <option value="">Todos</option>    
+                                 
                 </select>
             </div>
+
+
             <div class="col-md-3">
                 <label class="form-label">Especialidad</label>
                 <select class="form-select" id="filterSpecialty">
                     <!-- Estas opciones deberían generarse dinámicamente desde la base de datos , lo hago luego con foreach
                      recorriendo la bd-->
-                    <option value="">Todas</option>
-                    <option value="natacion">Natación</option>
-                    <option value="waterpolo">Waterpolo</option>
-                    <option value="sincronizada">Natación sincronizada</option>
+                    <option value="">Todas</option>                
                 </select>
             </div>
+
             <div class="col-md-3">
             <button type="button" class="btn btn-primary w-100" id="btnSearch">
                 Buscar
             </button>
         </div>
+
+
         </div>
 
         <div id="resultsContainer">
@@ -60,5 +54,7 @@
     </div>
 
 </main>
+
+<script type="module" src="<?= Env::get('ASSET_URL') ?>/js/modules/coachMain.js"></script>
 
 <?php include __DIR__ . '/../layout/footer.php'; ?>

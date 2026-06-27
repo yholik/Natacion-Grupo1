@@ -11,7 +11,7 @@
 <div class="coach-content flex-grow-1">
     
     <!-- Header de bienvenida -->
-    <div class="coach-welcome mb-5">
+    <div class="coach-welcome mb-5" id="welcome-coach">
         <h1 class="coach-title">Bienvenido, <?= htmlspecialchars($_SESSION['first_name']) ?></h1>
         <p class="coach-subtitle">Resumen de tu actividad</p>
     </div>
@@ -43,11 +43,15 @@
             <a href="?url=coach-calendar" class="text-decoration-none">
                 <div class="stat-card">
                     <div class="stat-icon">📅</div>
-                    <p class="stat-value" id="statNextClass"></p>
+                    
                     <p class="stat-label">Próxima clase</p>
+                    <p class="stat-value" id="statNextClass"></p>
                 </div>
             </a>
         </div>
+
+    </div>
+</div>
 
 </main>
 

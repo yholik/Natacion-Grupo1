@@ -66,7 +66,7 @@ body {
 /* IMAGE BLOCK (Base) */
 .login-image-side {
     flex: 1.2;
-    background-image: url('https://images.pexels.com/photos/824116/pexels-photo-824116.jpeg?auto=compress&cs=tinysrgb&w=800');
+    background-image: url('../img/login-image.jpeg');
     background-size: cover;
     background-position: center;
     position: relative;
@@ -191,7 +191,7 @@ body {
 .file-custom-label { font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 4px; margin-left: 4px; display: block; }
 .file-icon-adjust { top: 72% !important; }
 .register-image-side {
-    background-image: url('https://images.pexels.com/photos/1263349/pexels-photo-1263349.jpeg?auto=compress&cs=tinysrgb&w=800') !important;
+    background-image: url('../img/register-image.jpeg') !important;
 }
 
 /* FORGOT PASSWORD VARIATION (INVERTER) */
@@ -209,7 +209,7 @@ body {
     flex: 1.2 !important;
     min-width: 45% !important;
     background-color: #0284c7 !important;
-    background-image: url('https://images.unsplash.com/photo-1519315901367-f34ff9154487?auto=format&fit=crop&w=800&q=80') !important;
+    background-image: url('../img/forgot-password.avif') !important;
     background-size: cover !important;
     background-position: center !important;
 }
