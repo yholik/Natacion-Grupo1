@@ -15,10 +15,11 @@ $selectedSpecialtyIds = array_map('intval', $coach['specialty_ids'] ?? []);
 </div>
 
 <!--CONTENIDO PRINCIPAL-->
-<div class="coach-content">
-    <div>
-    <h2 class="profile-title">Mis datos personales</h2>
-</div>
+<div class="coach-content flex-grow-1">
+    <div class="coach-welcome">
+    <h2 class="coach-title">Mis datos personales</h2>
+        <p class="coach-subtitle">Actualiza datos personales desde este panel</p>
+    </div>
     <form id="updateProfileForm" class="profile-card">
         <div class="row g-3">
             <div class="col-md-6">
@@ -51,9 +52,10 @@ $selectedSpecialtyIds = array_map('intval', $coach['specialty_ids'] ?? []);
 </div>
 
 <!--BLOQUE ACTUALIZACION DE CONTRASEÑA-->
-<div>
-<h2 class="profile-title">Actualización de contraseña</h2>
-</div>
+    <div class="coach-welcome">
+        <h2 class="coach-title">Actualización de contraseña</h2>
+        <p class="coach-subtitle">Actualiza tu contraseña de acceso desde aqui</p>
+    </div>
 
 <form id="updatePasswordForm" class="profile-card">
 <div class="row g-3">

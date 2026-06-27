@@ -1,4 +1,5 @@
 <?php include __DIR__ . '/../layout/header.php'; ?>
+<link href="<?= Env::get('ASSET_URL') ?>/css/coach.css" rel="stylesheet"></main>
 <main class="d-flex flex-column flex-lg-row w-100">
     <div class="d-flex">
         <aside class="p-3 text-white bg-dark d-none d-lg-block flex-shrink-0" style="width: 280px; min-height: 100vh;">
@@ -6,11 +7,14 @@
         </aside>
     </div>
 
-    <div class="container-fluid p-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="mb-0">Calendario de clases</h2>
+    <div class="coach-content flex-grow-1">
+        <div class="coach-welcome">
+            <h2 class="coach-title">Calendario de clases</h2>
+            <p class="coach-subtitle">Consulta el detalle de tus clases haciendo click</p>
         </div>
-        <div id="calendarContainer"></div>
+
+        <div id="calendarContainer" class="coach-content"></div>
+
     </div>
 
     <!-- Modal DETALLE clase (solo lectura) -->

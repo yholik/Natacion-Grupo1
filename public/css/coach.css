@@ -16,7 +16,7 @@
 .coach-title {
     font-size: 1.8rem;
     font-weight: 800;
-    color: var(--text-main);
+    color: var(--primary);
     letter-spacing: -0.5px;
     margin-bottom: 0.25rem;
 }
@@ -56,7 +56,7 @@
     letter-spacing: -1px;
 }
 
-.stat-label {
+.stat-label, .coach-content .students-label  {
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--text-muted);
@@ -147,4 +147,13 @@
     background-color: var(--primary-dark);
     border-color: var(--primary-dark);
 
+}
+
+@media (max-width: 768px) {
+    .coach-content {
+        padding: 1.25rem;
+    }
+    .profile-card {
+        padding: 1.25rem;
+    }
 }
