@@ -26,9 +26,11 @@
 
         <div class="container">
 
-            <a class="navbar-brand" href="?url=landing">Club de Natacion - El Delfín Saltarín 🚩</a>
+            <a class="navbar-brand text-nowrap overflow-hidden" href="?url=landing">
+                <span class="d-none d-sm-inline">Club de Natacion - </span>El Delfín Saltarín 🚩
+            </a>
             <?php if (isset($_SESSION['role_id'])): ?>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
+            <button class="navbar-toggler ms-auto flex-shrink-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <?php endif; ?>

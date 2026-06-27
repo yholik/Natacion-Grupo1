@@ -61,6 +61,14 @@ footer {
     background-color: var(--primary-dark) !important;
 }
 
+.navbar .navbar-brand {
+    max-width: 70vw;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: clamp(0.9rem, 3.5vw, 1.25rem);
+}
+
 .sidebar-panel {
     width: 100%;
     background-color: transparent;
