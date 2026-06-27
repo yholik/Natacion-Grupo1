@@ -709,6 +709,7 @@ class AdminController extends BaseController
         }
 
         $fields['profile_image'] = $newFileName;
+        $_SESSION['profile_image'] = $newFileName;
 
         return $absolutePath;
     }
