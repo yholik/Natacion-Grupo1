@@ -243,6 +243,19 @@ class Coach
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // Devuelve las especialidades de un coach por su perfil.id (para admin).
+    public function getSpecialtiesByProfileId(int $profileId): array
+    {
+        $sql = "SELECT s.id, s.name
+                FROM specialties s
+                INNER JOIN perfil_specialty ps ON ps.specialty_id = s.id
+                WHERE ps.profile_id = ?
+                ORDER BY s.name ASC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$profileId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 
     //devuelve la proxima clase a partir del horario actual
     public function getNextClassByCoach(int $userId): array|false
