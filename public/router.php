@@ -99,9 +99,6 @@ switch ( $route ) {
     case 'coach-home':
     case 'coach-lessons':
     case 'coach-calendar':
-    case 'coach-create-lesson':
-    case 'coach-edit-lesson':
-    case 'coach-delete-lesson':
     case 'admin-manage-specialties':
     case 'admin-create-specialty':
     case 'admin-edit-specialty':
@@ -116,9 +113,6 @@ switch ( $route ) {
         if ( $route === 'coach-home' ) $controller->showCoachHome();
         if ( $route === 'coach-lessons' ) $controller->showCoachLessons();
         if ( $route === 'coach-calendar' ) $controller->showCoachCalendar();
-        if ( $route === 'coach-create-lesson' ) $controller->createLesson();
-        if ( $route === 'coach-edit-lesson' ) $controller->editLesson();
-        if ( $route === 'coach-delete-lesson' ) $controller->deleteLesson();
         if($route === 'coach-stats' ) $controller->getCoachStats();
         if($route === 'coach-get-specialties') $controller->getSpecialtiesJSON();
         if($route === 'coach-get-students' ) $controller->getCoachStudents();
