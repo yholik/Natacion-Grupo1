@@ -124,6 +124,8 @@ include __DIR__ . '/../layout/header.php';
                                 class="form-control"
                                 id="birth_date"
                                 name="birth_date"
+                                min="1927-01-01"
+                                max="2026-12-31"
                                 value="<?= e($swimmer['birth_date'] ?? '') ?>"
                             >
                         </div>

@@ -22,14 +22,20 @@
 
                 <input type="hidden" name="token" value="<?= htmlspecialchars($_GET['token'] ?? '') ?>">
                 
-                <div class="input-icon-group">
+                <div class="input-icon-group" style="position:relative">
                     <i class="bi bi-lock form-icon"></i>
-                    <input type="password" name="password" class="form-control" placeholder="Mínimo 6 caracteres" minlength="6" required>
+                    <input type="password" name="password" class="form-control" placeholder="Mínimo 6 caracteres" minlength="6" required style="padding-right:40px">
+                    <button type="button" class="btn-toggle-password" onclick="this.previousElementSibling.type = this.previousElementSibling.type === 'password' ? 'text' : 'password'; this.querySelector('i').classList.toggle('bi-eye'); this.querySelector('i').classList.toggle('bi-eye-slash');" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:0">
+                        <i class="bi bi-eye" style="font-size:1.1rem;color:#6c757d"></i>
+                    </button>
                 </div>
 
-                <div class="input-icon-group" style="margin-bottom: 25px;">
+                <div class="input-icon-group" style="margin-bottom: 25px;position:relative">
                     <i class="bi bi-shield-lock form-icon"></i>
-                    <input type="password" name="confirm_password" class="form-control" placeholder="Repetir contraseña" required>
+                    <input type="password" name="confirm_password" class="form-control" placeholder="Repetir contraseña" required style="padding-right:40px">
+                    <button type="button" class="btn-toggle-password" onclick="this.previousElementSibling.type = this.previousElementSibling.type === 'password' ? 'text' : 'password'; this.querySelector('i').classList.toggle('bi-eye'); this.querySelector('i').classList.toggle('bi-eye-slash');" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:0">
+                        <i class="bi bi-eye" style="font-size:1.1rem;color:#6c757d"></i>
+                    </button>
                 </div>
 
                 <button type="submit" class="btn-login-submit">Actualizar contraseña</button>

@@ -42,6 +42,7 @@
                             <div class="mb-3">
                                 <label class="form-label">Fecha de Nacimiento</label>
                                 <input type="date" name="birth_date" class="form-control"
+                                    min="1927-01-01" max="2026-12-31"
                                     value="<?= htmlspecialchars($swimmer['birth_date'] ?? '') ?>">
                             </div>
                             <div class="mb-3">
