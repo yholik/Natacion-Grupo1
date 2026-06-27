@@ -131,6 +131,7 @@
             calendarInitialized = true;
             initCalendar({
                 data: bookings, dayMap, dayNames,
+                cardButtonLabel: 'Cancelar inscripción',
                 onCardClick: (dayIdx, booking) => {
                     currentBookingId = booking.booking_id;
                     const start = booking.start_time.substring(0, 5);
