@@ -38,6 +38,17 @@ if (!function_exists('formatDateOrDash')) {
             </a>
         </div>
 
+        <form method="GET" action="" class="mb-4">
+            <input type="hidden" name="url" value="admin-manage-swimmers">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Buscar por nombre..." value="<?= e($searchTerm ?? '') ?>">
+                <button class="btn btn-primary" type="submit">Buscar</button>
+                <?php if (!empty($searchTerm)): ?>
+                    <a href="?url=admin-manage-swimmers" class="btn btn-secondary">Limpiar</a>
+                <?php endif; ?>
+            </div>
+        </form>
+
         <?php if (empty($swimmers)): ?>
             <div class="text-center py-4 text-muted">
                 <p class="mb-0">No hay nadadores registrados.</p>

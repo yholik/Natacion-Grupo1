@@ -34,6 +34,17 @@ function formatDateOrDash($value)
             </a>
         </div>
 
+        <form method="GET" action="" class="mb-4">
+            <input type="hidden" name="url" value="admin-manage-coaches">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Buscar por nombre..." value="<?= e($searchTerm ?? '') ?>">
+                <button class="btn btn-primary" type="submit">Buscar</button>
+                <?php if (!empty($searchTerm)): ?>
+                    <a href="?url=admin-manage-coaches" class="btn btn-secondary">Limpiar</a>
+                <?php endif; ?>
+            </div>
+        </form>
+
         <?php if (empty($coaches)): ?>
             <div class="text-center py-4 text-muted">
                 <p class="mb-0">No hay profesores registrados.</p>

@@ -141,9 +141,7 @@ public function getCoachStudents()
 
 
 
-//==================================
-//ESTOS METODOS SIGUEN EN PIE PARA UN COACH?
-//==================================
+
     // crear clase nueva para el coach logueado.
     public function createLesson()
     {

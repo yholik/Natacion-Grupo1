@@ -56,6 +56,47 @@ class Coach
         return array_map([$this, 'mapCoachSpecialties'], $rows);
     }
 
+    // Busca profesores por nombre (first_name o last_name).
+    public function search(string $term, bool $onlyActive = false)
+    {
+        $sql = "
+            SELECT
+                c.*,
+                a.email,
+                (
+                    SELECT GROUP_CONCAT(s.name ORDER BY s.name SEPARATOR ', ')
+                    FROM perfil_specialty ps
+                    INNER JOIN specialties s
+                        ON ps.specialty_id = s.id
+                    WHERE ps.profile_id = c.id
+                ) AS specialty_names,
+                (
+                    SELECT GROUP_CONCAT(ps.specialty_id ORDER BY ps.specialty_id SEPARATOR ',')
+                    FROM perfil_specialty ps
+                    WHERE ps.profile_id = c.id
+                ) AS specialty_ids_csv
+            FROM perfil c
+            INNER JOIN auth a
+                ON c.user_id = a.id
+            WHERE a.deleted_at IS NULL
+              AND a.role_id = 2
+              AND (c.first_name LIKE ? OR c.last_name LIKE ? OR CONCAT(c.first_name, ' ', c.last_name) LIKE ?)
+        ";
+
+        if ($onlyActive) {
+            $sql .= " AND c.deleted_at IS NULL";
+        }
+
+        $sql .= " ORDER BY c.id DESC";
+
+        $like = "%{$term}%";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$like, $like, $like]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return array_map([$this, 'mapCoachSpecialties'], $rows);
+    }
+
     // Inserta el perfil coach dentro de la tabla unificada.
     public function createCoach(array $data)
     {

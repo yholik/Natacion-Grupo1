@@ -30,6 +30,27 @@ class Swimmer {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // Busca nadadores por nombre (first_name o last_name).
+    public function search(string $term, bool $onlyActive = true) {
+        $sql = "SELECT s.*, u.email
+                FROM perfil s
+                INNER JOIN auth u ON s.user_id = u.id
+                WHERE u.deleted_at IS NULL
+                  AND u.role_id = 3
+                  AND (s.first_name LIKE ? OR s.last_name LIKE ? OR CONCAT(s.first_name, ' ', s.last_name) LIKE ?)";
+
+        if ($onlyActive) {
+            $sql .= " AND s.deleted_at IS NULL";
+        }
+
+        $sql .= " ORDER BY s.id DESC";
+
+        $like = "%{$term}%";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$like, $like, $like]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     /**
      * Inserta los datos personales vinculados a un user_id, incluyendo la imagen.
      * @param array $data ['user_id', 'first_name', 'last_name', 'phone', 'profile_image']
