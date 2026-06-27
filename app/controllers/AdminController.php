@@ -37,18 +37,21 @@ class AdminController extends BaseController
         exit;
     }
 
-    // Lista profesores activos y dados de baja.
+    // Lista profesores activos y dados de baja, con búsqueda por nombre.
     public function showAdminManageCoaches()
     {
         $this->checkAuth();
         $this->checkRole(1);
 
-        // false = trae activos y dados de baja
-        $coaches = $this->coachModel->getAll(false);
+        $searchTerm = trim($_GET['search'] ?? '');
+        $coaches = $searchTerm !== ''
+            ? $this->coachModel->search($searchTerm, false)
+            : $this->coachModel->getAll(false);
 
         $this->render('users/admin/admin-manage-coaches.view', [
             'title' => 'Gestionar Profesores',
-            'coaches' => $coaches
+            'coaches' => $coaches,
+            'searchTerm' => $searchTerm
         ]);
     }
 
@@ -478,17 +481,21 @@ class AdminController extends BaseController
         return $this->redirectToManageLessons();
     }
 
-    // Lista nadadores activos y dados de baja.
+    // Lista nadadores activos y dados de baja, con búsqueda por nombre.
     public function showAdminManageSwimmers()
     {
         $this->checkAuth();
         $this->checkRole(1);
 
-        $swimmers = $this->swimmerModel->getAll(false);
+        $searchTerm = trim($_GET['search'] ?? '');
+        $swimmers = $searchTerm !== ''
+            ? $this->swimmerModel->search($searchTerm, false)
+            : $this->swimmerModel->getAll(false);
 
         $this->render('users/admin/admin-manage-swimmers.view', [
             'title' => 'Gestionar Nadadores',
-            'swimmers' => $swimmers
+            'swimmers' => $swimmers,
+            'searchTerm' => $searchTerm
         ]);
     }
 
