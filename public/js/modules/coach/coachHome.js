@@ -1,8 +1,3 @@
-
-/*
- * esta funcion me permite llenar los cuadros de estadisticas de la pagina home de un Coach
-*/
-
 export async function initCoachHome() {
 
     //tomo un elemento de la vista para que esta funcion se ejecute solo si existe dicho elemento

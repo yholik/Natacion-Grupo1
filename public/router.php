@@ -1,44 +1,22 @@
 <?php
-
-// Decide qué controlador responde según la ruta recibida.
-
-/**
-* EL ENRUTADOR ( ROUTER ) - Front Controller Pattern
-* * Este archivo es el único punto de entrada a la lógica del servidor.
-* Su función es leer la intención del usuario ( vía URL ) y delegar el
-* trabajo al controlador correspondiente.
-*/
-
-// Cargamos el núcleo del sistema una sola vez
 require_once __DIR__ . '/../app/config/db.php';
 require_once __DIR__ . '/../app/core/Env.php';
 require_once __DIR__ . '/../app/core/BaseController.php';
 
-/**
-* 1. CAPTURA DE LA INTENCIÓN
-* Usamos el parámetro 'url' definido en el .htaccess o pasado por GET.
-* Si no hay ruta ( página de inicio ), por defecto vamos a 'home'.
-*/
+
 $route = $_GET[ 'url' ] ?? 'landing';
 
-/**
-* 2. DESPACHO DE RUTAS ( DISPATCHER )
-* El switch actúa como una tabla de decisiones.
-*/
 switch ( $route ) {
 
 /*====================================*/
 /*           RUTAS PUBLICAS           */
 /*====================================*/
-    case 'landing':
-        //Aquí mostramos el landing previo al inicio de sesión
+    case 'landing':        
         require_once __DIR__ .'/../app/controllers/HomeController.php';
         ( new HomeController() )->landing(); //
         break;
-
-    // --- VISTA PRINCIPAL ---
-    case 'home':
-    // Aquí mostramos el panel principal ( dashboard ) con la lista de nadadores
+    
+    case 'home':    
     require_once __DIR__ . '/../app/controllers/HomeController.php';
     ( new HomeController() )->index();
     break;
@@ -46,8 +24,7 @@ switch ( $route ) {
 
 /*====================================*/
 /*           AUTH & USERS          */
-/*====================================*/
-    // Agrupamos rutas relacionadas para evitar repetir el require_once
+/*====================================*/   
     case 'login':
     case 'authenticate':
     case 'register':
@@ -58,10 +35,6 @@ switch ( $route ) {
     require_once __DIR__ . '/../app/controllers/AuthController.php';
     $controller = new AuthController();
 
-    /**
-    * Ejecución del método según la acción solicitada.
-    * Separamos la visualización ( GET ) de la lógica de procesamiento ( POST ).
-    */
     if ( $route === 'login' )           $controller->showLogin();
     if ( $route === 'authenticate' )    $controller->authenticate();
     if ( $route === 'register' )        $controller->register();
@@ -153,9 +126,7 @@ case 'swimmer-calendar':
 /*====================================*/
 /*           RUTAS DE ADMIN           */
 /*====================================*/
-   
 
-    // --- ADMIN ---
     case 'admin':
     case 'admin-home':
     case 'admin-manage-coaches':
@@ -202,26 +173,13 @@ case 'swimmer-calendar':
 /*          SECURITY/LOGOUT           */
 /*====================================*/
     case 'logout':
-    /**
-    * Para destruir una sesión, primero debemos estar seguros de que
-    * el sistema sabe de su existencia ( iniciada previamente en index.php ).
-    */
-    $_SESSION = [];
-    // Vaciamos el array de sesión por seguridad
-    session_destroy();
-    // Eliminamos el archivo de sesión en el servidor
 
-    // Redirigimos al Login para forzar una nueva autenticación
+    $_SESSION = []; 
+    session_destroy(); 
     header( 'Location: ?url=login' );
     exit;
-    // Detenemos el script para asegurar la redirección
 
-    // --- MANEJO DE ERRORES ---
     default:
-    /**
-    * Si el usuario intenta acceder a una ruta que no definimos arriba,
-    * devolvemos un código de estado 404 ( Not Found ).
-    */
     http_response_code( 404 );
     echo 'Error 404: La página "' . htmlspecialchars( $route ) . '" no existe en este sistema.';
     break;

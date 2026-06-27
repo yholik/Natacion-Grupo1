@@ -12,8 +12,6 @@ export function initCoachStudents() {
     generateDayOptions();
     loadCoachSpecialties();
 
-
-    //genero dinamico de los inputs de horarios
     function generateOptionsTime() {
         for (let i = 6; i <= 24; i++) {
             const actualHour = i === 24 ? 0 : i;
@@ -57,7 +55,6 @@ console.log(data.data.especialidades)
 
 
 
-    // 4. EVENTO DEL BOTÓN BUSCAR
     btnSearch.addEventListener('click', async () => {
         const params = new URLSearchParams({
             url: 'coach-get-students',
@@ -66,7 +63,7 @@ console.log(data.data.especialidades)
             specialty: filterSpecialty.value
         });
 
-        // Spinner de carga
+        //spinner de carga
         resultsContainer.innerHTML = `
             <div class="text-center py-5">
                 <div class="spinner-border text-primary" role="status"></div>
@@ -91,7 +88,7 @@ console.log(data.data.especialidades)
         }
     });
 
-    // 5. RENDERIZADO DE LA TABLA DE RESULTADOS
+    
     function renderStudentsTable(students) {
         if (!students || students.length === 0) {
             resultsContainer.innerHTML = `
