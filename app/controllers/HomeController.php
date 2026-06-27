@@ -19,7 +19,7 @@ class HomeController extends BaseController {
         ];
         
         // Render busca automáticamente la vista /landing/ y permite pasar datos
-        $this->render('landing', $data,false); 
+        $this->render('landing', $data);
     }
 
     /**
@@ -29,15 +29,7 @@ class HomeController extends BaseController {
      */
     // Deja el dashboard general para usuarios con sesión.
     public function index() {
-        // Verificamos si el usuario está logueado antes de mostrar el panel
         $this->checkAuth();
-
-        $data = [
-            'title' => "Dashboard - Swimming School",
-            'user'  => $_SESSION['email'] ?? 'Guest'
-        ];
-        
-        // El método render busca automáticamente en /views/ y permite pasar datos
-        $this->render('home.view', $data,true);
+        $this->handleFallback();
     }
 }

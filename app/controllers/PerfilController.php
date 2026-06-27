@@ -13,12 +13,11 @@ class PerfilController extends BaseController
     private $coachModel;
 
     private $authModel;
-    private $pdo;
 
     public function __construct()
     {
         global $pdo;
-        $this->pdo = $pdo;
+
         $this->swimmerModel = new Swimmer($pdo);
         $this->coachModel = new Coach($pdo);
         $this->authModel = new Auth($pdo);

@@ -72,7 +72,7 @@ function formatDateOrDash($value)
                                     <form id="<?= e($formId) ?>" action="<?= $appUrl ?>/?url=<?= $isActive ? 'admin-deactivate-coach' : 'admin-activate-coach' ?>" method="POST" class="m-0 flex-fill">
                                         <input type="hidden" name="user_id" value="<?= e($userId) ?>">
                                         <button type="button" class="btn btn-sm <?= $isActive ? 'btn-danger' : 'btn-success' ?> w-100 btn-cambiar-estado"
-                                                data-form-id="<?= e($formId) ?>" data-nombre="<?= e($fullName) ?>" data-accion="<?= $isActive ? 'baja' : 'alta' ?>" data-especialidades="<?= e($coach['specialty_names'] ?? '') ?>">
+                                                data-form-id="<?= e($formId) ?>" data-nombre="<?= e($fullName) ?>" data-accion="<?= $isActive ? 'baja' : 'alta' ?>" data-especialidades="<?= e($coach['specialty_names'] ?? '') ?>" data-user-id="<?= e($userId) ?>">
                                             <?= $isActive ? 'Dar de Baja' : 'Dar de Alta' ?>
                                         </button>
                                     </form>
