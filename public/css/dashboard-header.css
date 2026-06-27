@@ -98,7 +98,7 @@ footer {
         left: auto;
         width: 280px;    
         min-height: calc(100vh - 56px);
-        background-color: var(--text-main) !important;
+        background-color: var(--primary-dark) !important;
         border-top: none;
         margin-top: 0;
         z-index: 1030;
